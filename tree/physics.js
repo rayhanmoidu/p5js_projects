@@ -18,4 +18,18 @@ class PhysicsCalculator {
         let final_y = posdiff.getY() == 0 ? 0 : diry * fy;
         return new Vec2(final_x, final_y);
     }
+
+    calculateDampingForce(se1, se2, r, kd) {
+        let vdiff = se1.getVelocity().subtract(se2.getVelocity());
+        vdiff = vdiff.scalarmult(1/r);
+
+        let posdiff = se1.getPos().subtract(se2.getPos());
+        let dirx = -posdiff.getX() / abs(posdiff.getX());
+        let diry = -posdiff.getY() / abs(posdiff.getY());
+        let dir = new Vec2(dirx, diry);
+
+        let dotres = vdiff.dot(dir);
+        let finalforce = dir.scalarmult(kd*dotres);
+        return finalforce;
+    }
 }

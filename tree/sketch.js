@@ -1,9 +1,6 @@
 // var song;
 // let amplitude;
 // let audiocontext;
-
-// let numFreqs = 64;
-
 // function preload() {
 //   song = loadSound('assets/clairedelune.mp3');
 // }
@@ -14,11 +11,15 @@
 //   createCanvas(400, 400);
 // }
 
-// const median = arr => {
-//   const mid = Math.floor(arr.length / 2),
-//     nums = [...arr].sort((a, b) => a - b);
-//   return arr.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
-// };
+const median = arr => {
+  const mid = Math.floor(arr.length / 2),
+    nums = [...arr].sort((a, b) => a - b);
+  return arr.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
+};
+
+// var song;
+// let amplitude;
+// let audiocontext;
 
 // var prevAmplitude = 0;
 // var noteCount = 0;
@@ -97,15 +98,34 @@
 
 
 // ************************************* NEW *************************************
+let numFreqs = 64;
 
 var tree;
 var simulation;
 var hasStarted = false;
+var shouldAddExternalForce = false;
+
+var song;
+let amplitude;
+let audiocontext;
+
+var prevAmplitude = 0;
+var noteCount = 0;
+var isIncreasing = false;
+
+function preload() {
+  song = loadSound('assets/gladiolus.mp3');
+}
 
 function setup() {
   createCanvas(1500, 800);
-  tree = new Tree("basicFractal");
-  simulation = new Simulation(tree.getSprings(), tree.getParticles(), 0.5);
+
+  basic = new Tree("starting");
+  simulation = new Simulation(basic.getSprings(), basic.getParticles(), 0.5);
+
+  // tree = new Tree("basicFractal", PI/6, 750, 6, 3, 200, 100, 0.6, 50000, 0.75);
+  // tree2 = new Tree("basicFractal", PI/6, 200, 4, 2, 100, 50, 0.7, 3000, 0.9);
+  // simulation = new Simulation(tree.getSprings().concat(tree2.getSprings()), tree.getParticles().concat(tree2.getParticles()), 0.5);
   
 }
 
@@ -113,26 +133,104 @@ function draw() {
   background(100);
   fill(200);
 
+  let externalForce = new Vec2(0, 0);
+
+  if (song.isPlaying()) {
+
+    let encounteredNewNote = false;
+
+    let curAmplitude = amplitude.getLevel();
+    let spectrum = fft.analyze(numFreqs);
+
+    if (curAmplitude > prevAmplitude*1.09 && !isIncreasing) {
+      isIncreasing = true
+      encounteredNewNote = true;
+      noteCount ++;
+    } else if (curAmplitude < prevAmplitude) {
+      isIncreasing = false;
+    }
+
+    if (encounteredNewNote) {
+
+      let avg = 0
+      let count = 0
+      for (let i = 0; i < spectrum.length; i++){
+        if (spectrum[i] > 0) {
+          avg += spectrum[i];
+          count ++
+        }
+      }
+      avg /= count
+      med = median(spectrum.filter((val) => val > 0))
+
+      freqTotal = 0;
+      weightedIndices = 0;
+      maxfreq = -1;
+      for (let i = 0; i < numFreqs; i++){
+        if (spectrum[i] > med) {
+          freqTotal += spectrum[i];
+          weightedIndices += spectrum[i]*i;
+          if (i > maxfreq) {
+            maxfreq = i;
+          }
+        }
+      }
+
+      avgFrequencyIndex = weightedIndices / freqTotal;
+      percentVal = avgFrequencyIndex / maxfreq;
+      print(percentVal)
+
+      if (percentVal > 1) {
+        print("BAD BAD BAD!!!");
+      }
+
+      let forceTheta = 2*PI * percentVal;
+
+      let forceDir = new Vec2(1, 0);
+      let force = forceDir.scalarmult(curAmplitude);
+
+      let directedfx = force.getX()*cos(forceTheta) - force.getY()*sin(forceTheta);
+      let directedfy = force.getX()*sin(forceTheta) + force.getY()*cos(forceTheta);
+
+      if (directedfx && directedfy) {
+        externalForce = new Vec2(directedfx, directedfy);
+      }
+    }
+
+    prevAmplitude = curAmplitude
+    prevSpectrum = spectrum;
+  }
+
   if (hasStarted) {
     randomval = random(0, 2);
-    simulation.addExternalForce(new Vec2((randomval-1)*500, 0));
+    // if (shouldAddExternalForce) {
+    //   simulation.addExternalForce(new Vec2((randomval)*100, 0));
+    // }
+    // simulation.addExternalForce(externalForce.scalarmult(500000));
     simulation.update();
     simulation.resetExternalForces();
   }
-
+  
   springs = simulation.getSprings();
   for (let i = 0; i < springs.length; i++) {
     endpoints = springs[i].getEndpoints();
     line(endpoints[0].getPos().getX(), endpoints[0].getPos().getY(), endpoints[1].getPos().getX(), endpoints[1].getPos().getY())
-    circle(endpoints[0].getPos().getX(), endpoints[0].getPos().getY(), 3);
-    circle(endpoints[1].getPos().getX(), endpoints[1].getPos().getY(), 3);
+    circle(endpoints[0].getPos().getX(), endpoints[0].getPos().getY(), 0);
+    circle(endpoints[1].getPos().getX(), endpoints[1].getPos().getY(), 0);
   }
+
 }
 
 function mousePressed() {
   if (!hasStarted) {
     hasStarted = true;
+    audiocontext = getAudioContext();
+    song.play();
+    amplitude = new p5.Amplitude();
+    amplitude.setInput(song);
+    fft = new p5.FFT();
   }
+  shouldAddExternalForce = !shouldAddExternalForce;
 }
 
 

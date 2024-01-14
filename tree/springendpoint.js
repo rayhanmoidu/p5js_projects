@@ -1,6 +1,7 @@
 class SpringEndpoint {
 
     constructor(id, pos, m) {
+        this.startpos = pos;
         this.id = id;
         this.pos = pos;
         this.inverseM = 1/m;
@@ -17,6 +18,16 @@ class SpringEndpoint {
 
     getPos() {
         return this.pos;
+    }
+
+    getVelocity() {
+        return this.v;
+    }
+
+    addReturningForce() {
+        let diff = this.startpos.subtract(this.pos);
+        let weight = diff.length2();
+        this.f = this.f.add(diff.scalarmult(100));
     }
 
     addForce(f) {
@@ -38,6 +49,9 @@ class SpringEndpoint {
             
             this.oldpos = this.pos;
             this.pos = newpos;
+
+            let velocity = this.pos.subtract(this.oldpos).scalarmult(1/timeStep);
+            this.v = velocity;
         }
     }
 

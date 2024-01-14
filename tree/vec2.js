@@ -21,6 +21,10 @@ class Vec2 {
         this.y = y;
     }
 
+    length2() {
+        return sqrt(this.x*this.x + this.y*this.y);
+    }
+
     add(pos) {
         return new Vec2(this.x + pos.getX(), this.y + pos.getY());
     }
