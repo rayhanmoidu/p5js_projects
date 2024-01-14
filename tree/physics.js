@@ -1,0 +1,21 @@
+class PhysicsCalculator {
+    constructor() {
+
+    }
+
+    calculateSpringForce(se1, se2, r, ks) {
+        let posdiff = se1.getPos().subtract(se2.getPos());
+        let d = sqrt(posdiff.getX()*posdiff.getX() + posdiff.getY()*posdiff.getY());
+        let f_scalar = ks * (d/r - 1);
+        let theta = atan(abs(posdiff.getY()) / abs(posdiff.getX()));
+
+        let fx = f_scalar * cos(theta)
+        let fy = f_scalar * sin(theta);
+        let dirx = -posdiff.getX() / abs(posdiff.getX());
+        let diry = -posdiff.getY() / abs(posdiff.getY());
+
+        let final_x = posdiff.getX() == 0 ? 0 : dirx * fx;
+        let final_y = posdiff.getY() == 0 ? 0 : diry * fy;
+        return new Vec2(final_x, final_y);
+    }
+}
