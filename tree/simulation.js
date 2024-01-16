@@ -36,8 +36,8 @@ class Simulation {
 
             endpoints[0].addForce(f1);
             endpoints[1].addForce(f2);
-            endpoints[0].addForce(d1);
-            endpoints[1].addForce(d2);
+            // endpoints[0].addForce(d1);
+            // endpoints[1].addForce(d2);
         }
     }
 

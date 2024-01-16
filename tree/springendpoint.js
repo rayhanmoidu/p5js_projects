@@ -1,15 +1,16 @@
 class SpringEndpoint {
 
-    constructor(id, pos, m) {
+    constructor(id, pos, m, level) {
         this.startpos = pos;
         this.id = id;
         this.pos = pos;
-        this.inverseM = 1/m;
+        this.inverseM = 1/(m*level);
 
         this.f = new Vec2(0, 0);
         this.oldpos = pos;
         this.v = new Vec2(0, 0);
         this.isFixed = false;
+        this.level = level;
     }
 
     fix() {
@@ -48,7 +49,9 @@ class SpringEndpoint {
             let newpos = newF.scalarmult(timeStep*timeStep).add(term1);
             
             this.oldpos = this.pos;
-            this.pos = newpos;
+            let weight = (this.level) / 12
+            weight *= weight;
+            this.pos = newpos.scalarmult(1-weight).add(this.pos.scalarmult(weight));
 
             let velocity = this.pos.subtract(this.oldpos).scalarmult(1/timeStep);
             this.v = velocity;

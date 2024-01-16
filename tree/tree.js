@@ -19,10 +19,10 @@ class Tree {
     }
 
     setupTree_starting() {
-        let se1 = new SpringEndpoint(0, new Vec2(100, 100), 5000);
-        let se2 = new SpringEndpoint(1, new Vec2(200, 50), 5000);
+        let se1 = new SpringEndpoint(0, new Vec2(100, 100), 5000, 1);
+        let se2 = new SpringEndpoint(1, new Vec2(200, 50), 5000, 1);
 
-        let spr1 = new Spring(0, se1, se2, 200, ks, kd);
+        let spr1 = new Spring(0, se1, se2, 200, ks, kd, 1);
 
         this.springs = [spr1];
         this.particles = [se1, se2];
@@ -33,9 +33,9 @@ class Tree {
         let particles = [];
 
         let startPos = 700;
-        let se1 = new SpringEndpoint(0, new Vec2(xPos, startPos), startingMass);
-        let se2 = new SpringEndpoint(1, new Vec2(xPos, startPos - treeHeight), startingMass);
-        let spr1 = new Spring(0, se1, se2, treeHeight*restLengthFactor, ks, kd);
+        let se1 = new SpringEndpoint(0, new Vec2(xPos, startPos), startingMass, fractalFactor+1);
+        let se2 = new SpringEndpoint(1, new Vec2(xPos, startPos - treeHeight), startingMass, fractalFactor+1);
+        let spr1 = new Spring(0, se1, se2, treeHeight*restLengthFactor, ks, kd, fractalFactor+1);
         
         particles.push(se1);
         particles.push(se2);
@@ -67,8 +67,8 @@ class Tree {
             let diffx = branchLength * cos(angleOffset + thetaDiff * (i+1) + stemTheta);
             let diffy = branchLength * sin(angleOffset + thetaDiff * (i+1) + stemTheta);
 
-            let new_endpoint = new SpringEndpoint(particles.length, new Vec2(stem_endpoint.getPos().getX() + diffx, stem_endpoint.getPos().getY() - diffy), mass);
-            let new_spring = new Spring(springs.length, stem_endpoint, new_endpoint, branchLength*restLengthFactor, ks, kd);
+            let new_endpoint = new SpringEndpoint(particles.length, new Vec2(stem_endpoint.getPos().getX() + diffx, stem_endpoint.getPos().getY() - diffy), mass, curLevel);
+            let new_spring = new Spring(springs.length, stem_endpoint, new_endpoint, branchLength*restLengthFactor, ks, kd, curLevel);
             particles.push(new_endpoint);
             springs.push(new_spring);
 

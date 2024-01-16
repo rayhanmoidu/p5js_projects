@@ -114,19 +114,24 @@ var noteCount = 0;
 var isIncreasing = false;
 
 function preload() {
-  song = loadSound('assets/gladiolus.mp3');
+  song = loadSound('assets/clairedelune.mp3');
 }
 
 function setup() {
   createCanvas(1500, 800);
 
-  basic = new Tree("starting");
-  simulation = new Simulation(basic.getSprings(), basic.getParticles(), 0.5);
+  // basic = new Tree("starting");
+  // simulation = new Simulation(basic.getSprings(), basic.getParticles(), 0.5);
 
-  // tree = new Tree("basicFractal", PI/6, 750, 6, 3, 200, 100, 0.6, 50000, 0.75);
-  // tree2 = new Tree("basicFractal", PI/6, 200, 4, 2, 100, 50, 0.7, 3000, 0.9);
+  tree = new Tree("basicFractal", PI/6, 750, 12, 2, 150, 75, 0.9, 50000, 0.9); // 0.75 for mass
+  tree2 = new Tree("basicFractal", PI/6, 200, 4, 2, 100, 50, 0.7, 3000, 0.9);
+  simulation = new Simulation(tree.getSprings(), tree.getParticles(), 0.5);
   // simulation = new Simulation(tree.getSprings().concat(tree2.getSprings()), tree.getParticles().concat(tree2.getParticles()), 0.5);
   
+}
+
+function compareSprings(a, b) {
+  return b.getLevel() - a.getLevel();
 }
 
 function draw() {
@@ -135,7 +140,7 @@ function draw() {
 
   let externalForce = new Vec2(0, 0);
 
-  if (song.isPlaying()) {
+  if (hasStarted) {
 
     let encounteredNewNote = false;
 
@@ -151,7 +156,6 @@ function draw() {
     }
 
     if (encounteredNewNote) {
-
       let avg = 0
       let count = 0
       for (let i = 0; i < spectrum.length; i++){
@@ -203,20 +207,43 @@ function draw() {
 
   if (hasStarted) {
     randomval = random(0, 2);
-    // if (shouldAddExternalForce) {
-    //   simulation.addExternalForce(new Vec2((randomval)*100, 0));
-    // }
-    // simulation.addExternalForce(externalForce.scalarmult(500000));
+    if (shouldAddExternalForce) {
+      simulation.addExternalForce(new Vec2((randomval)*100, 0));
+    }
+    simulation.addExternalForce(externalForce.scalarmult(5000000));
     simulation.update();
     simulation.resetExternalForces();
   }
   
   springs = simulation.getSprings();
+  springs.sort(compareSprings)
   for (let i = 0; i < springs.length; i++) {
     endpoints = springs[i].getEndpoints();
+    strokeWeight(springs[i].getLevel());
+    stroke((12-springs[i].getLevel())/12 * 50)
     line(endpoints[0].getPos().getX(), endpoints[0].getPos().getY(), endpoints[1].getPos().getX(), endpoints[1].getPos().getY())
-    circle(endpoints[0].getPos().getX(), endpoints[0].getPos().getY(), 0);
-    circle(endpoints[1].getPos().getX(), endpoints[1].getPos().getY(), 0);
+    // if (springs[i].getLevel()==1) {
+    // // circle(endpoints[0].getPos().getX(), endpoints[0].getPos().getY(), 2);
+    //   fill(83, 130, 65)
+    //   stroke(83, 130, 65)
+    //   circle(endpoints[1].getPos().getX(), endpoints[1].getPos().getY(), 7.5);
+    //   stroke(0)
+    // }
+  }
+
+  for (let i = 0; i < springs.length; i++) {
+    
+    // strokeWeight(springs[i].getLevel());
+    // stroke((12-springs[i].getLevel())/12 * 50)
+    // line(endpoints[0].getPos().getX(), endpoints[0].getPos().getY(), endpoints[1].getPos().getX(), endpoints[1].getPos().getY())
+    if (springs[i].getLevel()==1) {
+      endpoints = springs[i].getEndpoints();
+    // circle(endpoints[0].getPos().getX(), endpoints[0].getPos().getY(), 2);
+      fill(83, 130, 65)
+      stroke(83, 130, 65)
+      circle(endpoints[1].getPos().getX(), endpoints[1].getPos().getY(), 6);
+      stroke(0)
+    }
   }
 
 }
@@ -229,6 +256,8 @@ function mousePressed() {
     amplitude = new p5.Amplitude();
     amplitude.setInput(song);
     fft = new p5.FFT();
+  } else if (hasStarted) {
+    hasStarted = false;
   }
   shouldAddExternalForce = !shouldAddExternalForce;
 }
