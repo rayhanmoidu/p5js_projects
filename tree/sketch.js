@@ -114,7 +114,7 @@ var noteCount = 0;
 var isIncreasing = false;
 
 function preload() {
-  song = loadSound('assets/clairedelune.mp3');
+  song = loadSound('assets/gladiolus.mp3');
 }
 
 function setup() {
@@ -208,9 +208,10 @@ function draw() {
   if (hasStarted) {
     randomval = random(0, 2);
     if (shouldAddExternalForce) {
-      simulation.addExternalForce(new Vec2((randomval)*100, 0));
+      // simulation.addExternalForce(new Vec2((randomval)*100, 0));
+    
+      simulation.addExternalForce(externalForce.scalarmult(500000));
     }
-    simulation.addExternalForce(externalForce.scalarmult(5000000));
     simulation.update();
     simulation.resetExternalForces();
   }
@@ -257,7 +258,7 @@ function mousePressed() {
     amplitude.setInput(song);
     fft = new p5.FFT();
   } else if (hasStarted) {
-    hasStarted = false;
+    // hasStarted = false;
   }
   shouldAddExternalForce = !shouldAddExternalForce;
 }

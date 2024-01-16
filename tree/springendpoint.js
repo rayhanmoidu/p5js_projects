@@ -4,7 +4,7 @@ class SpringEndpoint {
         this.startpos = pos;
         this.id = id;
         this.pos = pos;
-        this.inverseM = 1/(m*level);
+        this.inverseM = 1/(m);
 
         this.f = new Vec2(0, 0);
         this.oldpos = pos;
@@ -50,7 +50,7 @@ class SpringEndpoint {
             
             this.oldpos = this.pos;
             let weight = (this.level) / 12
-            weight *= weight;
+            weight *= weight * weight * weight;
             this.pos = newpos.scalarmult(1-weight).add(this.pos.scalarmult(weight));
 
             let velocity = this.pos.subtract(this.oldpos).scalarmult(1/timeStep);
