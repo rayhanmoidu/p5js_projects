@@ -94,6 +94,49 @@ const median = arr => {
 //   fft = new p5.FFT();
 // }
 
+// parameters
+let p = {
+
+  numLevels: 12,
+  numLevelsMin: 1,
+  numLevelsMax: 15,
+  
+  branchingFactor: 2,
+  branchingFactorMin: 1,
+  branchingFactorMax: 10,
+
+  branchLength: 75,
+  branchLengthWMin: 10,
+  branchLengthMax: 300,
+  branchLengthStep: 5,
+
+  treeHeight: 150,
+  treeHeightMin: 10,
+  treeHeightMax: 300,
+  treeHeightStep: 10,
+
+  angleOffset: 0.6283,
+  angleOffsetMin: 0,
+  angleOffsetMax: 1.57,
+  angleOffsetStep: 0.01,
+
+  branchLengthFactor: 0.9,
+  branchLengthFactorMin: 0.05,
+  branchLengthFactorMax: 1,
+  branchLengthFactorStep: 0.05,
+
+  mass: 50000,
+  massMin: 10000,
+  massMax: 150000,
+  massStep: 10000,
+
+  massFactor: 0.9,
+  massFactorMin: 0.05,
+  massFactorMax: 1,
+  massFactorStep: 0.05,
+
+};
+
 
 
 
@@ -109,25 +152,36 @@ var song;
 let amplitude;
 let audiocontext;
 
+let prevSpectrum = null;
 var prevAmplitude = 0;
 var noteCount = 0;
 var isIncreasing = false;
 
 function preload() {
-  song = loadSound('assets/gladiolus.mp3');
+  song = loadSound('assets/chopin_prelude.wav');
+  
+  
+  // song.start();
 }
 
 function setup() {
   createCanvas(1500, 800);
-
+  createParamGui(p, paramChanged);
   // basic = new Tree("starting");
   // simulation = new Simulation(basic.getSprings(), basic.getParticles(), 0.5);
+  restartSimulation();
+  song.setLoop(true);
+  // tree = new Tree("basicFractal", p.angleOffset, 750, p.numLevels, p.branchingFactor, p.treeHeight, p.branchLength, p.branchLengthFactor, p.mass, p.massFactor); // 0.75 for mass
+  // // tree2 = new Tree("basicFractal", PI/6, 200, 4, 2, 100, 50, 0.7, 3000, 0.9);
+  // simulation = new Simulation(tree.getSprings(), tree.getParticles(), 0.5);
+  // // simulation = new Simulation(tree.getSprings().concat(tree2.getSprings()), tree.getParticles().concat(tree2.getParticles()), 0.5);
+  // // song = new p5.AudioIn();
+  // // print(song)
+}
 
-  tree = new Tree("basicFractal", PI/6, 750, 12, 2, 150, 75, 0.9, 50000, 0.9); // 0.75 for mass
-  tree2 = new Tree("basicFractal", PI/6, 200, 4, 2, 100, 50, 0.7, 3000, 0.9);
+function restartSimulation() {
+  tree = new Tree("basicFractal", p.angleOffset, 750, p.numLevels, p.branchingFactor, p.treeHeight, p.branchLength, p.branchLengthFactor, p.mass, p.massFactor); // 0.75 for mass
   simulation = new Simulation(tree.getSprings(), tree.getParticles(), 0.5);
-  // simulation = new Simulation(tree.getSprings().concat(tree2.getSprings()), tree.getParticles().concat(tree2.getParticles()), 0.5);
-  
 }
 
 function compareSprings(a, b) {
@@ -135,7 +189,7 @@ function compareSprings(a, b) {
 }
 
 function draw() {
-  background(100);
+  background(143, 197, 217);
   fill(200);
 
   let externalForce = new Vec2(0, 0);
@@ -144,10 +198,14 @@ function draw() {
 
     let encounteredNewNote = false;
 
+    // let curAmplitude = song.getLevel();
     let curAmplitude = amplitude.getLevel();
     let spectrum = fft.analyze(numFreqs);
 
-    if (curAmplitude > prevAmplitude*1.09 && !isIncreasing) {
+    print(curAmplitude)
+    print(spectrum)
+
+    if (curAmplitude > prevAmplitude*1.00 && !isIncreasing) {
       isIncreasing = true
       encounteredNewNote = true;
       noteCount ++;
@@ -155,25 +213,36 @@ function draw() {
       isIncreasing = false;
     }
 
+    let myspectrum = []
+    if (prevSpectrum) {
+      for (let i = 0; i < spectrum.length; i++) {
+        myspectrum.push(spectrum[i]-prevSpectrum[i])
+      }
+      // myspectrum = spectrum - prevSpectrum
+    } else {
+      myspectrum = spectrum;
+    }
+    // print(myspectrum)
+
     if (encounteredNewNote) {
       let avg = 0
       let count = 0
-      for (let i = 0; i < spectrum.length; i++){
-        if (spectrum[i] > 0) {
-          avg += spectrum[i];
+      for (let i = 0; i < myspectrum.length; i++){
+        if (myspectrum[i] > 0) {
+          avg += myspectrum[i];
           count ++
         }
       }
       avg /= count
-      med = median(spectrum.filter((val) => val > 0))
+      med = median(myspectrum.filter((val) => val > 0))
 
       freqTotal = 0;
       weightedIndices = 0;
       maxfreq = -1;
       for (let i = 0; i < numFreqs; i++){
-        if (spectrum[i] > med) {
-          freqTotal += spectrum[i];
-          weightedIndices += spectrum[i]*i;
+        if (myspectrum[i] > med) {
+          freqTotal += myspectrum[i];
+          weightedIndices += myspectrum[i]*i;
           if (i > maxfreq) {
             maxfreq = i;
           }
@@ -188,7 +257,7 @@ function draw() {
         print("BAD BAD BAD!!!");
       }
 
-      let forceTheta = 2*PI * percentVal;
+      let forceTheta = 2*PI * percentVal + PI;
 
       let forceDir = new Vec2(1, 0);
       let force = forceDir.scalarmult(curAmplitude);
@@ -210,7 +279,7 @@ function draw() {
     if (shouldAddExternalForce) {
       // simulation.addExternalForce(new Vec2((randomval)*100, 0));
     
-      simulation.addExternalForce(externalForce.scalarmult(500000));
+      simulation.addExternalForce(externalForce.scalarmult(5000000));
     }
     simulation.update();
     simulation.resetExternalForces();
@@ -250,17 +319,36 @@ function draw() {
 }
 
 function mousePressed() {
+  let smoothingFactor = 0.5
   if (!hasStarted) {
-    hasStarted = true;
+    // song = new p5.AudioIn();
     audiocontext = getAudioContext();
+
+    // song.start();
+
+    // print("hello")
+
+    hasStarted = true;
     song.play();
-    amplitude = new p5.Amplitude();
+    amplitude = new p5.Amplitude(smoothingFactor);
+    amplitude.smooth(smoothingFactor)
     amplitude.setInput(song);
-    fft = new p5.FFT();
+    fft = new p5.FFT(smoothingFactor);
+    fft.smooth(smoothingFactor)
+    fft.setInput(song)
+    // song.start();
   } else if (hasStarted) {
     // hasStarted = false;
   }
   shouldAddExternalForce = !shouldAddExternalForce;
+}
+
+// global callback from the settings GUI
+function paramChanged(name) {
+  restartSimulation();
+  // if (name == "bins" || name == "smoothing") {
+  //   initalizeAnalysis();
+  // }
 }
 
 
