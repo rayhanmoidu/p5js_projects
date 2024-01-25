@@ -64,7 +64,7 @@ class Layer {
             curveVertex(canvasw + shiftx*this.z, canvash + leftover*this.z)
             endShape();
 
-            let springs = this.simulation.getSprings();
+            let springs = this.tree.getSprings();
             springs.sort(compareSprings)
             for (let i = 0; i < springs.length; i++) {
                 let endpoints = springs[i].getEndpoints();

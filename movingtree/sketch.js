@@ -53,7 +53,7 @@ let p = {
   forceStep: 100,
 };
 
-canvasw = 700;
+canvasw = 1100;
 canvash = 700;
 
 cubeDepth = 15;
@@ -71,13 +71,15 @@ function preload() {
 }
 
 function setup() {
+  canvasw = windowWidth;
+  canvash = windowHeight;
   createCanvas(canvasw, canvash);
   createParamGui(p, paramChanged);
   addLayer();
 }
 
 function draw() {
-  background(143, 197, 217);
+  background(255, 235, 253);
   distFromLastLayer += p.speed;
 
   for (let i = visibleLayers.length-1; i >=0; i--) {
