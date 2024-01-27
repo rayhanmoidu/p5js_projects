@@ -51,12 +51,15 @@ let p = {
   forceMax: 100000,
   forceMin: 0,
   forceStep: 100,
+
+  cubeDepth: 15,
+  cubeDepthMin: 1,
+  cubeDepthMax: 100,
 };
 
 canvasw = 1100;
 canvash = 700;
 
-cubeDepth = 15;
 distFromLastLayer = 0;
 visibleLayers = []
 
@@ -64,7 +67,7 @@ let stopanim = false;
 
 function addLayer() {
   let randH = round(random(100, 250));
-  visibleLayers.push(new Layer(randH, cubeDepth));
+  visibleLayers.push(new Layer(randH, p.cubeDepth));
 }
 
 function preload() {

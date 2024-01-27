@@ -1,6 +1,20 @@
 // parameters
 let p = {
 
+  renderMode: true,
+
+  dressTolerance: 100,
+  dressToleranceMax: 2000,
+  dressToleranceMin: 0,
+
+  dressX: 5,
+  dressXMax: 10,
+  dressMin: 1,
+
+  dressY: 5,
+  dressYMax: 10,
+  dressYMin: 1,
+
   mass: 50000,
   massMin: 10000,
   massMax: 150000,
@@ -33,7 +47,7 @@ let p = {
   lineWeightDivisionsMin: 1,
 
   numStrands: 8,
-  numStrandsMax: 32,
+  numStrandsMax: 64,
   numStrandsMin: 1,
 
   hoffset: 10,
@@ -57,11 +71,13 @@ let p = {
 canvasw = 1100;
 canvash = 700;
 
-let hair;
+// let hair;
+// let cloth;
+let character;
 
 function reloadHair() {
-  hair = new Hair("starting");
-  simulation = new Simulation(hair.getSprings(), hair.getParticles(), 0.5);
+  character = new Character(new Vec2(300, 100), 1);
+  simulation = new Simulation(character.getSprings(), character.getParticles(), 0.5);
 }
 
 function preload() {
@@ -83,8 +99,7 @@ function draw() {
   simulation.addExternalForce(new Vec2(p.windForce, 0));
   simulation.update();
   simulation.resetExternalForces();
-
-  hair.render();
+  character.render();
 }
 
 function mousePressed() {
@@ -92,7 +107,6 @@ function mousePressed() {
 
 // global callback from the settings GUI
 function paramChanged(name) {
-  print(name)
   if (name=="springLength" || name=="springsPerStrand" || name=="numStrands" || name=="hoffset" || name=="voffset") {
     reloadHair();
   }

@@ -34,9 +34,9 @@ class Layer {
 
             push();
             noStroke();
-            let colorFactor = (((this.z) / cubeDepth) * 0.2) + 0.8;
-            let opacity = fullOpacity ? 255 : 255 * ((cubeDepth - this.z) / cubeDepth);
-            fill(125*colorFactor, 186*colorFactor, 115*colorFactor, opacity)
+            let colorFactor = (((this.z) / p.cubeDepth) * 0.2) + 0.8;
+            let opacity = 255 * ((p.cubeDepth - this.z) / p.cubeDepth);
+            fill(125*colorFactor, 186*colorFactor, 115*colorFactor)
             // fill(107, 179, 104, 255 * ((cubeDepth - this.z) / cubeDepth));
             // translate(0, canvash/2);
             // if (this.z < 5) {
@@ -69,19 +69,24 @@ class Layer {
             for (let i = 0; i < springs.length; i++) {
                 let endpoints = springs[i].getEndpoints();
                 strokeWeight(springs[i].getLevel());
-                stroke((12-springs[i].getLevel())/12 * 50, opacity)
+                stroke((12-springs[i].getLevel())/12 * 50)
                 line(endpoints[0].getPos().getX(), endpoints[0].getPos().getY(), endpoints[1].getPos().getX(), endpoints[1].getPos().getY())
             }
 
             for (let i = 0; i < springs.length; i++) {
                 if (springs[i].getLevel()==1) {
                     let endpoints = springs[i].getEndpoints();
-                    fill(83, 130, 65, opacity)
-                    stroke(83, 130, 65, opacity)
+                    fill(83, 130, 65)
+                    stroke(83, 130, 65)
                     circle(endpoints[1].getPos().getX(), endpoints[1].getPos().getY(), 6);
                     stroke(0)
                 }
             }
+            scale(this.z)
+            translate(-shiftx, -shifty)
+            noStroke();
+            fill(255, 235, 253, 255-opacity);
+            rect(0, 0, canvasw, canvash);
 
 
             // fill(255, 0, 0, opacity)
