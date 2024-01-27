@@ -13,6 +13,11 @@ class SpringEndpoint {
         this.level = level;
     }
 
+    setXConstraint(x, isGreaterThan) {
+        this.xConstraint = x;
+        this.isGreaterThan = isGreaterThan;
+    }
+
     fix() {
         this.isFixed = true;
     }
@@ -39,19 +44,36 @@ class SpringEndpoint {
         this.f = new Vec2(0, 0);
     }
 
+    getConstraintSatisfier(newpos) {
+        if (this.xConstraint) {
+            if (this.isGreaterThan && newpos.getX() > this.xConstraint) {
+                return new Vec2(-1, 0);
+            }
+            if (!this.isGreaterThan && newpos.getX() < this.xConstraint) {
+                return new Vec2(1, 0);
+            }
+        }
+        return new Vec2(0, 0)
+    }
+
     computeNewPosition_verlet(timeStep) {
         if (!this.isFixed) {
+            print(this.f);
             let newF = this.f.scalarmult(this.inverseM);
             
             let posDiff = this.pos.subtract(this.oldpos);
             let term1 = this.pos.add(posDiff);
 
             let newpos = newF.scalarmult(timeStep*timeStep).add(term1);
-
+            
             this.oldpos = this.pos;
-            let weight = (this.level) / 12
-            weight *= weight;
-            this.pos = newpos.scalarmult(1-weight).add(this.pos.scalarmult(weight));
+            this.pos = newpos.add(this.getConstraintSatisfier(newpos));
+            // if (this.id==0) {
+            //     print(this.oldpos, this.pos)
+            // }
+            // let weight = (this.level) / 12
+            // weight *= weight;
+            // this.pos = newpos.scalarmult(1-weight).add(this.pos.scalarmult(weight));
 
             let velocity = this.pos.subtract(this.oldpos).scalarmult(1/timeStep);
             this.v = velocity;

@@ -2,6 +2,10 @@ var restLengthFactor = 1;
 var ks = 50000;
 var kd = 0.005;
 
+function compareSprings(a, b) {
+    return b.getLevel() - a.getLevel();
+}
+
 class Tree {
     constructor(mode, angleOffset, xPos, yPos, fractalFactor, branchingFactor, treeHeight, branchLength, branchLengthScalingFactor, startingMass, massScalingFactor) {
         this.springs = [];
@@ -73,6 +77,28 @@ class Tree {
 
             this.fractalHelper(curLevel-1, angleOffset, branchingFactor, new_endpoint, stem_endpoint, branchLength*branchLengthScalingFactor, branchLengthScalingFactor, springs, particles, mass*massScalingFactor, massScalingFactor);
         }
+    }
+
+    render() {
+        // push();
+        let springs = this.springs.sort(compareSprings)
+        for (let i = 0; i < springs.length; i++) {
+            let endpoints = springs[i].getEndpoints();
+            strokeWeight(springs[i].getLevel());
+            stroke((12-springs[i].getLevel())/12 * 50)
+            line(endpoints[0].getPos().getX(), endpoints[0].getPos().getY(), endpoints[1].getPos().getX(), endpoints[1].getPos().getY())
+        }
+
+        for (let i = 0; i < springs.length; i++) {
+            if (springs[i].getLevel()==1) {
+                let endpoints = springs[i].getEndpoints();
+                fill(83, 130, 65)
+                stroke(83, 130, 65)
+                circle(endpoints[1].getPos().getX(), endpoints[1].getPos().getY(), 6);
+                stroke(0)
+            }
+        }
+        // pop();
     }
 
     getSprings() {
