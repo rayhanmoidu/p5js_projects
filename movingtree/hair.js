@@ -24,7 +24,7 @@ class Hair {
     createStrand(startPos, idOffset) {
         for (let i = 0; i < p.springsPerStrand; i++) {
             let xPos = startPos.getX() + i*p.springLength;
-            let newEndpoint = new SpringEndpoint(idOffset + i, new Vec2(xPos, startPos.getY()), 500, p.springsPerStrand - i);
+            let newEndpoint = new SpringEndpoint(idOffset + i, "hair", new Vec2(xPos, startPos.getY()), 100*random(0.7, 1.3), p.springsPerStrand - i);
             if (i > 0) {
                 let neighbourEndpoint = this.particles[this.particles.length - 1];
                 let newSpring = new Spring(idOffset + i, newEndpoint, neighbourEndpoint, p.springLength, 15000, 0.05, p.springsPerStrand - i);
@@ -63,7 +63,7 @@ class Hair {
         let dim = sqrt(totalArea/p.numStrands);
 
         let startPos = pos.add(new Vec2(0, -25*sqrt(2)));
-        print("lalala", startPos)
+        // print("lalala", startPos)
         // print(startPos)
 
         let centreshiftx = dirx.scalarmult(dim / 2);
@@ -74,9 +74,9 @@ class Hair {
                 let shiftx = dirx.scalarmult(i*dim);
                 let shifty = diry.scalarmult(-j*dim);
                 let strandPos = startPos.add(shiftx).add(shifty);
-                print(pos.subtract(strandPos).length2())
+                // print(pos.subtract(strandPos).length2())
                 if (pos.subtract(strandPos).length2() < headR) {
-                    print(strandPos)
+                    // print(strandPos)
                     this.createStrand(strandPos, this.numStrands*p.springsPerStrand);
                     this.numStrands ++;
                 }

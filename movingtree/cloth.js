@@ -16,22 +16,22 @@ class Cloth {
     }
 
     setupCloth_starting(startPos, dressHeight, dressWidth, dressOffsetDir, dressOffset) {
-        let se1 = new SpringEndpoint(0, new Vec2(startPos.getX(), startPos.getY()), 500, 1);
+        let se1 = new SpringEndpoint(0, "cloth", new Vec2(startPos.getX(), startPos.getY()), 500, 1);
         let se1_adder = dressOffsetDir == -1 ? dressOffset : 0;
         let se2_adder = dressOffsetDir == 1 ? dressOffset : 0;
         let se1_m = dressOffsetDir == -1 ? 15000 : 10000;
         let se2_m = dressOffsetDir == 1 ? 15000 : 10000;
-        let se2 = new SpringEndpoint(1, new Vec2(startPos.getX() - dressWidth, startPos.getY() + dressHeight + se1_adder), se1_m, 1);
-        let se3 = new SpringEndpoint(2, new Vec2(startPos.getX() + dressWidth, startPos.getY() + dressHeight + se2_adder), se2_m, 1);
+        let se2 = new SpringEndpoint(1, "cloth", new Vec2(startPos.getX() - dressWidth, startPos.getY() + dressHeight + se1_adder), se1_m, 1);
+        let se3 = new SpringEndpoint(2, "cloth", new Vec2(startPos.getX() + dressWidth, startPos.getY() + dressHeight + se2_adder), se2_m, 1);
 
-        se2.setXConstraint(300, true);
-        se3.setXConstraint(300, false);
+        se2.setXConstraint(startPos.getX(), true);
+        se3.setXConstraint(startPos.getX(), false);
 
         let r12 = se1.getPos().subtract(se2.getPos()).length2();
         let r13 = se1.getPos().subtract(se3.getPos()).length2();
         let r23 = se2.getPos().subtract(se3.getPos()).length2();
 
-        let tol = 0.99;
+        let tol = 1;
         let s12 = new Spring(0, se1, se2, r12*tol, 15000, 0.05, 1);
         let s13 = new Spring(1, se1, se3, r13*tol, 15000, 0.05, 1);
         let s23 = new Spring(2, se2, se3, r23*tol, 15000, 0.05, 1);

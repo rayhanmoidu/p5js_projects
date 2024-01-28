@@ -9,17 +9,40 @@ class Layer {
         let threshold = 100;
         this.peak = random(0 + threshold, canvasw - threshold);
 
-        this.tree = new Tree("basicFractal", p.angleOffset, this.peak, canvash - this.groundHeight, p.numLevels, p.branchingFactor, p.treeHeight, p.branchLength, p.branchLengthFactor, p.mass, p.massFactor);
-        this.character = new Character(new Vec2(300, 100), 1); // 0.75 for mass
+        let tol = 200;
 
-        this.simulation = new Simulation(this.tree.getSprings().concat(this.character.getSprings()), this.tree.getParticles().concat(this.character.getParticles()), 0.5);
+        let side = random(-1, 1);
+        let characterX = random(0, canvasw);
+
+        if (side > 0) {
+            characterX = random(0, this.peak - tol);
+        } else {
+            characterX = random(this.peak + tol, canvasw);
+        }
+
+        let characterY;
+        if (characterX < this.peak) {
+            characterY = random(0, (this.groundHeight/this.peak)*characterX);
+        } else {
+            characterY = random(0, (this.groundHeight/(canvasw-this.peak))*(canvasw - characterX));
+        }
+
+        let characterHeight = p.dressHeight + 50 + 50;
+
+
+        this.tree = new Tree("basicFractal", p.angleOffset, this.peak, canvash - this.groundHeight, p.numLevels, p.branchingFactor, p.treeHeight, p.branchLength, p.branchLengthFactor, p.mass, p.massFactor);
+        this.character = new Character(new Vec2(characterX, canvash - characterY - characterHeight), 1); // 0.75 for mass
+
+        this.simulation = new Simulation(this.tree.getSprings().concat(this.character.getSprings()), this.tree.getParticles().concat(this.character.getParticles()), 2.5 / frameRate());
     }
 
     update() {
         this.z -= p.speed;
-        // let externalForce = new Vec2(random(-p.force, p.force), random(-p.force))
-        let externalForce = new Vec2(p.windForce,  9.81);
-        this.simulation.addExternalForce(externalForce);
+        let windForce = new Vec2(p.windForce,  0);
+        let gravitationalForce = new Vec2(0,  9.81);
+        this.simulation.addExternalForce("wind", windForce);
+        this.simulation.addExternalForce("gravity", gravitationalForce);
+
         this.simulation.update();
         this.simulation.resetExternalForces();
     }

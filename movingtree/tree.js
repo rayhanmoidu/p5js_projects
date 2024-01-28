@@ -23,8 +23,8 @@ class Tree {
     }
 
     setupTree_starting() {
-        let se1 = new SpringEndpoint(0, new Vec2(100, 100), 5000, 1);
-        let se2 = new SpringEndpoint(1, new Vec2(200, 50), 5000, 1);
+        let se1 = new SpringEndpoint(0, "tree", new Vec2(100, 100), 5000, 1);
+        let se2 = new SpringEndpoint(1, "tree", new Vec2(200, 50), 5000, 1);
 
         let spr1 = new Spring(0, se1, se2, 200, ks, kd, 1);
 
@@ -36,8 +36,8 @@ class Tree {
         let springs = [];
         let particles = [];
 
-        let se1 = new SpringEndpoint(0, new Vec2(xPos, yPos), startingMass, fractalFactor+1);
-        let se2 = new SpringEndpoint(1, new Vec2(xPos, yPos - treeHeight), startingMass, fractalFactor+1);
+        let se1 = new SpringEndpoint(0, "tree", new Vec2(xPos, yPos), startingMass, fractalFactor+1);
+        let se2 = new SpringEndpoint(1, "tree", new Vec2(xPos, yPos - treeHeight), startingMass, fractalFactor+1);
         let spr1 = new Spring(0, se1, se2, treeHeight*restLengthFactor, ks, kd, fractalFactor+1);
         
         particles.push(se1);
@@ -45,7 +45,6 @@ class Tree {
         springs.push(spr1);
 
         this.fractalHelper(fractalFactor, angleOffset, branchingFactor, se2, se1, branchLength, branchLengthScalingFactor, springs, particles, startingMass, massScalingFactor);
-        print(springs, particles)
         this.springs = springs;
         this.particles = particles;
         this.fixedIds = [0, 1];
@@ -70,7 +69,7 @@ class Tree {
             let diffx = branchLength * cos(angleOffset + thetaDiff * (i+1) + stemTheta);
             let diffy = branchLength * sin(angleOffset + thetaDiff * (i+1) + stemTheta);
 
-            let new_endpoint = new SpringEndpoint(particles.length, new Vec2(stem_endpoint.getPos().getX() + diffx, stem_endpoint.getPos().getY() - diffy), mass, curLevel);
+            let new_endpoint = new SpringEndpoint(particles.length, "tree", new Vec2(stem_endpoint.getPos().getX() + diffx, stem_endpoint.getPos().getY() - diffy), mass, curLevel);
             let new_spring = new Spring(springs.length, stem_endpoint, new_endpoint, branchLength*restLengthFactor, ks, kd, curLevel);
             particles.push(new_endpoint);
             springs.push(new_spring);

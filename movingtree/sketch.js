@@ -47,11 +47,6 @@ let p = {
   massFactorMax: 1,
   massFactorStep: 0.05,
 
-  force: 3500,
-  forceMax: 100000,
-  forceMin: 0,
-  forceStep: 100,
-
   cubeDepth: 15,
   cubeDepthMin: 1,
   cubeDepthMax: 100,
@@ -67,21 +62,6 @@ let p = {
   dressY: 5,
   dressYMax: 10,
   dressYMin: 1,
-
-  mass: 50000,
-  massMin: 10000,
-  massMax: 150000,
-  massStep: 10000,
-
-  massFactor: 0.9,
-  massFactorMin: 0.05,
-  massFactorMax: 1,
-  massFactorStep: 0.05,
-
-  force: 3500,
-  forceMax: 100000,
-  forceMin: 0,
-  forceStep: 100,
 
   springsPerStrand: 8,
   springsPerStrandMax: 20,
@@ -119,6 +99,15 @@ let p = {
   rootWidthMax: 30,
   rootWidthMin: 0.1,
   rootWidthStep: 0.1,
+
+  dressHeight: 200,
+  dressHeightMax: 600,
+  dressHeightMin: 100,
+
+  dressWidth: 67,
+  dressWidthMax: 200,
+  dressWidthMin: 10,
+
 };
 
 canvasw = 1100;

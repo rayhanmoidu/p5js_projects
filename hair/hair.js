@@ -63,7 +63,7 @@ class Hair {
         let dim = sqrt(totalArea/p.numStrands);
 
         let startPos = pos.add(new Vec2(0, -25*sqrt(2)));
-        print("lalala", startPos)
+        // print("lalala", startPos)
         // print(startPos)
 
         let centreshiftx = dirx.scalarmult(dim / 2);
@@ -74,9 +74,9 @@ class Hair {
                 let shiftx = dirx.scalarmult(i*dim);
                 let shifty = diry.scalarmult(-j*dim);
                 let strandPos = startPos.add(shiftx).add(shifty);
-                print(pos.subtract(strandPos).length2())
+                // print(pos.subtract(strandPos).length2())
                 if (pos.subtract(strandPos).length2() < headR) {
-                    print(strandPos)
+                    // print(strandPos)
                     this.createStrand(strandPos, this.numStrands*p.springsPerStrand);
                     this.numStrands ++;
                 }

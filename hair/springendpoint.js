@@ -46,6 +46,7 @@ class SpringEndpoint {
 
     getConstraintSatisfier(newpos) {
         if (this.xConstraint) {
+            print("hi")
             if (this.isGreaterThan && newpos.getX() > this.xConstraint) {
                 return new Vec2(-1, 0);
             }
