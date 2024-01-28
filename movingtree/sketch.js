@@ -72,7 +72,7 @@ let p = {
   springLengthMax: 200,
 
   windForce: 0,
-  windForceMax: 100000,
+  windForceMax: 1000,
   windForceMin: 10,
 
   lineWeightDivisions: 2,

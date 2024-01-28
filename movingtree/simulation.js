@@ -7,7 +7,7 @@ class Simulation {
         this.timestep = timestep;
         this.time = 0;
         this.physicsCalc = new PhysicsCalculator();
-        this.externalForces = [];
+        this.externalForces = new Vec2(0, 0);
     }
 
     update() {
@@ -20,16 +20,17 @@ class Simulation {
     }
 
     addExternalForce(key, f) {
-        this.externalForces.push({"key": key, "f": f});
+        // this.externalForces.push({"key": key, "f": f});
+        // this.externalForces = (f);
         // if (key=="gravity") {
         //     this.externalForce = this.externalForce.add(f.scalarmult());
         // }
-        // this.externalForce = this.externalForce.add(f);
+        this.externalForces = this.externalForces.add(f);
     }
 
     resetExternalForces() {
         // print(this.externalForces.length)
-        this.externalForces = [];
+        this.externalForces = new Vec2(0, 0);
     }
 
     applySpringForces() {
@@ -40,10 +41,10 @@ class Simulation {
             let d1 = this.physicsCalc.calculateDampingForce(endpoints[0], endpoints[1], this.springs[i].getR(), this.springs[i].getKd());
             let d2 = this.physicsCalc.calculateDampingForce(endpoints[1], endpoints[0], this.springs[i].getR(), this.springs[i].getKd());
 
-            if (!isNaN(f1) && !isNaN(f1)) {
-                endpoints[0].applyForce({"key": "spring", "f": f1});
-                endpoints[1].applyForce({"key": "spring", "f": f2});
-            }
+            // if (!isNaN(f1) && !isNaN(f1)) {
+                endpoints[0].addForce(f1);
+                endpoints[1].addForce(f2);
+            // }
             // endpoints[0].addForce(d1);
             // endpoints[1].addForce(d2);
         }
@@ -51,11 +52,11 @@ class Simulation {
 
     applyExternalForces() {
         for (let i = 0; i < this.n; i++) {
-            print(this.externalForces.length)
-            for (let j = 0; j < this.externalForces.length; j++) {
-                this.particles[i].applyForce(this.externalForces[j]);
-            }
-            // this.particles[i].addForce(this.externalForce);
+            // print(this.externalForces.length)
+            // for (let j = 0; j < this.externalForces.length; j++) {
+            //     this.particles[i].applyForce(this.externalForces[j]);
+            // }
+            this.particles[i].addForce(this.externalForces);
             this.particles[i].addReturningForce();
         }
     }

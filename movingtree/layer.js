@@ -33,13 +33,13 @@ class Layer {
         this.tree = new Tree("basicFractal", p.angleOffset, this.peak, canvash - this.groundHeight, p.numLevels, p.branchingFactor, p.treeHeight, p.branchLength, p.branchLengthFactor, p.mass, p.massFactor);
         this.character = new Character(new Vec2(characterX, canvash - characterY - characterHeight), 1); // 0.75 for mass
 
-        this.simulation = new Simulation(this.tree.getSprings().concat(this.character.getSprings()), this.tree.getParticles().concat(this.character.getParticles()), 2.5 / frameRate());
+        this.simulation = new Simulation(this.tree.getSprings().concat(this.character.getSprings()), this.tree.getParticles().concat(this.character.getParticles()), 10 / frameRate());
     }
 
     update() {
         this.z -= p.speed;
         let windForce = new Vec2(p.windForce,  0);
-        let gravitationalForce = new Vec2(0,  9.81);
+        let gravitationalForce = new Vec2(0,  90.81);
         this.simulation.addExternalForce("wind", windForce);
         this.simulation.addExternalForce("gravity", gravitationalForce);
 

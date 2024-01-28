@@ -39,21 +39,24 @@ class SpringEndpoint {
     }
 
     addReturningForce() {
-        let diff = this.startpos.subtract(this.pos);
-        let weight = diff.length2();
-        this.f = this.f.add(diff.scalarmult(500));
+        if (this.type=="tree") {
+            let diff = this.startpos.subtract(this.pos);
+            let weight = diff.length2();
+            this.f = this.f.add(diff.scalarmult(500));
+        }
     }
 
-    applyForce(force) {
+    addForce(force) {
+        this.f = this.f.add(force);
         // print(force)
-        if (force.key == "wind") {
-            this.f = this.f.add(force.f);
-        } else if (force.key == "spring") {
-            print(force.f)
-            this.f = this.f.add(force.f);
-        } else if (force.key == "gravity" && springTypes_gravity.includes(this.type)) {
-            this.f = this.f.add(force.f.scalarmult(this.m));
-        }
+        // if (force.key == "wind") {
+        //     this.f = this.f.add(force.f);
+        // } else if (force.key == "spring") {
+        //     print(force.f)
+        //     this.f = this.f.add(force.f);
+        // } else if (force.key == "gravity" && springTypes_gravity.includes(this.type)) {
+        //     this.f = this.f.add(force.f.scalarmult(this.m));
+        // }
     }
 
     clearForce() {
