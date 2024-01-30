@@ -123,8 +123,8 @@ let s = {
 
 let p = {
   dressHeight: 200,
-  dressWidth: 75,
-  dressTolerance: 15,
+  dressWidth: 67,
+  dressTolerance: 12,
 }
 layerDistance = 3;
 cubeDepth = 15;
@@ -186,7 +186,7 @@ function draw() {
   // if (s.presentMode) {
   //   background(255, 179, 245);
   // } else {
-    background(255, 210, 253);
+    background(255, 235, 252);
   // }
   distFromLastLayer += zSpeed;
 

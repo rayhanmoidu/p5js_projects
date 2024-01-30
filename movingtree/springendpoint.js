@@ -44,7 +44,7 @@ class SpringEndpoint {
             let weight = diff.length2();
             this.f = this.f.add(diff.scalarmult(300*z));
             // this.f = this.f.add(new Vec2(p.windForce, 0));
-            this.f = this.f.add(new Vec2(250*random(-5, 5), 250*random(0, 10)))
+            this.f = this.f.add(new Vec2(350*random(-5, 5), 350*random(0, 10)))
         }
     }
 

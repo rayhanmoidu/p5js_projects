@@ -46,6 +46,7 @@ class Cloth {
         
         noStroke();
         fill(240, 234, 214);
+        // 240, 234, 214
         // triangle(
         //     this.particles[0].getPos().getX(),
         //     this.particles[0].getPos().getY(),

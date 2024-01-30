@@ -39,7 +39,7 @@ class Layer {
         let branchLength = random(50, 150);
         let branchLengthFactor = random(0.75, 1);
 
-        this.tree = new Tree("basicFractal", treevals.angleOffset, this.peak, canvash - this.groundHeight, treevals.numLevels, 2, treevals.treeHeight, treevals.branchLength, treevals.branchLengthFactor, 3500, 0.8);
+        this.tree = new Tree("basicFractal", treevals.angleOffset, this.peak, canvash - this.groundHeight, treevals.numLevels, 2, treevals.treeHeight, treevals.branchLength, treevals.branchLengthFactor, 3000, 0.8);
         this.character = new Character(new Vec2(characterX, canvash - characterY - characterHeight), 1); // 0.75 for mass
 
         this.simulation = new Simulation(this.tree.getSprings().concat(this.character.getSprings()), this.tree.getParticles().concat(this.character.getParticles()), 0.25);
@@ -70,7 +70,9 @@ class Layer {
         noStroke();
         let colorFactor = (((this.z) / cubeDepth) * 0.2) + 0.8;
         let opacity = 255 * ((cubeDepth - this.z) / cubeDepth);
+        // fill(106*colorFactor, 158*colorFactor, 98*colorFactor)
         fill(125*colorFactor, 186*colorFactor, 115*colorFactor)
+        // fill(102, 145, 96)
 
         let shiftx = ((canvasw - (canvasw * (1/cubeDepth))) / 2)
         let shifty = (canvash - (canvash * (1/this.z))) * (1 - (this.groundHeight / canvash))
@@ -116,7 +118,7 @@ class Layer {
         // if (s.presentMode) {
         // fill(255, 217, 250, 255-opacity);
         // } else {
-        fill(255, 210, 253, 255-opacity);
+        fill(255, 235, 252, 255-opacity);
         // }
         // fill(255, 235, 253, 255-opacity);
         rect(0, 0, canvasw, canvash);
