@@ -1,8 +1,10 @@
 // parameters
-let p = {
-  layerDistance: 3,
-  layerDistanceMin: 1,
-  layerDistanceMax: 300,
+let s = {
+  // layerDistance: 3,
+  // layerDistanceMin: 1,
+  // layerDistanceMax: 300,
+
+  presentMode: true,
 
   speed: 0.008,
   speedMin: 0.001,
@@ -46,23 +48,23 @@ let p = {
   // branchLengthFactorMax: 1,
   // branchLengthFactorStep: 0.05,
 
-  mass: 10000,
-  massMin: 10000,
-  massMax: 150000,
-  massStep: 10000,
+  // mass: 10000,
+  // massMin: 10000,
+  // massMax: 150000,
+  // massStep: 10000,
 
-  massFactor: 0.7,
-  massFactorMin: 0.05,
-  massFactorMax: 1,
-  massFactorStep: 0.05,
+  // massFactor: 0.7,
+  // massFactorMin: 0.05,
+  // massFactorMax: 1,
+  // massFactorStep: 0.05,
 
-  cubeDepth: 15,
-  cubeDepthMin: 1,
-  cubeDepthMax: 100,
+  // cubeDepth: 15,
+  // cubeDepthMin: 1,
+  // cubeDepthMax: 100,
 
-  dressTolerance: 12,
-  dressToleranceMax: 2000,
-  dressToleranceMin: 0,
+  // dressTolerance: 14,
+  // dressToleranceMax: 2000,
+  // dressToleranceMin: 0,
 
   // dressX: 5,
   // dressXMax: 10,
@@ -80,9 +82,9 @@ let p = {
   // springLengthMin: 1,
   // springLengthMax: 200,
 
-  windForce: 250,
-  windForceMax: 1000,
-  windForceMin: 0,
+  // windForce: 250,
+  // windForceMax: 1000,
+  // windForceMin: 0,
 
   // lineWeightDivisions: 2,
   // lineWeightDivisionsMax: 10,
@@ -109,15 +111,23 @@ let p = {
   // rootWidthMin: 0.1,
   // rootWidthStep: 0.1,
 
-  dressHeight: 200,
-  dressHeightMax: 600,
-  dressHeightMin: 100,
+  // dressHeight: 200,
+  // dressHeightMax: 600,
+  // dressHeightMin: 100,
 
-  dressWidth: 67,
-  dressWidthMax: 200,
-  dressWidthMin: 10,
+  // dressWidth: 75,
+  // dressWidthMax: 200,
+  // dressWidthMin: 10,
 
 };
+
+let p = {
+  dressHeight: 200,
+  dressWidth: 75,
+  dressTolerance: 15,
+}
+layerDistance = 3;
+cubeDepth = 15;
 
 layerId = 0;
 
@@ -130,12 +140,26 @@ visibleLayers = []
 treeCycle = 0;
 randomFactory_tree;
 
+zSpeed;
+drawCount;
+
 let stopanim = false;
 
-function addLayer() {
+function createStartingLayers() {
+  let pos = 0;
+  while (1) {
+    addLayer(pos)
+    pos += layerDistance;
+    if (pos >= cubeDepth) {
+      break;
+    }
+  }
+}
+
+function addLayer(depth) {
   let randH = round(random(100, 250));
-  treeCycle = min(1, treeCycle + p.treeCycleSpeed);
-  visibleLayers.push(new Layer(randH, p.cubeDepth, randomFactory_tree.getVals(treeCycle)));
+  treeCycle = min(1, treeCycle + s.treeCycleSpeed);
+  visibleLayers.push(new Layer(randH, depth, randomFactory_tree.getVals(treeCycle)));
   if (treeCycle >= 1) {
     treeCycle = 0;
   }
@@ -145,25 +169,34 @@ function preload() {
 }
 
 function setup() {
+  zSpeed = 0;
+  drawCount = 0;
   canvasw = windowWidth;
   canvash = windowHeight;
   createCanvas(canvasw, canvash);
-  createParamGui(p, paramChanged);
+  createParamGui(s, paramChanged);
   randomFactory_tree = new RandomFactory("tree");
-  addLayer();
+  createStartingLayers();
+
 }
 
 function draw() {
-  background(255, 235, 253);
-  distFromLastLayer += p.speed;
+  zSpeed = s.speed
+  print(zSpeed)
+  // if (s.presentMode) {
+  //   background(255, 179, 245);
+  // } else {
+    background(255, 210, 253);
+  // }
+  distFromLastLayer += zSpeed;
 
   for (let i = visibleLayers.length-1; i >=0; i--) {
       visibleLayers[i].update();
       visibleLayers[i].render();
   }
 
-  if (distFromLastLayer > p.layerDistance) {
-    addLayer();
+  if (distFromLastLayer > layerDistance) {
+    addLayer(cubeDepth);
     distFromLastLayer = 0;
   }
 }

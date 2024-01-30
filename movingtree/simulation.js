@@ -19,6 +19,10 @@ class Simulation {
         this.resetForces();
     }
 
+    getTime() {
+        return this.time;
+    }
+
     addExternalForce(key, f) {
         // this.externalForces.push({"key": key, "f": f});
         // this.externalForces = (f);

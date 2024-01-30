@@ -39,15 +39,15 @@ class Layer {
         let branchLength = random(50, 150);
         let branchLengthFactor = random(0.75, 1);
 
-        this.tree = new Tree("basicFractal", treevals.angleOffset, this.peak, canvash - this.groundHeight, treevals.numLevels, 2, treevals.treeHeight, treevals.branchLength, treevals.branchLengthFactor, p.mass, p.massFactor);
+        this.tree = new Tree("basicFractal", treevals.angleOffset, this.peak, canvash - this.groundHeight, treevals.numLevels, 2, treevals.treeHeight, treevals.branchLength, treevals.branchLengthFactor, 3500, 0.8);
         this.character = new Character(new Vec2(characterX, canvash - characterY - characterHeight), 1); // 0.75 for mass
 
         this.simulation = new Simulation(this.tree.getSprings().concat(this.character.getSprings()), this.tree.getParticles().concat(this.character.getParticles()), 0.25);
     }
 
     update() {
-        this.z -= p.speed;
-        let windf = p.windForce;
+        this.z -= zSpeed;
+        let windf = 1000 * noise(this.simulation.getTime());
         let windForce = new Vec2(windf,  0);
         let gravitationalForce = new Vec2(0,  90.81);
         this.simulation.addExternalForce("wind", windForce);
@@ -58,7 +58,7 @@ class Layer {
     }
 
     render() {
-        if (this.z <= p.speed) {
+        if (this.z <= zSpeed) {
             // stopanim = true;
             const index = visibleLayers.indexOf(this);
             if (index > -1) { // only splice array when item is found
@@ -68,11 +68,11 @@ class Layer {
 
         push();
         noStroke();
-        let colorFactor = (((this.z) / p.cubeDepth) * 0.2) + 0.8;
-        let opacity = 255 * ((p.cubeDepth - this.z) / p.cubeDepth);
+        let colorFactor = (((this.z) / cubeDepth) * 0.2) + 0.8;
+        let opacity = 255 * ((cubeDepth - this.z) / cubeDepth);
         fill(125*colorFactor, 186*colorFactor, 115*colorFactor)
 
-        let shiftx = ((canvasw - (canvasw * (1/p.cubeDepth))) / 2)
+        let shiftx = ((canvasw - (canvasw * (1/cubeDepth))) / 2)
         let shifty = (canvash - (canvash * (1/this.z))) * (1 - (this.groundHeight / canvash))
         let shifty2 = (canvash - (canvash * (1/this.z))) / 2
         let leftover = (canvash - (canvash * (1/100))) * (1 - (this.groundHeight / canvash)) + (canvash * (1/100));
@@ -113,7 +113,12 @@ class Layer {
         scale(this.z)
         translate(-shiftx, -shifty)
         noStroke();
-        fill(255, 235, 253, 255-opacity);
+        // if (s.presentMode) {
+        // fill(255, 217, 250, 255-opacity);
+        // } else {
+        fill(255, 210, 253, 255-opacity);
+        // }
+        // fill(255, 235, 253, 255-opacity);
         rect(0, 0, canvasw, canvash);
 
         pop();

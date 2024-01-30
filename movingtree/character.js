@@ -58,7 +58,7 @@ class Character {
         endShape();
 
         // eye (black)
-        let shiftx = ((canvasw - (canvasw * (1/p.cubeDepth))) / 2)
+        let shiftx = ((canvasw - (canvasw * (1/cubeDepth))) / 2)
         // let shifty = (canvash - (canvash * (1/this.z))) * (1 - (groundHeight / canvash))
         let eyePosX = shiftx + (1/z)*this.pos.getX();
 

@@ -42,8 +42,9 @@ class SpringEndpoint {
         if (this.type=="tree") {
             let diff = this.startpos.subtract(this.pos);
             let weight = diff.length2();
-            this.f = this.f.add(diff.scalarmult(500*z));
-            this.f = this.f.add(new Vec2(p.windForce*random(-5, 5), p.windForce*random(0, 10)))
+            this.f = this.f.add(diff.scalarmult(300*z));
+            // this.f = this.f.add(new Vec2(p.windForce, 0));
+            this.f = this.f.add(new Vec2(250*random(-5, 5), 250*random(0, 10)))
         }
     }
 

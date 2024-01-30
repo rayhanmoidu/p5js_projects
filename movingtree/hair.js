@@ -40,10 +40,13 @@ class Hair {
     }
 
     createStrand(startPos, idOffset, headPos) {
+        let massFactor = 0.8;
+        let mass = 250;
+        let randomFact = random(0.7, 1.3);
         let headWidth = 25 - (startPos.getX() - headPos.getX());
         // let headWidth = 25;
-        let newEndpoint1 = new SpringEndpoint(idOffset, "hair", new Vec2(startPos.getX(), startPos.getY()), 1000*random(0.7, 1.3), this.springsPerStrand);
-        let newEndpoint2 = new SpringEndpoint(idOffset + 1, "hair", new Vec2(startPos.getX() + headWidth, startPos.getY()), 1000*random(0.7, 1.3), this.springsPerStrand - 1);
+        let newEndpoint1 = new SpringEndpoint(idOffset, "hair", new Vec2(startPos.getX(), startPos.getY()), mass*randomFact, this.springsPerStrand);
+        let newEndpoint2 = new SpringEndpoint(idOffset + 1, "hair", new Vec2(startPos.getX() + headWidth, startPos.getY()), mass*randomFact, this.springsPerStrand - 1);
         let newSpring = new Spring(idOffset, newEndpoint2, newEndpoint1, headWidth, 15000, 0.05, this.springsPerStrand);
 
         this.particles.push(newEndpoint1);
@@ -52,7 +55,7 @@ class Hair {
 
         for (let i = 1; i < this.springsPerStrand-1; i++) {
             let xPos = startPos.getX() + headWidth + i*this.springLength;
-            let newEndpoint = new SpringEndpoint(idOffset + i + 1, "hair", new Vec2(xPos, startPos.getY()), 1000*random(0.7, 1.3), this.springsPerStrand - (i+1));
+            let newEndpoint = new SpringEndpoint(idOffset + i + 1, "hair", new Vec2(xPos, startPos.getY()), mass*randomFact*i*massFactor, this.springsPerStrand - (i+1));
             // if (i > 0) {
             let neighbourEndpoint = this.particles[this.particles.length - 1];
             let newSpring = new Spring(idOffset + i, newEndpoint, neighbourEndpoint, this.springLength, 15000, 0.05, this.springsPerStrand - (i+1));
