@@ -24,8 +24,8 @@ class Cloth {
         let se2 = new SpringEndpoint(1, "cloth", new Vec2(startPos.getX() - dressWidth, startPos.getY() + dressHeight + se1_adder), se1_m, 1);
         let se3 = new SpringEndpoint(2, "cloth", new Vec2(startPos.getX() + dressWidth, startPos.getY() + dressHeight + se2_adder), se2_m, 1);
 
-        se2.setXConstraint(startPos.getX(), true);
-        se3.setXConstraint(startPos.getX(), false);
+        se2.setXConstraint(startPos.getX() - 30, true);
+        se3.setXConstraint(startPos.getX() + 30, false);
 
         let r12 = se1.getPos().subtract(se2.getPos()).length2();
         let r13 = se1.getPos().subtract(se3.getPos()).length2();
@@ -43,9 +43,75 @@ class Cloth {
 
     render() {
         push();
-        stroke(100);
-        strokeWeight(5);
-        noFill();
+        
+        noStroke();
+        fill(240, 234, 214);
+        // triangle(
+        //     this.particles[0].getPos().getX(),
+        //     this.particles[0].getPos().getY(),
+        //     this.particles[1].getPos().getX(),
+        //     this.particles[1].getPos().getY(),
+        //     this.particles[2].getPos().getX(),
+        //     this.particles[2].getPos().getY(),
+        // );
+
+        stroke(160);
+        strokeWeight(3);
+        noStroke();
+        // noFill();
+
+        let startPos = this.particles[0].getPos();
+
+        let vec12 = this.particles[1].getPos().subtract(this.particles[0].getPos());
+        let dir12 = new Vec2(vec12.getY(), -vec12.getX());
+        dir12 = dir12.scalarmult(1/dir12.length2());
+        let m12 = this.particles[1].getPos().add(this.particles[0].getPos()).scalarmult(0.5);
+
+        let vec13 = this.particles[0].getPos().subtract(this.particles[2].getPos());
+        let dir13 = new Vec2(vec13.getY(), -vec13.getX());
+        dir13 = dir13.scalarmult(1/dir13.length2());
+        let m13 = this.particles[0].getPos().add(this.particles[2].getPos()).scalarmult(0.5);
+
+        let vec23 = this.particles[2].getPos().subtract(this.particles[1].getPos());
+        let dir23 = new Vec2(vec23.getY(), -vec23.getX());
+        dir23 = dir23.scalarmult(1/dir23.length2());
+        let m23 = this.particles[2].getPos().add(this.particles[1].getPos()).scalarmult(0.5);
+
+        let innerpoint_12 = m12.add(dir12.scalarmult(p.dressTolerance));
+        let innerpoint_13 = m13.add(dir13.scalarmult(p.dressTolerance));
+        let innerpoint_23 = m23.add(dir23.scalarmult(p.dressTolerance));
+        // rotate vec12 by 90, 
+
+        beginShape();
+        curveVertex(startPos.getX(), startPos.getY());
+        curveVertex(startPos.getX(), startPos.getY());
+
+        curveVertex(innerpoint_12.getX(), innerpoint_12.getY());
+
+        curveVertex(this.particles[1].getPos().getX(), this.particles[1].getPos().getY());
+        curveVertex(this.particles[1].getPos().getX(), this.particles[1].getPos().getY());
+        curveVertex(this.particles[1].getPos().getX(), this.particles[1].getPos().getY());
+        // curveVertex(this.particles[1].getPos().getX(), this.particles[1].getPos().getY());
+        // curveVertex(this.particles[1].getPos().getX(), this.particles[1].getPos().getY());
+
+        curveVertex(innerpoint_23.getX(), innerpoint_23.getY());
+
+        curveVertex(this.particles[2].getPos().getX(), this.particles[2].getPos().getY());
+        curveVertex(this.particles[2].getPos().getX(), this.particles[2].getPos().getY());
+        curveVertex(this.particles[2].getPos().getX(), this.particles[2].getPos().getY());
+        // curveVertex(this.particles[2].getPos().getX(), this.particles[2].getPos().getY());
+        // curveVertex(this.particles[2].getPos().getX(), this.particles[2].getPos().getY());
+
+        curveVertex(innerpoint_13.getX(), innerpoint_13.getY());
+
+        curveVertex(startPos.getX(), startPos.getY());
+        curveVertex(startPos.getX(), startPos.getY());
+
+        endShape();
+
+
+
+
 
         // spring 1
         let endpoints = this.springs[0].getEndpoints();
@@ -75,11 +141,8 @@ class Cloth {
         y2 = endpoints[1].getPos().getY();
         cp1 = new Vec2(x1 - p.dressX*p.dressTolerance, y1 + p.dressY*p.dressTolerance);
         cp2 = new Vec2(x2 + p.dressX*p.dressTolerance, y2 + p.dressY*p.dressTolerance);
-
-        // let lala = curve(cp1.getX(), cp1.getY(), x1, y1, x2, y2, cp2.getX(), cp2.getY())
         
-        curve(cp1.getX(), cp1.getY(), x1, y1, x2, y2, cp2.getX(), cp2.getY())
-        // curve(endpoints[0].getPos().getX(), endpoints[0].getPos().getY(), endpoints[1].getPos().getX(), endpoints[1].getPos().getY())
+        // curve(cp1.getX(), cp1.getY(), x1, y1, x2, y2, cp2.getX(), cp2.getY())
 
 
 

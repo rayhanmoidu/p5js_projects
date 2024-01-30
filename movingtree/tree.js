@@ -54,7 +54,7 @@ class Tree {
         if (curLevel==0) {
             return;
         }
-        
+
         let angleToDiv = PI - 2*angleOffset
         let thetaDiff = (angleToDiv / (branchingFactor+1));
         for (let i = 0; i < branchingFactor; i++) {
@@ -79,7 +79,7 @@ class Tree {
     }
 
     render() {
-        // push();
+        push();
         let springs = this.springs.sort(compareSprings)
         for (let i = 0; i < springs.length; i++) {
             let endpoints = springs[i].getEndpoints();
@@ -97,7 +97,7 @@ class Tree {
                 stroke(0)
             }
         }
-        // pop();
+        pop();
     }
 
     getSprings() {

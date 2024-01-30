@@ -7,11 +7,29 @@ class Hair {
         this.springs = [];
         this.particles = [];
         this.fixedIds = [];
-        this.numStrands = 0;
+        this.numStrandsCreated = 0;
+
+        this.springsPerStrand = round(random(5, 10));
+        let totalLength = random(125, 250);
+        this.springLength = totalLength / this.springsPerStrand;
+        this.lineWeightDivisions = round(random(2, 6));
+        this.curveThreshold = random(15, 90);
+        this.numStrands = round(random(6, 12));
+        let rootWidthMultiplier = (this.curveThreshold*this.numStrands)/(90*12);
+        this.rootWidth = 6 * (1-rootWidthMultiplier);
+
+        // this.springsPerStrand = p.springsPerStrand;
+        // this.springLength = this.springLength;
+        // this.lineWeightDivisions = this.lineWeightDivisions;
+        // this.curveThreshold = this.curveThreshold;
+        // this.rootWidth = this.rootWidth;
+        // this.numStrands = this.numStrands;
+
+        print(this.springsPerStrand, this.springLength, this.lineWeightDivisions, this.curveThreshold, this.rootWidth, this.numStrands)
         
 
         if (mode=="starting") {
-            this.setupHair_starting();
+            // this.setupHair_starting();
         } else if (mode=="head") {
             this.setupHair_head(pos, headR);
         }
@@ -21,19 +39,42 @@ class Hair {
         }
     }
 
-    createStrand(startPos, idOffset) {
-        for (let i = 0; i < p.springsPerStrand; i++) {
-            let xPos = startPos.getX() + i*p.springLength;
-            let newEndpoint = new SpringEndpoint(idOffset + i, "hair", new Vec2(xPos, startPos.getY()), 100*random(0.7, 1.3), p.springsPerStrand - i);
-            if (i > 0) {
-                let neighbourEndpoint = this.particles[this.particles.length - 1];
-                let newSpring = new Spring(idOffset + i, newEndpoint, neighbourEndpoint, p.springLength, 15000, 0.05, p.springsPerStrand - i);
-                this.springs.push(newSpring);
-            }
+    createStrand(startPos, idOffset, headPos) {
+        let headWidth = 25 - (startPos.getX() - headPos.getX());
+        // let headWidth = 25;
+        let newEndpoint1 = new SpringEndpoint(idOffset, "hair", new Vec2(startPos.getX(), startPos.getY()), 1000*random(0.7, 1.3), this.springsPerStrand);
+        let newEndpoint2 = new SpringEndpoint(idOffset + 1, "hair", new Vec2(startPos.getX() + headWidth, startPos.getY()), 1000*random(0.7, 1.3), this.springsPerStrand - 1);
+        let newSpring = new Spring(idOffset, newEndpoint2, newEndpoint1, headWidth, 15000, 0.05, this.springsPerStrand);
+
+        this.particles.push(newEndpoint1);
+        this.particles.push(newEndpoint2);
+        this.springs.push(newSpring);
+
+        for (let i = 1; i < this.springsPerStrand-1; i++) {
+            let xPos = startPos.getX() + headWidth + i*this.springLength;
+            let newEndpoint = new SpringEndpoint(idOffset + i + 1, "hair", new Vec2(xPos, startPos.getY()), 1000*random(0.7, 1.3), this.springsPerStrand - (i+1));
+            // if (i > 0) {
+            let neighbourEndpoint = this.particles[this.particles.length - 1];
+            let newSpring = new Spring(idOffset + i, newEndpoint, neighbourEndpoint, this.springLength, 15000, 0.05, this.springsPerStrand - (i+1));
+            this.springs.push(newSpring);
+            // }
             this.particles.push(newEndpoint);
         }
         this.fixedIds.push(idOffset)
         this.fixedIds.push(idOffset+1)
+
+        // for (let i = 0; i < this.springsPerStrand; i++) {
+        //     let xPos = startPos.getX() + i*this.springLength;
+        //     let newEndpoint = new SpringEndpoint(idOffset + i, "hair", new Vec2(xPos, startPos.getY()), 1000*random(0.7, 1.3), this.springsPerStrand - i);
+        //     if (i > 0) {
+        //         let neighbourEndpoint = this.particles[this.particles.length - 1];
+        //         let newSpring = new Spring(idOffset + i, newEndpoint, neighbourEndpoint, this.springLength, 15000, 0.05, this.springsPerStrand - i);
+        //         this.springs.push(newSpring);
+        //     }
+        //     this.particles.push(newEndpoint);
+        // }
+        // this.fixedIds.push(idOffset)
+        // this.fixedIds.push(idOffset+1)
     }
 
     setupHair_head(pos, headR) {
@@ -60,7 +101,7 @@ class Hair {
 
 
         let totalArea = headR*headR*2;
-        let dim = sqrt(totalArea/p.numStrands);
+        let dim = sqrt(totalArea/this.numStrands);
 
         let startPos = pos.add(new Vec2(0, -25*sqrt(2)));
         // print("lalala", startPos)
@@ -77,8 +118,8 @@ class Hair {
                 // print(pos.subtract(strandPos).length2())
                 if (pos.subtract(strandPos).length2() < headR) {
                     // print(strandPos)
-                    this.createStrand(strandPos, this.numStrands*p.springsPerStrand);
-                    this.numStrands ++;
+                    this.createStrand(strandPos, this.numStrandsCreated*this.springsPerStrand, pos);
+                    this.numStrandsCreated ++;
                 }
             }
         }
@@ -94,43 +135,43 @@ class Hair {
         //     let shifty = diry.scalarmult(random(-headR, headR));
         //     let strandPos = squareCentre.add(shiftx).add(shifty);
         //     if (pos.subtract(strandPos).length2() < headR) {
-        //         this.createStrand(strandPos, numStrandsCreated*p.springsPerStrand);
+        //         this.createStrand(strandPos, numStrandsCreated*this.springsPerStrand);
         //         numStrandsCreated++;
         //     }
 
-        //     if (numStrandsCreated==p.numStrands) {
+        //     if (numStrandsCreated==this.numStrands) {
         //         break;
         //     }
         // }
 
         // starting
-        // for (let i = 0; i < p.numStrands; i++) {
-        //     this.createStrand(new Vec2(pos.getX() + (i%2)*p.hoffset, pos.getY() + (i/2)*p.voffset), i*p.springsPerStrand);
+        // for (let i = 0; i < this.numStrands; i++) {
+        //     this.createStrand(new Vec2(pos.getX() + (i%2)*p.hoffset, pos.getY() + (i/2)*p.voffset), i*this.springsPerStrand);
         // }
     }
 
-    setupHair_starting() {
-        for (let i = 0; i < p.numStrands; i++) {
-            this.createStrand(new Vec2(200 + (i%2)*p.hoffset, 300 + (i/2)*p.voffset), i*p.springsPerStrand);
-        }
-    }
+    // setupHair_starting() {
+    //     for (let i = 0; i < this.numStrandsCreated; i++) {
+    //         this.createStrand(new Vec2(200 + (i%2)*p.hoffset, 300 + (i/2)*p.voffset), i*this.springsPerStrand);
+    //     }
+    // }
 
     render_strand() {
         let springs = this.springs.sort(compareSprings);
         noFill();
 
-        for (let j = 0; j < this.numStrands; j ++) {
+        for (let j = 0; j < this.numStrandsCreated; j ++) {
 
-            let startIndex = j*(p.springsPerStrand);
+            let startIndex = j*(this.springsPerStrand);
             
             let startingEndpoint = this.particles[startIndex];
-            let endingEndpoint = this.particles[startIndex + (p.springsPerStrand - 1)];
+            let endingEndpoint = this.particles[startIndex + (this.springsPerStrand - 1)];
 
             beginShape();
             curveVertex(startingEndpoint.getPos().getX(), startingEndpoint.getPos().getY());
             curveVertex(startingEndpoint.getPos().getX(), startingEndpoint.getPos().getY());
 
-            for (let i = startIndex; i < startIndex + p.springsPerStrand; i++) {
+            for (let i = startIndex; i < startIndex + this.springsPerStrand; i++) {
                 let endpoint = this.particles[i];
                 curveVertex(endpoint.getPos().getX(), endpoint.getPos().getY());
             }
@@ -152,18 +193,19 @@ class Hair {
             let diff = endpoints[1].getPos().subtract(endpoints[0].getPos());
             let dist = diff.length2();
             diff = diff.scalarmult(1/dist);
-            let spacing = dist / p.lineWeightDivisions;
-            for (let j = 0; j < p.lineWeightDivisions; j++) {
-                let weight = p.rootWidth*(springs[i].getLevel()/(p.springsPerStrand*2)) + (j*(1/p.lineWeightDivisions));
+            let spacing = dist / this.lineWeightDivisions;
+            for (let j = 0; j < this.lineWeightDivisions; j++) {
+                let weight = this.rootWidth*(springs[i].getLevel()/(this.springsPerStrand*2)) + (j*(1/this.lineWeightDivisions));
+                stroke(0);
                 strokeWeight(weight);
                 // strokeWeight(weight);
                 let pos1 = endpoints[0].getPos().add(diff.scalarmult(spacing*j));
                 let pos2 = endpoints[0].getPos().add(diff.scalarmult(spacing*(j+1)));
                 let cp1, cp2;
-                let threshold = p.curveThreshold;
+                let threshold = this.curveThreshold;
 
                 let shouldSpringStartMatch = false;
-                if (p.lineWeightDivisions % 2 == 0) {
+                if (this.lineWeightDivisions % 2 == 0) {
                     shouldSpringStartMatch = true;
                 }
 
@@ -176,7 +218,7 @@ class Hair {
                         cp2 = pos2.add(new Vec2(threshold, threshold));
                     }
                 } else {
-                    let adder = p.lineWeightDivisions % 2;
+                    let adder = this.lineWeightDivisions % 2;
                     if ((j+adder) % 2 == 0) {
                         cp1 = pos1.add(new Vec2(-threshold, -threshold));
                         cp2 = pos2.add(new Vec2(-threshold, threshold));

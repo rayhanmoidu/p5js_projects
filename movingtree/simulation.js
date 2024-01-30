@@ -10,10 +10,10 @@ class Simulation {
         this.externalForces = new Vec2(0, 0);
     }
 
-    update() {
-        print(this.externalForces)
+    update(z) {
+        // print(this.externalForces)
         this.applySpringForces();
-        this.applyExternalForces(); // should come from beats
+        this.applyExternalForces(z); // should come from beats
         this.computeNewParticleStates();
         this.time += this.timestep / frameRate();
         this.resetForces();
@@ -50,14 +50,14 @@ class Simulation {
         }
     }
 
-    applyExternalForces() {
+    applyExternalForces(z) {
         for (let i = 0; i < this.n; i++) {
             // print(this.externalForces.length)
             // for (let j = 0; j < this.externalForces.length; j++) {
             //     this.particles[i].applyForce(this.externalForces[j]);
             // }
             this.particles[i].addForce(this.externalForces);
-            this.particles[i].addReturningForce();
+            this.particles[i].addReturningForce(z);
         }
     }
 

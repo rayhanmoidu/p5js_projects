@@ -38,15 +38,17 @@ class SpringEndpoint {
         return this.v;
     }
 
-    addReturningForce() {
+    addReturningForce(z) {
         if (this.type=="tree") {
             let diff = this.startpos.subtract(this.pos);
             let weight = diff.length2();
-            this.f = this.f.add(diff.scalarmult(500));
+            this.f = this.f.add(diff.scalarmult(500*z));
+            this.f = this.f.add(new Vec2(p.windForce*random(-5, 5), p.windForce*random(0, 10)))
         }
     }
 
     addForce(force) {
+        // need to make gravity not impact trees
         this.f = this.f.add(force);
         // print(force)
         // if (force.key == "wind") {
@@ -78,9 +80,9 @@ class SpringEndpoint {
     computeNewPosition_verlet(timeStep) {
         if (!this.isFixed) {
             let newF = this.f.scalarmult(this.inverseM);
-            if (this.type=="hair") {
-                print(newF, this.f, this.m, this.inverseM)
-            }
+            // if (this.type=="hair") {
+            //     print(newF, this.f, this.m, this.inverseM)
+            // }
             
             let posDiff = this.pos.subtract(this.oldpos);
             let term1 = this.pos.add(posDiff);

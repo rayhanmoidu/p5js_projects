@@ -3,6 +3,10 @@ let p = {
 
   renderMode: true,
 
+  eyeOffset: 0,
+  eyeOffsetMax: 11,
+  eyeOffsetMin: -11,
+
   dressTolerance: 100,
   dressToleranceMax: 2000,
   dressToleranceMin: 0,

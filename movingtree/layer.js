@@ -3,7 +3,8 @@ function compareSprings(a, b) {
 }
 
 class Layer {
-    constructor(h, z) {
+    constructor(h, z, treevals) {
+        this.layerId = layerId++;
         this.z = z;
         this.groundHeight = h;
         let threshold = 100;
@@ -11,13 +12,15 @@ class Layer {
 
         let tol = 200;
 
+        let charTol = 300;
+
         let side = random(-1, 1);
-        let characterX = random(0, canvasw);
+        let characterX = random(0-charTol, canvasw+charTol);
 
         if (side > 0) {
-            characterX = random(0, this.peak - tol);
+            characterX = random(0-charTol, this.peak - tol);
         } else {
-            characterX = random(this.peak + tol, canvasw);
+            characterX = random(this.peak + tol, canvasw+charTol);
         }
 
         let characterY;
@@ -27,23 +30,30 @@ class Layer {
             characterY = random(0, (this.groundHeight/(canvasw-this.peak))*(canvasw - characterX));
         }
 
-        let characterHeight = p.dressHeight + 50 + 50;
+        let characterHeight = p.dressHeight + 50;
 
 
-        this.tree = new Tree("basicFractal", p.angleOffset, this.peak, canvash - this.groundHeight, p.numLevels, p.branchingFactor, p.treeHeight, p.branchLength, p.branchLengthFactor, p.mass, p.massFactor);
+        let angleOffset = random(0.1, 1.4);
+        let numLevels = round(random(7, 10));
+        let treeHeight = random(250, 400);
+        let branchLength = random(50, 150);
+        let branchLengthFactor = random(0.75, 1);
+
+        this.tree = new Tree("basicFractal", treevals.angleOffset, this.peak, canvash - this.groundHeight, treevals.numLevels, 2, treevals.treeHeight, treevals.branchLength, treevals.branchLengthFactor, p.mass, p.massFactor);
         this.character = new Character(new Vec2(characterX, canvash - characterY - characterHeight), 1); // 0.75 for mass
 
-        this.simulation = new Simulation(this.tree.getSprings().concat(this.character.getSprings()), this.tree.getParticles().concat(this.character.getParticles()), 10 / frameRate());
+        this.simulation = new Simulation(this.tree.getSprings().concat(this.character.getSprings()), this.tree.getParticles().concat(this.character.getParticles()), 0.25);
     }
 
     update() {
         this.z -= p.speed;
-        let windForce = new Vec2(p.windForce,  0);
+        let windf = p.windForce;
+        let windForce = new Vec2(windf,  0);
         let gravitationalForce = new Vec2(0,  90.81);
         this.simulation.addExternalForce("wind", windForce);
         this.simulation.addExternalForce("gravity", gravitationalForce);
 
-        this.simulation.update();
+        this.simulation.update(this.z);
         this.simulation.resetExternalForces();
     }
 
@@ -62,7 +72,7 @@ class Layer {
         let opacity = 255 * ((p.cubeDepth - this.z) / p.cubeDepth);
         fill(125*colorFactor, 186*colorFactor, 115*colorFactor)
 
-        let shiftx = ((canvasw - (canvasw * (1/100))) / 2)
+        let shiftx = ((canvasw - (canvasw * (1/p.cubeDepth))) / 2)
         let shifty = (canvash - (canvash * (1/this.z))) * (1 - (this.groundHeight / canvash))
         let shifty2 = (canvash - (canvash * (1/this.z))) / 2
         let leftover = (canvash - (canvash * (1/100))) * (1 - (this.groundHeight / canvash)) + (canvash * (1/100));
@@ -75,16 +85,29 @@ class Layer {
         beginShape();
         curveVertex(0 - shiftx*this.z, canvash + leftover*this.z)
         curveVertex(0 - shiftx*this.z, canvash + leftover*this.z)
+        curveVertex(0 - shiftx*this.z, canvash + leftover*this.z)
         curveVertex(this.peak, canvash - this.groundHeight)
         curveVertex(canvasw + shiftx*this.z, canvash + leftover*this.z)
         curveVertex(canvasw + shiftx*this.z, canvash + leftover*this.z)
+        curveVertex(canvasw + shiftx*this.z, canvash + leftover*this.z)
+        curveVertex(0 - shiftx*this.z, canvash + leftover*this.z)
+        curveVertex(0 - shiftx*this.z, canvash + leftover*this.z)
+        curveVertex(0 - shiftx*this.z, canvash + leftover*this.z)
         endShape();
+
+        // beginShape();
+        // curveVertex(0 - shiftx*this.z, canvash + leftover*this.z)
+        // curveVertex(0 - shiftx*this.z, canvash + leftover*this.z)
+        // curveVertex(this.peak, canvash - this.groundHeight + 1)
+        // curveVertex(canvasw + shiftx*this.z, canvash + leftover*this.z)
+        // curveVertex(canvasw + shiftx*this.z, canvash + leftover*this.z)
+        // endShape();
 
         // tree
         this.tree.render();
 
         // character
-        this.character.render();
+        this.character.render(this.z, this.groundHeight);
 
         // white overlay
         scale(this.z)
