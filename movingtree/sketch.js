@@ -6,15 +6,19 @@ let s = {
 
   presentMode: true,
 
-  speed: 0.008,
+  speed: 0.01,
   speedMin: 0.001,
   speedMax: 0.5,
   speedStep: 0.001,
 
-  treeCycleSpeed: 0.1,
+  treeCycleSpeed: 0.15,
   treeCycleSpeedMax: 1,
   treeCycleSpeedMin: 0.01,
   treeCycleSpeedStep: 0.01,
+
+  skyColor: 235,
+  skyColorMax: 255,
+  skyColorMin: 100,
 
   // legLength: 100,
   // legLengthMax: 100,
@@ -181,12 +185,13 @@ function setup() {
 }
 
 function draw() {
+  noCursor();
   zSpeed = s.speed
   print(zSpeed)
   // if (s.presentMode) {
   //   background(255, 179, 245);
   // } else {
-    background(255, 235, 252);
+    background(255, s.skyColor, 252);
   // }
   distFromLastLayer += zSpeed;
 

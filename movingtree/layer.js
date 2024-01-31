@@ -118,7 +118,7 @@ class Layer {
         // if (s.presentMode) {
         // fill(255, 217, 250, 255-opacity);
         // } else {
-        fill(255, 235, 252, 255-opacity);
+        fill(255, s.skyColor, 252, 255-opacity);
         // }
         // fill(255, 235, 253, 255-opacity);
         rect(0, 0, canvasw, canvash);
