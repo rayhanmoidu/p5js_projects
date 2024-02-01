@@ -6,7 +6,7 @@ distFromLastLayer = 0;
 visibleLayers = [];
 
 treeCycle_pos = 0; // [0, 1] value for interpolating between randomized tree parameters
-randomFactory_tree;
+randomFactory_tree = 0;
 
 // create evenly spaced layers within cube of visible depth
 function createStartingLayers() {
@@ -23,7 +23,7 @@ function addLayer(depth) {
 
   // interpolate tree parameters based on [0, 1] position in cycle
   treeCycle_pos = min(1, treeCycle_pos + s.treeCycleSpeed);
-  let treeParams = randomFactory_tree.getParams(treeCycle_pos);
+  let treeParams = randomFactory_tree.getParams_tree(treeCycle_pos);
 
   visibleLayers.push(new Layer(height, depth, treeParams));
   if (treeCycle_pos >= 1) {
@@ -65,7 +65,3 @@ function draw() {
 }
 
 function paramChanged() {};
-
-
-
- 

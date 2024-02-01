@@ -20,6 +20,10 @@ let p = {
     simulationTimestep: 0.25,
     treeRandomnessTolerance: 0.3,
 
+    // springs
+    springKs: 15000,
+    springKd: 0.05,
+
     // layer
     hillHeight_min: 100,
     hillHeight_max: 250,
@@ -43,10 +47,6 @@ let p = {
     legLength: 100,
     legWidth: 10,
     neckWidth: 10,
-
-    // springs
-    springKs: 15000,
-    springKd: 0.05,
 
     // tree
     treeMass: 3000,

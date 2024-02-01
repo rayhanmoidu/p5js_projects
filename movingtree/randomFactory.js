@@ -18,7 +18,7 @@ class RandomFactory {
         this.branchLengthFactor_1 = random(p.branchLengthFactor_min, p.branchLengthFactor_max);
 
         // create destination parameter set
-        let newRandomVals = this.getNewRandomParams({
+        let newRandomVals = this.getNewRandomParams_tree({
             "angleOffset": this.angleOffset_1,
             "numLevels": this.numLevels_1,
             "treeHeight": this.treeHeight_1,
@@ -32,7 +32,7 @@ class RandomFactory {
         this.branchLengthFactor_2 = newRandomVals.branchLengthFactor;
     }
 
-    getNewRandomParams(randomVals) {
+    getNewRandomParams_tree(randomVals) {
         // creates a new destination paramater set, ensuring new values are beyond a threshold of previous destination
         let tol = p.treeRandomnessTolerance;
 
@@ -79,7 +79,7 @@ class RandomFactory {
         }
     }
 
-    getParams(t) {
+    getParams_tree(t) {
         // interpolates source and destination param sets based on t=[0, 1]
         let retVal = {
             "angleOffset": (1-t)*this.angleOffset_1 + t*this.angleOffset_2,
@@ -98,7 +98,7 @@ class RandomFactory {
             this.branchLengthFactor_1 = this.branchLengthFactor_2;
 
             // generate new destination set
-            let newRandomVals = this.getNewRandomParams({
+            let newRandomVals = this.getNewRandomParams_tree({
                 "angleOffset": this.angleOffset_1,
                 "numLevels": this.numLevels_1,
                 "treeHeight": this.treeHeight_1,

@@ -81,11 +81,12 @@ class Tree {
         // each spring either represents a tree branch or the tree trunk
         let springs = this.springs.sort(compareSprings)
 
-        // render all springs as lines, weighted by branchLevel (depth in recursive stack during creation)
+        // render all springs as lines, weighted and colored by branchLevel (depth in recursive stack during creation)
         for (let i = 0; i < springs.length; i++) {
             let endpoints = springs[i].getEndpoints();
             strokeWeight(springs[i].getLevel());
-            stroke(((this.fractalFactor+1)-springs[i].getLevel())/(this.fractalFactor+1) * 50)
+            stroke(8 + (((this.fractalFactor+1)-springs[i].getLevel())/(this.fractalFactor+1) * 42))
+            
             line(endpoints[0].getPos().getX(), endpoints[0].getPos().getY(), endpoints[1].getPos().getX(), endpoints[1].getPos().getY())
         }
 
