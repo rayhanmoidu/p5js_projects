@@ -1,12 +1,16 @@
 class Spring {
     constructor(id, se1, se2, r, ks, kd, level) {
         this.id = id;
+        this.level = level;
+
+        // endpoints
         this.se1 = se1;
         this.se2 = se2;
+
+        // spring information
         this.r = r;
         this.ks = ks;
         this.kd = kd;
-        this.level = level;
     }
 
     getEndpoints() {

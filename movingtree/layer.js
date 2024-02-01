@@ -1,128 +1,121 @@
-function compareSprings(a, b) {
-    return b.getLevel() - a.getLevel();
-}
-
 class Layer {
     constructor(h, z, treevals) {
         this.layerId = layerId++;
+
+        // depth
         this.z = z;
-        this.groundHeight = h;
-        let threshold = 100;
-        this.peak = random(0 + threshold, canvasw - threshold);
 
-        let tol = 200;
+        // peak of hill
+        this.peakX = random(0 + p.peakThresholdX, canvasw - p.peakThresholdX);
+        this.peakY = h;
 
-        let charTol = 300;
+        // character
+        let characterPos = this.getCharacterPos();
+        let characterHeight = p.dressHeight + p.headRadius*2;
+        
+        // create objects for tree and character
+        this.tree = new Tree(treevals.angleOffset, this.peakX, canvash - this.peakY, treevals.numLevels, p.branchingFactor, treevals.treeHeight, treevals.branchLength, treevals.branchLengthFactor, p.treeMass, p.treeMassFactor);
+        this.character = new Character(new Vec2(characterPos.x, canvash - characterPos.y - characterHeight), 1);
 
-        let side = random(-1, 1);
-        let characterX = random(0-charTol, canvasw+charTol);
-
-        if (side > 0) {
-            characterX = random(0-charTol, this.peak - tol);
-        } else {
-            characterX = random(this.peak + tol, canvasw+charTol);
-        }
-
-        let characterY;
-        if (characterX < this.peak) {
-            characterY = random(0, (this.groundHeight/this.peak)*characterX);
-        } else {
-            characterY = random(0, (this.groundHeight/(canvasw-this.peak))*(canvasw - characterX));
-        }
-
-        let characterHeight = p.dressHeight + 50;
-
-
-        let angleOffset = random(0.1, 1.4);
-        let numLevels = round(random(7, 10));
-        let treeHeight = random(250, 400);
-        let branchLength = random(50, 150);
-        let branchLengthFactor = random(0.75, 1);
-
-        this.tree = new Tree("basicFractal", treevals.angleOffset, this.peak, canvash - this.groundHeight, treevals.numLevels, 2, treevals.treeHeight, treevals.branchLength, treevals.branchLengthFactor, 3000, 0.8);
-        this.character = new Character(new Vec2(characterX, canvash - characterY - characterHeight), 1); // 0.75 for mass
-
-        this.simulation = new Simulation(this.tree.getSprings().concat(this.character.getSprings()), this.tree.getParticles().concat(this.character.getParticles()), 0.25);
+        // create simulation engine, running over all springs modelling tree and character 
+        this.simulation = new Simulation(this.tree.getSprings().concat(this.character.getSprings()), this.tree.getParticles().concat(this.character.getParticles()), p.simulationTimestep);
     }
 
     update() {
-        this.z -= zSpeed;
-        let windf = 1000 * noise(this.simulation.getTime());
+        this.z -= s.speed;
+
+        // add forces
+        let windf = p.windForce * noise(this.simulation.getTime());
         let windForce = new Vec2(windf,  0);
         let gravitationalForce = new Vec2(0,  90.81);
-        this.simulation.addExternalForce("wind", windForce);
-        this.simulation.addExternalForce("gravity", gravitationalForce);
+        this.simulation.addExternalForce(windForce);
+        this.simulation.addExternalForce(gravitationalForce);
 
+        // update particle positions and reset forces
         this.simulation.update(this.z);
         this.simulation.resetExternalForces();
     }
 
     render() {
-        if (this.z <= zSpeed) {
-            // stopanim = true;
+        // once layer is in front of camera, remove from list of visible layers
+        if (this.z <= s.speed) {
             const index = visibleLayers.indexOf(this);
-            if (index > -1) { // only splice array when item is found
-                visibleLayers.splice(index, 1); // 2nd parameter means remove one item only
+            if (index > -1) {
+                visibleLayers.splice(index, 1);
             }
         }
 
-        push();
-        noStroke();
-        let colorFactor = (((this.z) / cubeDepth) * 0.2) + 0.8;
-        let opacity = 255 * ((cubeDepth - this.z) / cubeDepth);
-        // fill(106*colorFactor, 158*colorFactor, 98*colorFactor)
-        fill(125*colorFactor, 186*colorFactor, 115*colorFactor)
-        // fill(102, 145, 96)
+        // factors based on z value
+        let colorFactor = (((this.z) / p.cubeDepth) * 0.2) + 0.8;
+        let opacity = 255 * ((this.z) / p.cubeDepth);
 
-        let shiftx = ((canvasw - (canvasw * (1/cubeDepth))) / 2)
-        let shifty = (canvash - (canvash * (1/this.z))) * (1 - (this.groundHeight / canvash))
-        let shifty2 = (canvash - (canvash * (1/this.z))) / 2
-        let leftover = (canvash - (canvash * (1/100))) * (1 - (this.groundHeight / canvash)) + (canvash * (1/100));
-        leftover = canvash - leftover;
+        // ***** to visualize depth, scale and translate based on z-value before rendering *****
+        // translateX: middle of canvas, translateY: lower-half of canvas (based on peakY)
+        let shiftx = ((canvasw - (canvasw * (1/p.cubeDepth))) / 2)
+        let shifty = (canvash - (canvash * (1/this.z))) * (1 - (this.peakY / canvash))
+
+        // extend hill dimensions to fill screen despite frame being scaled
+        let hillExtension = canvash - ((canvash - (canvash * (1/100))) * (1 - (this.peakY / canvash)) + (canvash * (1/100)));
+
+        // start rendering
+        push();
+
+        fill(125*colorFactor, 186*colorFactor, 115*colorFactor);
+        noStroke();
 
         translate(shiftx, shifty)
         scale(1/this.z)
 
         // hill
         beginShape();
-        curveVertex(0 - shiftx*this.z, canvash + leftover*this.z)
-        curveVertex(0 - shiftx*this.z, canvash + leftover*this.z)
-        curveVertex(0 - shiftx*this.z, canvash + leftover*this.z)
-        curveVertex(this.peak, canvash - this.groundHeight)
-        curveVertex(canvasw + shiftx*this.z, canvash + leftover*this.z)
-        curveVertex(canvasw + shiftx*this.z, canvash + leftover*this.z)
-        curveVertex(canvasw + shiftx*this.z, canvash + leftover*this.z)
-        curveVertex(0 - shiftx*this.z, canvash + leftover*this.z)
-        curveVertex(0 - shiftx*this.z, canvash + leftover*this.z)
-        curveVertex(0 - shiftx*this.z, canvash + leftover*this.z)
+        curveVertex(0 - shiftx*this.z, canvash + hillExtension*this.z)
+        curveVertex(0 - shiftx*this.z, canvash + hillExtension*this.z)
+        curveVertex(0 - shiftx*this.z, canvash + hillExtension*this.z)
+        curveVertex(this.peakX, canvash - this.peakY)
+        curveVertex(canvasw + shiftx*this.z, canvash + hillExtension*this.z)
+        curveVertex(canvasw + shiftx*this.z, canvash + hillExtension*this.z)
+        curveVertex(canvasw + shiftx*this.z, canvash + hillExtension*this.z)
+        curveVertex(0 - shiftx*this.z, canvash + hillExtension*this.z)
+        curveVertex(0 - shiftx*this.z, canvash + hillExtension*this.z)
+        curveVertex(0 - shiftx*this.z, canvash + hillExtension*this.z)
         endShape();
-
-        // beginShape();
-        // curveVertex(0 - shiftx*this.z, canvash + leftover*this.z)
-        // curveVertex(0 - shiftx*this.z, canvash + leftover*this.z)
-        // curveVertex(this.peak, canvash - this.groundHeight + 1)
-        // curveVertex(canvasw + shiftx*this.z, canvash + leftover*this.z)
-        // curveVertex(canvasw + shiftx*this.z, canvash + leftover*this.z)
-        // endShape();
 
         // tree
         this.tree.render();
 
         // character
-        this.character.render(this.z, this.groundHeight);
+        this.character.render(this.z);
 
-        // white overlay
+        // white overlay (covers entire screen)
         scale(this.z)
         translate(-shiftx, -shifty)
+
         noStroke();
-        // if (s.presentMode) {
-        // fill(255, 217, 250, 255-opacity);
-        // } else {
-        fill(255, s.skyColor, 252, 255-opacity);
-        // }
-        // fill(255, 235, 253, 255-opacity);
+        fill(255, 235, 252, opacity);
         rect(0, 0, canvasw, canvash);
 
         pop();
+    }
+
+    getCharacterPos() {        
+        let side = random(-1, 1);
+
+        // randomize xPos, keeping a distance from the tree
+        let characterX = 0;
+        if (side > 0) {
+            characterX = random(0-p.characterTolerance_extra, this.peakX - p.characterTolerance_tree);
+        } else {
+            characterX = random(this.peakX + p.characterTolerance_tree, canvasw+p.characterTolerance_extra);
+        }
+
+        // randomize yPos, ensuring character is positioned on hill
+        let characterY;
+        if (characterX < this.peakX) {
+            characterY = random(0, (this.peakY/this.peakX)*characterX);
+        } else {
+            characterY = random(0, (this.peakY/(canvasw-this.peakX))*(canvasw - characterX));
+        }
+
+        return {"x": characterX, "y": characterY};
     }
 }

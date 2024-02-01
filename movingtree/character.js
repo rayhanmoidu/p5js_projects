@@ -1,48 +1,59 @@
 class Character {
-    // pos should be the center of the head
     constructor(pos, dir) {
+        // center position of head
         this.pos = pos;
-        this.dress = new Cloth("dress", pos.add(new Vec2(0, 25+10)), p.dressHeight, p.dressWidth, -dir, p.dressHeight / 6);
-        this.hair = new Hair("head", pos, 25);
+
+        // create objects for dress and hair
+        this.dress = new Cloth(pos.add(new Vec2(0, p.headRadius+p.neckLength)), p.dressHeight, p.dressWidth, -dir, p.dressHeight*p.dressOffsetFactor);
+        this.hair = new Hair(pos, p.headRadius);
+
+        // keep list of springs and particles modelling dress and hair
         this.springs = this.dress.getSprings().concat(this.hair.getSprings());
         this.particles = this.dress.getParticles().concat(this.hair.getParticles());
     }
 
-    render(z, groundHeight) {
+    render(z) {
         push();
-
-        // print(z, this.pos)
 
         // head
         fill(156, 115, 87);
         stroke(156, 115, 87);
         strokeWeight(5);
-        circle(this.pos.getX(), this.pos.getY(), 50);
+        circle(this.pos.getX(), this.pos.getY(), p.headRadius*2);
 
         // neck
         noStroke();
-        triangle(this.pos.getX() - 5, this.pos.getY(), this.pos.getX() + 5, this.pos.getY(), this.pos.getX(), this.pos.getY() + 25+10)
+        triangle(
+            this.pos.getX() - p.neckWidth/2, 
+            this.pos.getY(), this.pos.getX() + p.neckWidth/2, this.pos.getY(), 
+            this.pos.getX(), this.pos.getY() + p.headRadius+p.neckLength
+        );
 
-        let oldpos = this.pos;
+        // leg
+        triangle(
+            this.pos.getX() - p.legWidth/2, this.pos.getY() + p.headRadius+p.neckLength + p.dressHeight,
+            this.pos.getX() + p.legWidth/2, this.pos.getY() + p.headRadius+p.neckLength + p.dressHeight,
+            this.pos.getX(), this.pos.getY() + p.headRadius+p.neckLength + p.dressHeight + p.legLength,
+        );
+
         // eye
+        this.renderEye(z);
+        
+        // dress
+        this.dress.render();
+
+        // hair
+        this.hair.render();
+
+        pop();
+    }
+
+    renderEye(z) {
         let eyeWidth = 22;
         let eyeHeight = 8;
 
         // eye (white)
         fill(255);
-        // beginShape();
-        // curveVertex(this.pos.getX() - eyeWidth/2, this.pos.getY());
-        // curveVertex(this.pos.getX() - eyeWidth/2, this.pos.getY());
-
-        // curveVertex(this.pos.getX(), this.pos.getY() - eyeHeight);
-        // curveVertex(this.pos.getX() + eyeWidth/2, this.pos.getY());
-        // curveVertex(this.pos.getX() + eyeWidth/2, this.pos.getY());
-        // curveVertex(this.pos.getX() + eyeWidth/2, this.pos.getY());
-        // curveVertex(this.pos.getX(), this.pos.getY() + eyeHeight);
-
-        // curveVertex(this.pos.getX() - eyeWidth/2, this.pos.getY());
-        // curveVertex(this.pos.getX() - eyeWidth/2, this.pos.getY());
-        // endShape();
         beginShape();
         curveVertex(this.pos.getX() - eyeWidth, this.pos.getY());
         curveVertex(this.pos.getX() - eyeWidth, this.pos.getY());
@@ -58,97 +69,57 @@ class Character {
         endShape();
 
         // eye (black)
-        let shiftx = ((canvasw - (canvasw * (1/cubeDepth))) / 2)
-        // let shifty = (canvash - (canvash * (1/this.z))) * (1 - (groundHeight / canvash))
-        let eyePosX = shiftx + (1/z)*this.pos.getX();
+        let shiftLimit = 9;
 
-        // let theta = atan(z*100 / eyePosX);
-        // let eyePos = eyeWidth * tan(theta);
+        // get xDiff between camera and character
+        let frameShiftX = ((canvasw - (canvasw * (1/p.cubeDepth))) / 2)
+        let eyePosX = frameShiftX + (1/z)*this.pos.getX();
 
-        let tol = 9;
-        let eyeshift = tol + (eyePosX / canvasw) * (eyeWidth-tol*2);
-        eyeshift = max(tol, eyeshift);
-        eyeshift = min(eyeWidth-tol, eyeshift);
-        // let eyePosY = shifty + (1/z)*this.pos.getY();
-        // print(shiftx)
-        // if (eyePosX < 300) {
-        // print(shiftx, eyePosX)
-        // }
+        // get pupil shift based on xDiff
+        let pupilShift = shiftLimit + (eyePosX / canvasw) * (eyeWidth-shiftLimit*2);
+        pupilShift = max(shiftLimit, pupilShift);
+        pupilShift = min(eyeWidth-shiftLimit, pupilShift);
 
-        // print(theta, z*100 / eyePosX)
         fill(0);
-        ellipse(this.pos.getX() - eyeshift, this.pos.getY(), 8, eyeHeight*2);
+        ellipse(this.pos.getX() - pupilShift, this.pos.getY(), 8, eyeHeight*2);
 
-        // eye (mask)
+        // eye (mask) - hides the pupil's overflow from white region
         noStroke();
         fill(156, 115, 87);
 
+        this.renderEyeMask(this.pos, eyeWidth, eyeHeight);
+        this.renderEyeMask(this.pos, eyeWidth, -eyeHeight);
+    }
+
+    // hides the pupil's overflow from the eye's white region
+    renderEyeMask(pos, eyeWidth, eyeHeight) {
+        let heightAdder = 5 * (eyeHeight/abs(eyeHeight));
         beginShape();
         
-        curveVertex(this.pos.getX() - eyeWidth - 4, this.pos.getY());
-        curveVertex(this.pos.getX() - eyeWidth - 4, this.pos.getY());
-        curveVertex(this.pos.getX() - eyeWidth, this.pos.getY());
-        curveVertex(this.pos.getX() - eyeWidth, this.pos.getY());
+        curveVertex(pos.getX() - eyeWidth - 4, pos.getY());
+        curveVertex(pos.getX() - eyeWidth - 4, pos.getY());
 
-        curveVertex(this.pos.getX() - eyeWidth/2, this.pos.getY() - eyeHeight);
-        curveVertex(this.pos.getX(), this.pos.getY());
-        curveVertex(this.pos.getX(), this.pos.getY());
-        curveVertex(this.pos.getX() + 4, this.pos.getY());
-        curveVertex(this.pos.getX() + 4, this.pos.getY());
-        curveVertex(this.pos.getX() + 4, this.pos.getY());
+        curveVertex(pos.getX() - eyeWidth, pos.getY());
+        curveVertex(pos.getX() - eyeWidth, pos.getY());
 
-        
+        curveVertex(pos.getX() - eyeWidth/2, pos.getY() + eyeHeight);
 
-        curveVertex(this.pos.getX(), this.pos.getY() - (eyeHeight + 5));
-        curveVertex(this.pos.getX() - eyeWidth/2, this.pos.getY() - (eyeHeight + 5));
-        curveVertex(this.pos.getX() - eyeWidth, this.pos.getY() - (eyeHeight + 5));
+        curveVertex(pos.getX(), pos.getY());
+        curveVertex(pos.getX(), pos.getY());
 
-        curveVertex(this.pos.getX() - eyeWidth - 4, this.pos.getY());
-        curveVertex(this.pos.getX() - eyeWidth - 4, this.pos.getY());
+        curveVertex(pos.getX() + 4, pos.getY());
+        curveVertex(pos.getX() + 4, pos.getY());
+        curveVertex(pos.getX() + 4, pos.getY());
+
+        curveVertex(pos.getX(), pos.getY() + (eyeHeight + heightAdder));
+
+        curveVertex(pos.getX() - eyeWidth/2, pos.getY() + (eyeHeight + heightAdder));
+
+        curveVertex(pos.getX() - eyeWidth, pos.getY() + (eyeHeight + heightAdder));
+
+        curveVertex(pos.getX() - eyeWidth - 4, pos.getY());
+        curveVertex(pos.getX() - eyeWidth - 4, pos.getY());
         endShape();
-
-        beginShape();
-        
-        curveVertex(this.pos.getX() - eyeWidth - 4, this.pos.getY());
-        curveVertex(this.pos.getX() - eyeWidth - 4, this.pos.getY());
-        curveVertex(this.pos.getX() - eyeWidth, this.pos.getY());
-        curveVertex(this.pos.getX() - eyeWidth, this.pos.getY());
-
-        curveVertex(this.pos.getX() - eyeWidth/2, this.pos.getY() + eyeHeight);
-        curveVertex(this.pos.getX(), this.pos.getY());
-        curveVertex(this.pos.getX(), this.pos.getY());
-        curveVertex(this.pos.getX() + 4, this.pos.getY());
-        curveVertex(this.pos.getX() + 4, this.pos.getY());
-        curveVertex(this.pos.getX() + 4, this.pos.getY());
-
-        
-
-        curveVertex(this.pos.getX(), this.pos.getY() + (eyeHeight + 5));
-        curveVertex(this.pos.getX() - eyeWidth/2, this.pos.getY() + (eyeHeight + 5));
-        curveVertex(this.pos.getX() - eyeWidth, this.pos.getY() + (eyeHeight + 5));
-
-        curveVertex(this.pos.getX() - eyeWidth - 4, this.pos.getY());
-        curveVertex(this.pos.getX() - eyeWidth - 4, this.pos.getY());
-        endShape();
-
-        rect(this.pos.getX() - eyeWidth - 4, this.pos.getY() - 3, 4, 6);
-        rect(this.pos.getX(), this.pos.getY() - 3, 4, 6);
-
-        // leg
-        fill(156, 115, 87);
-        triangle(
-            this.pos.getX() - 5, this.pos.getY() + 25 + 10 + p.dressHeight,
-            this.pos.getX() + 5, this.pos.getY() + 25 + 10 + p.dressHeight,
-            this.pos.getX(), this.pos.getY() + 25 + 10 + p.dressHeight + 100,
-        )
-
-        pop();
-        
-        this.dress.render();
-
-        
-
-        this.hair.render();
     }
 
     getSprings() {
@@ -158,6 +129,4 @@ class Character {
     getParticles() {
         return this.particles;
     }
-
-
 }

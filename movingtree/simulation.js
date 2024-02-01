@@ -1,81 +1,74 @@
 class Simulation {
     constructor(springs, particles, timestep) {
+        // springs and particles being processed by simulation
         this.springs = springs;
         this.particles = particles;
+
         this.n = particles.length;
-        this.fixedIds = [];
+        
         this.timestep = timestep;
         this.time = 0;
+
+        // physics calculator for spring forces
         this.physicsCalc = new PhysicsCalculator();
+
+        // keeps track of external forces to be applied to particles
         this.externalForces = new Vec2(0, 0);
     }
 
     update(z) {
-        // print(this.externalForces)
+        // apply forces to particles
         this.applySpringForces();
-        this.applyExternalForces(z); // should come from beats
+        this.applyExternalForces(z);
+
+        // compute new particle positions
         this.computeNewParticleStates();
+
+        // increment time and reset forces
         this.time += this.timestep / frameRate();
         this.resetForces();
     }
 
-    getTime() {
-        return this.time;
-    }
-
-    addExternalForce(key, f) {
-        // this.externalForces.push({"key": key, "f": f});
-        // this.externalForces = (f);
-        // if (key=="gravity") {
-        //     this.externalForce = this.externalForce.add(f.scalarmult());
-        // }
+    addExternalForce(f) {
         this.externalForces = this.externalForces.add(f);
     }
 
     resetExternalForces() {
-        // print(this.externalForces.length)
         this.externalForces = new Vec2(0, 0);
     }
 
     applySpringForces() {
+        // iterate through all springs, and apply corresponding force onto each particle
         for (let i = 0; i < this.springs.length; i++) {
             let endpoints = this.springs[i].getEndpoints();
             let f1 = this.physicsCalc.calculateSpringForce(endpoints[0], endpoints[1], this.springs[i].getR(), this.springs[i].getKs());
             let f2 = this.physicsCalc.calculateSpringForce(endpoints[1], endpoints[0], this.springs[i].getR(), this.springs[i].getKs());
-            let d1 = this.physicsCalc.calculateDampingForce(endpoints[0], endpoints[1], this.springs[i].getR(), this.springs[i].getKd());
-            let d2 = this.physicsCalc.calculateDampingForce(endpoints[1], endpoints[0], this.springs[i].getR(), this.springs[i].getKd());
 
-            // if (!isNaN(f1) && !isNaN(f1)) {
-                endpoints[0].addForce(f1);
-                endpoints[1].addForce(f2);
-            // }
-            // endpoints[0].addForce(d1);
-            // endpoints[1].addForce(d2);
+            endpoints[0].addForce(f1);
+            endpoints[1].addForce(f2);
         }
     }
 
     applyExternalForces(z) {
+        // iterate through all particles, and apply external force onto each
         for (let i = 0; i < this.n; i++) {
-            // print(this.externalForces.length)
-            // for (let j = 0; j < this.externalForces.length; j++) {
-            //     this.particles[i].applyForce(this.externalForces[j]);
-            // }
             this.particles[i].addForce(this.externalForces);
-            this.particles[i].addReturningForce(z);
+            this.particles[i].addTreeForce(z);
         }
     }
 
     resetForces() {
+        // iterate through all particles, and clear their force vector
         for (let i = 0; i < this.n; i++) {
             this.particles[i].clearForce();
         }
     }
 
     computeNewParticleStates() {
+        // iterate through all particles, and adjust their positions
         for (let i = 0; i < this.n; i++) {
-            this.particles[i].computeNewPosition_verlet(this.timestep);
+            this.particles[i].computeNewPosition(this.timestep);
         }
-        //postProcess();
     }
 
     getParticles() {
@@ -84,5 +77,9 @@ class Simulation {
 
     getSprings() {
         return this.springs;
+    }
+
+    getTime() {
+        return this.time;
     }
 }

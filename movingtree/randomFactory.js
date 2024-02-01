@@ -1,4 +1,8 @@
 class RandomFactory {
+    // creates 2 parameter sets: source and destination
+    // when queried with t=[0, 1], returns an interpolated blend of the source and destination parameters
+    // when queried with t=1, source becomes destination, and a new destination is generated
+
     constructor(mode) {
         if (mode=="tree") {
             this.initTree();
@@ -6,20 +10,21 @@ class RandomFactory {
     }
 
     initTree() {
-        this.angleOffset_1 = random(0.1, 1.4);
-        this.numLevels_1 = round(random(7, 10));
-        this.treeHeight_1 = random(250, 400);
-        this.branchLength_1 = random(50, 150);
-        this.branchLengthFactor_1 = random(0.8, 0.9);
+        // create source parameter set
+        this.angleOffset_1 = random(p.angleOffset_min, p.angleOffset_max);
+        this.numLevels_1 = round(random(p.numLevels_min, p.numLevels_max));
+        this.treeHeight_1 = random(p.treeHeight_min, p.treeHeight_max);
+        this.branchLength_1 = random(p.branchLength_min, p.branchLength_max);
+        this.branchLengthFactor_1 = random(p.branchLengthFactor_min, p.branchLengthFactor_max);
 
-        let newRandomVals = this.getNewRandomVals({
+        // create destination parameter set
+        let newRandomVals = this.getNewRandomParams({
             "angleOffset": this.angleOffset_1,
             "numLevels": this.numLevels_1,
             "treeHeight": this.treeHeight_1,
             "branchLength": this.branchLength_1,
             "branchLengthFactor": this.branchLengthFactor_1,
         })
-
         this.angleOffset_2 = newRandomVals.angleOffset;
         this.numLevels_2 = newRandomVals.numLevels;
         this.treeHeight_2 = newRandomVals.treeHeight;
@@ -27,33 +32,44 @@ class RandomFactory {
         this.branchLengthFactor_2 = newRandomVals.branchLengthFactor;
     }
 
-    getNewRandomVals(randomVals) {
-        let tol = 0.3;
+    getNewRandomParams(randomVals) {
+        // creates a new destination paramater set, ensuring new values are beyond a threshold of previous destination
+        let tol = p.treeRandomnessTolerance;
+
+        // compute param ranges
+        let angleOffset_range = p.angleOffset_max - p.angleOffset_min;
+        let numLevels_range = p.numLevels_max - p.numLevels_min;
+        let treeHeight_range = p.treeHeight_max - p.treeHeight_min;
+        let branchLength_range = p.branchLength_max - p.branchLength_min;
+        let branchLengthFactor_range = p.branchLengthFactor_max - p.branchLengthFactor_min;
+
+        // generate randomized destination parameters, respecting threshold
         let angleOffset = randomVals.angleOffset;
-        while (angleOffset >= randomVals.angleOffset-(1.3*tol) && angleOffset <= randomVals.angleOffset+(1.3*tol)) {
-            angleOffset = random(0.1, 1.4);
+        while (angleOffset >= randomVals.angleOffset-(angleOffset_range*tol) && angleOffset <= randomVals.angleOffset+(angleOffset_range*tol)) {
+            angleOffset = random(p.angleOffset_min, p.angleOffset_max);
         }
 
         let numLevels = randomVals.numLevels;
-        while (numLevels >= randomVals.numLevels-(3*tol) && numLevels <= randomVals.numLevels+(3*tol)) {
-            numLevels = round(random(7, 10));
+        while (numLevels >= randomVals.numLevels-(numLevels_range*tol) && numLevels <= randomVals.numLevels+(numLevels_range*tol)) {
+            numLevels = round(random(p.numLevels_min, p.numLevels_max));
         }
 
         let treeHeight = randomVals.treeHeight;
-        while (treeHeight >= randomVals.treeHeight-(150*tol) && treeHeight <= randomVals.treeHeight+(150*tol)) {
-            treeHeight = random(250, 400);
+        while (treeHeight >= randomVals.treeHeight-(treeHeight_range*tol) && treeHeight <= randomVals.treeHeight+(treeHeight_range*tol)) {
+            treeHeight = random(p.treeHeight_min, p.treeHeight_max);
         }
 
         let branchLength = randomVals.branchLength;
-        while (branchLength >= randomVals.branchLength-(100*tol) && branchLength <= randomVals.branchLength+(100*tol)) {
-            branchLength = random(50, 150);
+        while (branchLength >= randomVals.branchLength-(branchLength_range*tol) && branchLength <= randomVals.branchLength+(branchLength_range*tol)) {
+            branchLength = random(p.branchLength_min, p.branchLength_max);
         }
 
         let branchLengthFactor = randomVals.branchLengthFactor;
-        while (branchLengthFactor >= randomVals.branchLengthFactor-(0.1*tol) && branchLengthFactor <= randomVals.branchLengthFactor+(0.1*tol)) {
-            branchLengthFactor = random(0.8, 0.9);
+        while (branchLengthFactor >= randomVals.branchLengthFactor-(branchLengthFactor_range*tol) && branchLengthFactor <= randomVals.branchLengthFactor+(branchLengthFactor_range*tol)) {
+            branchLengthFactor = random(p.branchLengthFactor_min, p.branchLengthFactor_max);
         }
 
+        // return destination values
         return {
             "angleOffset": angleOffset,
             "numLevels": numLevels,
@@ -63,7 +79,8 @@ class RandomFactory {
         }
     }
 
-    getVals(t) {
+    getParams(t) {
+        // interpolates source and destination param sets based on t=[0, 1]
         let retVal = {
             "angleOffset": (1-t)*this.angleOffset_1 + t*this.angleOffset_2,
             "numLevels": round((1-t)*this.numLevels_1 + t*this.numLevels_2),
@@ -73,20 +90,21 @@ class RandomFactory {
         }
 
         if (t == 1) {
+            // set source to curDestination
             this.angleOffset_1 = this.angleOffset_2;
             this.numLevels_1 = this.numLevels_2;
             this.treeHeight_1 = this.treeHeight_2;
             this.branchLength_1 = this.branchLength_2;
             this.branchLengthFactor_1 = this.branchLengthFactor_2;
 
-            let newRandomVals = this.getNewRandomVals({
+            // generate new destination set
+            let newRandomVals = this.getNewRandomParams({
                 "angleOffset": this.angleOffset_1,
                 "numLevels": this.numLevels_1,
                 "treeHeight": this.treeHeight_1,
                 "branchLength": this.branchLength_1,
                 "branchLengthFactor": this.branchLengthFactor_1,
             })
-
             this.angleOffset_2 = newRandomVals.angleOffset;
             this.numLevels_2 = newRandomVals.numLevels;
             this.treeHeight_2 = newRandomVals.treeHeight;

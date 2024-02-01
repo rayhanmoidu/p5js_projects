@@ -1,29 +1,84 @@
-springTypes_gravity = ["hair"]
-
 class SpringEndpoint {
-
     constructor(id, type, pos, m, level) {
-        this.type = type;
-        this.startpos = pos;
         this.id = id;
-        this.pos = pos;
-        if (type=="tree" || type=="hair") {
-            this.m = m * level;
-        } else {
-            this.m = m;
-        }
+        this.type = type;
+        this.level = level;
+
+        // mass
+        this.m = m * level;
         this.inverseM = 1/this.m;
 
-        this.f = new Vec2(0, 0);
+        // position
+        this.startpos = pos;
+        this.pos = pos;
         this.oldpos = pos;
+
+        // current force influencing particle
+        this.f = new Vec2(0, 0);
+        // current velocity of particle
         this.v = new Vec2(0, 0);
+
+        // fixed particles do not undergo motion
         this.isFixed = false;
-        this.level = level;
     }
 
+    // sets a constraint along x-axis that particle should respect
     setXConstraint(x, isGreaterThan) {
         this.xConstraint = x;
         this.isGreaterThan = isGreaterThan;
+    }
+
+    addTreeForce(z) {
+        // tree particles undergo special forces
+        if (this.type=="tree") {
+            // add force to return particle to starting poisition
+            let diff = this.startpos.subtract(this.pos);
+            this.f = this.f.add(diff.scalarmult(p.returningForceFactor*z));
+
+            // add large force in randomized direction
+            this.f = this.f.add(new Vec2(p.randomForceFactor*random(-5, 5), p.randomForceFactor*random(0, 10)))
+        }
+    }
+
+    addForce(force) {
+        this.f = this.f.add(force);
+    }
+
+    clearForce() {
+        this.f = new Vec2(0, 0);
+    }
+
+    // returns adjustment factor to a computed newpos, such that constraint is respected 
+    getConstraintSatisfier(newpos) {
+        if (this.xConstraint) {
+            if (this.isGreaterThan && newpos.getX() > this.xConstraint) {
+                return new Vec2(this.xConstraint - newpos.getX(), 0);
+            }
+            if (!this.isGreaterThan && newpos.getX() < this.xConstraint) {
+                return new Vec2(this.xConstraint - newpos.getX(), 0);
+            }
+        }
+        return new Vec2(0, 0)
+    }
+
+    computeNewPosition(timeStep) {
+        if (!this.isFixed) {
+            // compute new position using Verlet integration
+            let newF = this.f.scalarmult(this.inverseM);
+            
+            let posDiff = this.pos.subtract(this.oldpos);
+            let term1 = this.pos.add(posDiff);
+
+            let newpos = newF.scalarmult(timeStep*timeStep).add(term1);
+            
+            // adjust pos and oldpos, respecting constraints
+            this.oldpos = this.pos.add(this.getConstraintSatisfier(newpos));
+            this.pos = newpos.add(this.getConstraintSatisfier(newpos));
+
+            // set velocity
+            let velocity = this.pos.subtract(this.oldpos).scalarmult(1/timeStep);
+            this.v = velocity;
+        }
     }
 
     fix() {
@@ -37,71 +92,4 @@ class SpringEndpoint {
     getVelocity() {
         return this.v;
     }
-
-    addReturningForce(z) {
-        if (this.type=="tree") {
-            let diff = this.startpos.subtract(this.pos);
-            let weight = diff.length2();
-            this.f = this.f.add(diff.scalarmult(300*z));
-            // this.f = this.f.add(new Vec2(p.windForce, 0));
-            this.f = this.f.add(new Vec2(350*random(-5, 5), 350*random(0, 10)))
-        }
-    }
-
-    addForce(force) {
-        // need to make gravity not impact trees
-        this.f = this.f.add(force);
-        // print(force)
-        // if (force.key == "wind") {
-        //     this.f = this.f.add(force.f);
-        // } else if (force.key == "spring") {
-        //     print(force.f)
-        //     this.f = this.f.add(force.f);
-        // } else if (force.key == "gravity" && springTypes_gravity.includes(this.type)) {
-        //     this.f = this.f.add(force.f.scalarmult(this.m));
-        // }
-    }
-
-    clearForce() {
-        this.f = new Vec2(0, 0);
-    }
-
-    getConstraintSatisfier(newpos) {
-        if (this.xConstraint) {
-            if (this.isGreaterThan && newpos.getX() > this.xConstraint) {
-                return new Vec2(this.xConstraint - newpos.getX(), 0);
-            }
-            if (!this.isGreaterThan && newpos.getX() < this.xConstraint) {
-                return new Vec2(this.xConstraint - newpos.getX(), 0);
-            }
-        }
-        return new Vec2(0, 0)
-    }
-
-    computeNewPosition_verlet(timeStep) {
-        if (!this.isFixed) {
-            let newF = this.f.scalarmult(this.inverseM);
-            // if (this.type=="hair") {
-            //     print(newF, this.f, this.m, this.inverseM)
-            // }
-            
-            let posDiff = this.pos.subtract(this.oldpos);
-            let term1 = this.pos.add(posDiff);
-
-            let newpos = newF.scalarmult(timeStep*timeStep).add(term1);
-            
-            this.oldpos = this.pos.add(this.getConstraintSatisfier(newpos));
-            this.pos = newpos.add(this.getConstraintSatisfier(newpos));
-            // if (this.id==0) {
-            //     print(this.oldpos, this.pos)
-            // }
-            // let weight = (this.level) / 12
-            // weight *= weight;
-            // this.pos = newpos.scalarmult(1-weight).add(this.pos.scalarmult(weight));
-
-            let velocity = this.pos.subtract(this.oldpos).scalarmult(1/timeStep);
-            this.v = velocity;
-        }
-    }
-
 }
