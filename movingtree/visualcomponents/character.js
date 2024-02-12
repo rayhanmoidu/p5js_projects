@@ -1,4 +1,5 @@
 class Character {
+    // 
     constructor(pos, dir) {
         // center position of head
         this.pos = pos;

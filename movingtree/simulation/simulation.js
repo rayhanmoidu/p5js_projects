@@ -1,4 +1,7 @@
 class Simulation {
+    // Simulation engine for mass spring systems
+    // Takes a list of springs and particles, updates their positions based on internal (spring) and external (user-defined) forces
+    
     constructor(springs, particles, timestep) {
         // springs and particles being processed by simulation
         this.springs = springs;

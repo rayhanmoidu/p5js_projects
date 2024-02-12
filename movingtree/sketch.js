@@ -47,7 +47,7 @@ function setup() {
 
 function draw() {
   noCursor();
-  background(255, 235, 252);
+  background(255, 235, 255);
 
   distFromLastLayer += s.speed;
 

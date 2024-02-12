@@ -91,7 +91,7 @@ class Layer {
         translate(-shiftx, -shifty)
 
         noStroke();
-        fill(255, 235, 252, opacity);
+        fill(255, 235, 255, opacity);
         rect(0, 0, canvasw, canvash);
 
         pop();

@@ -1,4 +1,6 @@
 class Spring {
+    // Spring object, contains 2 spring endpoints and spring information
+    
     constructor(id, se1, se2, r, ks, kd, level) {
         this.id = id;
         this.level = level;

@@ -1,4 +1,6 @@
 class Vec2 {
+    // Vectors with 2 dimensions, along with associated methods
+    
     constructor(x, y) {
         this.x = x;
         this.y = y;

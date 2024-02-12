@@ -1,4 +1,6 @@
 class SpringEndpoint {
+    // Spring endpoint object (particles)
+
     constructor(id, type, pos, m, level) {
         this.id = id;
         this.type = type;
