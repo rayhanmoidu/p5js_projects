@@ -1,6 +1,6 @@
 // parameters
 let p = {
-  boundBox: true,
+  boundBox: false,
   annotations: false,
   labels: false,
   landmarks: false,
@@ -13,12 +13,19 @@ let predictions = [];
 // video capture
 let video;
 
+let pg;
+
 function preload() {
   emoji = loadImage('data/monkey.png')
 }
 
 function setup() {
-  createCanvas(640, 480);
+  createCanvas(windowWidth, windowHeight);
+  pg = createGraphics(windowWidth, windowHeight);
+  pg.clear();
+
+  // pg.fill(60);
+  // pg.ellipse(100, 100, 500);
 
   video = createCapture(VIDEO);
   video.size(width, height);
@@ -29,9 +36,10 @@ function setup() {
   // initialize the model
   const options = {
     // flipHorizontal: true, // seems to be a bug?
-    maxFaces: 5,
+    maxFaces: 25,
     detectionConfidence: 0.5,
   };
+  print(video)
   facemesh = ml5.facemesh(video, options, modelReady);
 
   // This sets up an event that fills the global variable "predictions"
@@ -49,19 +57,17 @@ function modelReady() {
 }
 
 function draw() {
-  background("#0000aa");
+  background(0);
   // image(video, 0, 0, width, height);
 
   // different visualizations
   drawClown();
 
-  // if (p.boundBox) drawBoundingBoxes();
-  // if (p.landmarks) drawLandmarks();
-  // if (p.annotations) drawAllAnnotations();
+  image(pg, 0, 0);
 
-  // if (predictions.length > 0) {
-  //   drawAnnotation(predictions[0], "silhouette")
-  // }
+  if (p.boundBox) drawBoundingBoxes();
+  if (p.landmarks) drawLandmarks();
+  if (p.annotations) drawAllAnnotations();
 
   // debug info
   drawFps();
@@ -70,50 +76,124 @@ function draw() {
 function drawClown() {
   predictions.forEach((p) => {
 
-    let silhouette = p.annotations["silhouette"];
-    let c = color(255);
-    drawAnnotation(silhouette, c);
 
-    
+      scale(2);
 
-    // for (let n in p.annotations) {
-    //   // make a rainbow
-      
-    //   // draw the annotation
-    //   drawAnnotation(p, n, c);
-    // }
+      let noseTip = p.annotations["noseTip"];
+      let noseRightCorner = p.annotations["noseRightCorner"][0];
+      let noseLeftCorner = p.annotations["noseLeftCorner"][0];
+      let diffx = noseRightCorner[0] - noseLeftCorner[0];
+      let diffy = noseRightCorner[1] - noseLeftCorner[1];
+      let noseR = sqrt(diffx*diffx + diffy*diffy);
+      noStroke();
+      let opacity = min(255 * ((noseR-10)/40), 255);
 
-    // const [lx, ly] = p.annotations['leftCheek'][0]
-    // const [rx, ry] = p.annotations['rightCheek'][0]
-    // stroke('#ff0000')
-    // strokeWeight(10)
-    // line(lx, ly, rx, ry)
+    if (true) {
 
-    // const x = (lx + rx) / 2
-    // const y = (ly + ry) / 2
-    // let d = dist(lx, ly, rx, ry) * 5
+      let silhouette = p.annotations["silhouette"];
+      let silhouette_c = color(255);
+      silhouette_c.setAlpha(opacity)
+      drawAnnotationShape(silhouette, silhouette_c);
 
-    // push()
-    // noStroke();
-    // fill(170);
-    // circle(x, y, 100, 50);
-    // pop()
+      let upperLip_outer = p.annotations["lipsUpperOuter"];
+      let lowerLip_outer = p.annotations["lipsLowerOuter"];
+      let lips_outer = lowerLip_outer.concat(upperLip_outer.reverse()).concat([lowerLip_outer[0]])
+      let lips_outer_c = color(255, 0, 0);
+      lips_outer_c.setAlpha(opacity)
+      drawAnnotationShape(lips_outer, lips_outer_c);
+
+      let upperLip_inner = p.annotations["lipsUpperInner"];
+      let lowerLip_inner = p.annotations["lipsLowerInner"];
+      let lips_inner = lowerLip_inner.concat(upperLip_inner.reverse()).concat([lowerLip_inner[0]])
+      let lips_inner_c = color(255);
+      lips_inner_c.setAlpha(opacity)
+      drawAnnotationShape(lips_inner, lips_inner_c);
+
+      let leftEye1_upper = p.annotations["leftEyeUpper2"];
+      let leftEye1_lower = p.annotations["leftEyeLower2"];
+      let leftEye1 = leftEye1_upper.concat(leftEye1_lower.reverse()).concat([leftEye1_upper[0]])
+      let leftEye1_c = color(0);
+      leftEye1_c.setAlpha(opacity)
+      drawAnnotationShape(leftEye1, leftEye1_c);
+
+      let rightEye1_upper = p.annotations["rightEyeUpper2"];
+      let rightEye1_lower = p.annotations["rightEyeLower2"];
+      let rightEye1 = rightEye1_upper.concat(rightEye1_lower.reverse()).concat([rightEye1_upper[0]])
+      let rightEye1_c = color(0);
+      rightEye1_c.setAlpha(opacity)
+      drawAnnotationShape(rightEye1, rightEye1_c);
+
+      let leftEye2_upper = p.annotations["leftEyeUpper0"];
+      let leftEye2_lower = p.annotations["leftEyeLower0"];
+      let leftEye2 = leftEye2_upper.concat(leftEye2_lower.reverse()).concat([leftEye2_upper[0]])
+      let leftEye2_c = color(255);
+      leftEye2_c.setAlpha(opacity)
+      drawAnnotationShape(leftEye2, leftEye2_c);
+
+      let rightEye2_upper = p.annotations["rightEyeUpper0"];
+      let rightEye2_lower = p.annotations["rightEyeLower0"];
+      let rightEye2 = rightEye2_upper.concat(rightEye2_lower.reverse()).concat([rightEye2_upper[0]])
+      let rightEye2_c = color(255);
+      rightEye2_c.setAlpha(opacity)
+      drawAnnotationShape(rightEye2, rightEye2_c);
+
+      let leftEyebrow_upper = p.annotations["leftEyebrowUpper"];
+      let leftEyebrow_lower = p.annotations["leftEyebrowLower"];
+      let leftEyebrow = leftEyebrow_upper.concat(leftEyebrow_lower.reverse()).concat([leftEyebrow_upper[0]])
+      let leftEyebrow_c = color(0);
+      leftEyebrow_c.setAlpha(opacity);
+      drawAnnotationShape(leftEyebrow, leftEyebrow_c);
+
+      let rightEyebrow_upper = p.annotations["rightEyebrowUpper"];
+      let rightEyebrow_lower = p.annotations["rightEyebrowLower"];
+      let rightEyebrow = rightEyebrow_upper.concat(rightEyebrow_lower.reverse()).concat([rightEyebrow_upper[0]])
+      let rightEyebrow_c = color(0);
+      rightEyebrow_c.setAlpha(opacity);
+      drawAnnotationShape(rightEyebrow, rightEyebrow_c);
 
 
 
+      fill(255, 0, 0, opacity);
+      ellipse(noseTip[0][0], noseTip[0][1], noseR);
 
-    // const bb = p.boundingBox;
-    // // get bb coordinates
-    // const x = bb.topLeft[0][0];
-    // const y = bb.topLeft[0][1];
-    // const w = bb.bottomRight[0][0] - x;
-    // const h = bb.bottomRight[0][1] - y;
+    }
 
-    // fill(200);
-    // img = loadImage('data/monkey.jpg');
-    // image(x+w/2, y+h/2);
+    // pg.scale(2);
+    pg.noStroke();
+    let dotColor = color(255, 0, 0);
+    dotColor.setAlpha(opacity);
+    pg.fill(dotColor);
+    pg.ellipse(noseTip[0][0], noseTip[0][1], noseR);
+    // pg.scale(1/2);
+    print(pg);
+
+    // drawAnnotationShape(leftEye2_lower, leftEye2_c);
   });
 }
+
+function drawAnnotationShape(
+  pts,
+  color,
+) {
+  if (pts.length == 1) {
+    return;
+  }
+
+  let [px, py] = pts[0];
+  fill(color);
+  noStroke();
+  beginShape();
+  curveVertex(px, py);
+  curveVertex(px, py);
+  for (let i = 1; i < pts.length; i++) {
+    const [x, y] = pts[i];
+    curveVertex(x, y);
+  }
+  curveVertex(px, py);
+  curveVertex(px, py);
+  endShape();
+}
+
 
 // draw the bounding box for first face
 function drawBoundingBoxes() {
@@ -175,36 +255,38 @@ leftCheek
 */
 
 function drawAnnotation(
-  pts,
-  color,
+  prediction,
+  name,
+  color = "#0000ff",
+  addLabel = p.labels
 ) {
+  let pts = prediction.annotations[name];
   if (pts.length == 1) {
-    return;
+    const [x, y] = pts[0];
+    noStroke();
+    fill(color);
+    ellipse(x, y, 8);
+  } else {
+    let [px, py] = pts[0];
+    for (let i = 1; i < pts.length; i++) {
+      const [x, y] = pts[i];
+      stroke(color);
+      strokeWeight(1);
+      noFill();
+      line(px, py, x, y);
+      px = x;
+      py = y;
+    }
   }
 
-  let [px, py] = pts[0];
-  fill(color);
-  beginShape();
-  curveVertex(px, py);
-  curveVertex(px, py);
-  for (let i = 1; i < pts.length; i++) {
-    const [x, y] = pts[i];
-    curveVertex(x, y);
+  if (addLabel) {
+    const [x, y] = pts[0];
+    noStroke();
+    fill(color);
+    textSize(10);
+    textAlign(LEFT, BOTTOM);
+    text(name, x + 8, y - 8);
   }
-  curveVertex(px, py);
-  curveVertex(px, py);
-  endShape();
-
-  // let [px, py] = pts[0];
-  // for (let i = 1; i < pts.length; i++) {
-  //   const [x, y] = pts[i];
-  //   stroke(color);
-  //   strokeWeight(1);
-  //   noFill();
-  //   line(px, py, x, y);
-  //   px = x;
-  //   py = y;
-  // }
 }
 
 function drawAllAnnotations() {
@@ -243,6 +325,8 @@ function keyPressed() {
     if (predictions) print(JSON.stringify(predictions, null, 2));
   } else if (key === "a") {
     drawAnnotations();
+  } else if (key === "r") {
+    pg.clear();
   }
 }
 
