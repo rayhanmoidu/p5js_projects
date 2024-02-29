@@ -6,28 +6,31 @@ class Ghost {
   // sscale = 0.1;
   // angle = 0.0;
 
-  constructor(id, pos, shape) {
+  constructor(id, pos, shapeSVG) {
     this.curNoise = 0;
     this.id = id;
     this.pos = pos;
-    this.shape = shape;
+    this.shape = shapeSVG;
 
     this.dir = new Vec3(random(0, 0.45), random(0, 0.45), random(0, 0.1));
     this.dir = this.dir.normalize();
 
-    this.bbox_w = this.ghostWidth;
-    this.bbox_h = this.ghostHeight;
+    this.bbox_w = ghostWidth;
+    this.bbox_h = ghostHeight;
     this.bbox_z = 30;
 
     this.step = new Vec3(random(-1, 1), random(-1, 1), random(-0.1, 0.1));
 
     this.ghostGraphic = createGraphics(ghostWidth, ghostHeight);
-    for (let i = 0; i < ghostWidth; i++) {
-      for (let j = 0; j < ghostHeight; j++) {
-        this.ghostGraphic.set(i, j, shape.get(i, j));
-        print(this.ghostGraphic.get(i, j))
-      }
-    }
+    this.hasGraphic = false;
+    // this.shapePNG.loadPixels();
+    // for (let i = 0; i < ghostWidth; i++) {
+    //   for (let j = 0; j < ghostHeight; j++) {
+    //     print(this.shapePNG.get(i, j)[2])
+    // // //     this.ghostGraphic.set(i, j, this.shapePNG.get(i, j));
+    // //     print(this.shapePNG.get(0, 0))
+    //   }
+    // }
   }
 
   getPos() {
@@ -38,14 +41,39 @@ class Ghost {
     return this.id;
   }
 
+  // setGraphicsObject() {
+  //   ghostImg_png.loadPixels();
+  //   // print(this.shapePNG)
+  //   for (let i = 0; i < ghostWidth; i++) {
+  //     for (let j = 0; j < ghostHeight; j++) {
+  //       this.ghostGraphic.set(i, j, ghostImg_png.get(i, j));
+  //     }
+  //   }
+  //   this.ghostGraphic.updatePixels();
+  //   this.hasGraphic = true;
+  // }
+
   update() {
     // print(this.dir);
     let dest = this.pos.add(this.dir);
     let newpos = this.pos.scalarmult(1-p.speed).add(dest.scalarmult(p.speed));
-    this.applyWorldConstraints(newpos);
-    this.pos = newpos;
+
+    let lightpos = new Vec3(p.lx, p.ly, p.lz);
+    let d = this.pos.subtract(lightpos).length2();
+    let alpha = (p.lr - d)/p.lr;
+    let attractedpos = newpos;
+    if (alpha>0) {
+      alpha *= 0.2;
+      attractedpos = this.pos.scalarmult(1-alpha).add(lightpos.scalarmult(alpha));
+    }
+
+    let finalpos = newpos.add(attractedpos).scalarmult(0.5);
+    finalpos = attractedpos;
+
+    this.applyWorldConstraints(finalpos);
+    this.pos = finalpos;
     this.processCollisions();
-    print(this.pos)
+    // print(this.pos)
     // this.perturbDir();
   }
 
@@ -97,12 +125,14 @@ class Ghost {
   processCollisions() {
     for (let i = 0; i < ghosts.length; i++) {
       let overlapPerc = this.getOverlap(ghosts[i]);
+      // print(overlapPerc)
       if (overlapPerc > 0) {
+        // print("OMGGG")
         let overlap = this.pos.subtract(ghosts[i].getPos());
         overlap = overlap.normalize();
 
-        this.pos.setX(this.pos.getX() + overlapPerc*overlap.getX());
-        this.pos.setY(this.pos.getY() + overlapPerc*overlap.getY());
+        this.pos.setX(this.pos.getX() + overlapPerc*overlap.getX()*5);
+        this.pos.setY(this.pos.getY() + overlapPerc*overlap.getY()*5);
         // this.pos.setZ(this.pos.getZ() + overlapPerc*overlap.getZ());
       }
     }
@@ -113,18 +143,19 @@ class Ghost {
       return 0;
     }
 
-    let bbox_x = (1/this.pos.getX()) * this.bbox_w;
-    let bbox_y = (1/this.pos.getY()) * this.bbox_h;
-    let bbox_z = (1/this.pos.getZ()) * this.bbox_z;
+    let bbox_x = (this.pos.getZ() * p.bboxScale) * this.bbox_w;
+    let bbox_y = (this.pos.getZ() * p.bboxScale) * this.bbox_h;
+    let bbox_z = (this.pos.getZ() * p.bboxScale) * this.bbox_z;
 
-    let dx = abs(this.x - ghost.getPos().getX());
-    let dy = abs(this.y - ghost.getPos().getY());
-    let dz = abs(this.z - ghost.getPos().getZ())
-    if (dx < bbox_x && dy < bbox_y && dz < bbox_z) {
+    let dx = abs(this.pos.getX() - ghost.getPos().getX());
+    let dy = abs(this.pos.getY() - ghost.getPos().getY());
+    let dz = abs(this.pos.getZ() - ghost.getPos().getZ())
+
+    if (dx < bbox_x && dy < bbox_y) {
       let percX = (bbox_x - dx) / bbox_x;
       let percY = (bbox_y - dy) / bbox_y;
       let percZ = (bbox_z - dz) / bbox_z;
-      return percX*percY*percZ;
+      return percX*percY;
     }
     return 0;
   }
@@ -171,6 +202,12 @@ class Ghost {
   // }
 
   draw() {
+    // if (!this.hasGraphic) {
+    //   this.setGraphicsObject();
+    //   print("hi")
+    // }
+    // this.shapePNG.loadPixels();
+    // print(this.shapePNG)
     push();
     translate(this.pos.getX(), this.pos.getY());
     scale(1/this.pos.getZ());
@@ -181,10 +218,24 @@ class Ghost {
     // let s = this.sscale * p.shapeScale;
     // scale(s);
     // translate(p.shapeOffset, p.shapeOffset);
+
+
+    let maxOpacity = 100;
+
+    let depthOpacity = (1 - (this.pos.getZ()/100));
+
+    let lightSource = new Vec3(p.lx, p.ly, p.lz);
+    let posDiff = this.pos.subtract(lightSource).length2();
+    let lightSourceOpacity = 0;
+    // print(posDiff)
+    if (posDiff < p.lr) {
+      lightSourceOpacity = (p.lr - posDiff) / p.lr;
+    }
+    tint(255, 255, 255, maxOpacity*depthOpacity*lightSourceOpacity)
+
     image(this.shape, 0, 0);
-    image(this.ghostGraphic, 0, 0);
+    // image(this.ghostGraphic, 0, 0);
     // this.ghostGraphic.draw();
-    tint(255, 0, 0, 100)
     // tint('red')
     pop();
   }
