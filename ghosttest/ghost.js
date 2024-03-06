@@ -10,6 +10,8 @@ class Ghost {
     this.curNoise = 0;
     this.id = id;
 
+    this.opacity = 0;
+
     this.pos = pos;
     this.oldpos = pos;
 
@@ -47,13 +49,34 @@ class Ghost {
 
     let depthOpacity = (1 - (this.pos.getZ()/p.zDepth));
 
-    let lightSource = new Vec3(p.lx, p.ly, p.lz);
-    let posDiff = this.pos.subtract(lightSource).length2();
     let lightSourceOpacity = 0;
-    if (posDiff < p.lr) {
-      lightSourceOpacity = (p.lr - posDiff) / p.lr;
+    for (let i = 0; i < lx.length; i++) {
+      let lightSource = new Vec3(lx[i], ly[i], lz[i]);
+      let posDiff = this.pos.subtract(lightSource).length2();
+      if (posDiff < p.lr) {
+        lightSourceOpacity += (p.lr - posDiff) / p.lr;
+      }
     }
-    tint(255, 255, 255, maxOpacity*lightSourceOpacity)
+
+    lightSourceOpacity = min(lightSourceOpacity, 1);
+
+    // let lightSource = new Vec3(lx, ly, lz);
+    // let posDiff = this.pos.subtract(lightSource).length2();
+    // if (posDiff < p.lr) {
+    //   lightSourceOpacity = (p.lr - posDiff) / p.lr;
+    // }
+
+    let newOpacity = maxOpacity*lightSourceOpacity;
+    if (newOpacity > this.opacity) {
+      this.opacity = newOpacity
+    } else {
+      if (newOpacity >= this.opacity - p.ghostFade) {
+        this.opacity = newOpacity;
+      } else {
+        this.opacity = max(0, this.opacity - p.ghostFade);
+      }
+    }
+    tint(255, 255, 255, this.opacity)
 
     image(this.shape, 0, 0);
 

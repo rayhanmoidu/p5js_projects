@@ -2,17 +2,66 @@ let ghosts;
 let ghostImg;
 let ghostImg_png;
 
+// the model
+let facemesh;
+
+// latest model predictions
+let predictions = [];
+
+// video capture
+let video;
+let bodyImg;
+
+let noseWidthImg = 25;
+let imgWidth = 218;
+let headHeight = 218;
+
+let w;
+let h;
+
+let heightScaleFactor;
+let widthScaleFactor;
+
+let lx = [0];
+let ly = [0];
+let lz = [0];
+
 function setup() {
+  w = windowWidth;
+  h = windowHeight;
+  widthScaleFactor = w / 640;
+  heightScaleFactor = h / 480;
   createCanvas(windowWidth, windowHeight);
   createParamGui(p, paramChanged);
 
   ghostImg = loadImage('data/ghost.svg');
   ghostImg_png = loadImage('data/ghost.png');
+  bodyImg = loadImage('data/body.png')
   ghostImg_png.loadPixels();
   // print(ghostImg_png)
 
   createGhosts();
 
+  video = createCapture(VIDEO);
+  video.size(640, 480);
+
+  // initialize the model
+  const options = {
+    maxFaces: 2,
+    detectionConfidence: 0.15,
+  };
+
+  facemesh = ml5.facemesh(video, options, modelReady);
+  facemesh.on("predict", (results) => {
+    predictions = results;
+  });
+
+  video.hide();
+
+}
+
+function modelReady() {
+  console.log("Model ready!");
 }
 
 function draw() {
@@ -21,7 +70,84 @@ function draw() {
     g.update();
     g.draw();
   }
+  drawBody();
+
   drawFps();
+}
+
+let prevNL = [];
+let prevNR = [];
+
+let alpha = 0.5;
+
+function smoothing(curValue, prev) {
+  lala = curValue[0];
+  lala[0] = alpha*lala[0] + (1-alpha)*prev[0];
+  lala[1] = alpha*lala[1] + (1-alpha)*prev[1];
+  lala[2] = alpha*lala[2] + (1-alpha)*prev[2];
+  return lala;
+}
+
+function drawBody() {
+  if (lx.length > predictions.length) {
+    lx = lx.slice(0, predictions.length);
+    ly = ly.slice(0, predictions.length);
+    lz = lz.slice(0, predictions.length);
+    prevNL = prevNL.slice(0, predictions.length);
+    prevNR = prevNR.slice(0, predictions.length);
+  } else if (lx.length < predictions.length) {
+    for (let i = 0; i < predictions.length-lx.length; i++) {
+      lx.push(0);
+      ly.push(0);
+      lz.push(0);
+      prevNR.push(-1)
+      prevNL.push(-1)
+    }
+  }
+
+  // print(predictions)
+  
+  predictions.forEach((pred, i) => {
+    // if (p["faceInViewConfidence"]>=1) {
+      let noseLeftCorner = pred.annotations["noseLeftCorner"];
+      let noseRightCorner = pred.annotations["noseRightCorner"];
+
+      let noseTip = pred.annotations["noseTip"];
+
+      // print(i, noseTip)
+
+      lx[i] = width - noseTip[0][0]*widthScaleFactor;
+      ly[i] = noseTip[0][1]*heightScaleFactor;
+
+
+      if (prevNL[i]!=-1 && prevNR[i]!=-1) {
+        noseLeftCorner[0] = smoothing(noseLeftCorner, prevNL[i])
+        noseRightCorner[0] = smoothing(noseRightCorner, prevNR[i])
+      }
+
+      prevNL[i] = noseLeftCorner[0];
+      prevNR[i] = noseRightCorner[0];
+
+      let xDiff = noseLeftCorner[0][0] - noseRightCorner[0][0];
+      print(i, xDiff)
+      lz[i] = map(xDiff, 10, 80, 0, int(p.zDepth));
+      lz[i] = int(p.zDepth) - lz[i];
+      // print(xDiff, lz, p.zDepth)
+      let scaleFactor = abs(xDiff / noseWidthImg);
+
+      push();
+ 
+      let dx = ((noseLeftCorner[0][0]) + xDiff/2);
+      let dy = (noseLeftCorner[0][1] - headHeight/2);
+      translate(width - dx*widthScaleFactor, dy*heightScaleFactor);
+      scale(scaleFactor);
+      tint(255, 255, 255, 255)
+      // image(bodyImg, 0, 0);
+
+      pop(); 
+    // }
+  })
+  print(lx, ly, lz)
 }
 
 function createGhosts() {

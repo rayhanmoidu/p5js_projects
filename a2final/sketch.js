@@ -1,7 +1,3 @@
-let ghosts;
-let ghostImg;
-let ghostImg_png;
-
 // the model
 let facemesh;
 
@@ -10,11 +6,6 @@ let predictions = [];
 
 // video capture
 let video;
-let bodyImg;
-
-let noseWidthImg = 25;
-let imgWidth = 218;
-let headHeight = 218;
 
 let w;
 let h;
@@ -28,7 +19,9 @@ let lx = [0];
 let ly = [0];
 let lz = [0];
 
-randomImgs = [];
+let randomImgs = [];
+let om_agents = [];
+
 
 function setup() {
   w = windowWidth;
@@ -38,10 +31,6 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   createParamGui(p, paramChanged);
 
-  ghostImg = loadImage('data/ghost.svg');
-  ghostImg_png = loadImage('data/ghost.png');
-  bodyImg = loadImage('data/body.png')
-
   om1 = loadImage('data/om1.svg');
   om2 = loadImage('data/om2.svg');
   om3 = loadImage('data/om3.svg');
@@ -49,10 +38,8 @@ function setup() {
   om5 = loadImage('data/om5.svg');
 
   loadImages();
-  // ghostImg_png.loadPixels();
-  // print(ghostImg_png)
 
-  createGhosts();
+  createOmAgents();
 
   video = createCapture(VIDEO);
   video.size(640, 480);
@@ -97,11 +84,11 @@ function draw() {
   background("#FFFDD0");
 
   // background(16,12,47);
-  for (g of ghosts) {
-    g.update();
-    g.draw();
+  for (om of om_agents) {
+    om.update();
+    om.draw();
   }
-  drawBody();
+  recomputeLightPositions();
 
   drawFps();
 }
@@ -119,7 +106,7 @@ function smoothing(curValue, prev) {
   return lala;
 }
 
-function drawBody() {
+function recomputeLightPositions() {
   if (lx.length > predictions.length) {
     lx = lx.slice(0, predictions.length);
     ly = ly.slice(0, predictions.length);
@@ -136,23 +123,18 @@ function drawBody() {
     }
   }
 
-  // print(predictions)
-  
   predictions.forEach((pred, i) => {
-    // print("YAYY");
     // if (p["faceInViewConfidence"]>=1) {
       let noseLeftCorner = pred.annotations["noseLeftCorner"];
       let noseRightCorner = pred.annotations["noseRightCorner"];
 
       let noseTip = pred.annotations["noseTip"];
 
-      // print(i, noseTip)
-
       lx[i] = width - noseTip[0][0]*widthScaleFactor;
       ly[i] = noseTip[0][1]*heightScaleFactor;
 
-
       if (prevNL[i]!=-1 && prevNR[i]!=-1) {
+        // print(noseLeftCorner[0])
         noseLeftCorner[0] = smoothing(noseLeftCorner, prevNL[i])
         noseRightCorner[0] = smoothing(noseRightCorner, prevNR[i])
       }
@@ -161,48 +143,27 @@ function drawBody() {
       prevNR[i] = noseRightCorner[0];
 
       let xDiff = noseLeftCorner[0][0] - noseRightCorner[0][0];
-      // print(i, xDiff)
       lz[i] = map(xDiff, 10, 80, 0, int(p.zDepth));
       lz[i] = int(p.zDepth) - lz[i];
-      // print(xDiff, lz, p.zDepth)
-      let scaleFactor = abs(xDiff / noseWidthImg);
 
-      push();
- 
-      let dx = ((noseLeftCorner[0][0]) + xDiff/2);
-      let dy = (noseLeftCorner[0][1] - headHeight/2);
-      translate(width - dx*widthScaleFactor, dy*heightScaleFactor);
-      scale(scaleFactor);
-      tint(255, 255, 255, 255)
-      // image(bodyImg, 0, 0);
 
-      pop(); 
     // }
   })
-  // print(lx, ly, lz)
 }
 
-function createGhosts() {
-  ghosts = [];
+function createOmAgents() {
+  om_agents = [];
   for (let i = 0; i < p.numAgents; i++) {
-    let newGhost = new Om(i, new Vec3(random(0, width), random(0, height), random(0, p.zDepth)), random(50, 150), ghostImg);
-    ghosts.push(newGhost);
+    let om_agent = new Om(i, new Vec3(random(0, width), random(0, height), random(0, p.zDepth)), random(50, 150));
+    om_agents.push(om_agent);
   }
   
 }
 
 function paramChanged(name) {
-  // if (name == "tileSize" || name == "fillScreen") {
-  //   createGhosts();
-  // }
-
   if (name == "numAgents") {
-    createGhosts();
+    createOmAgents();
   }
-
-  // if (name == "color") {
-  //   createGhosts();
-  // }
 }
 
 fps = 0;

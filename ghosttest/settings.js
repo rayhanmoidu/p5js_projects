@@ -4,20 +4,23 @@ let p = {
     fillScreen: false,
     color: false,
   
-    lr: 100,
+    lr: 458,
     lrMax: 1500,
     lrMin: 0,
+
     lx: 300,
     lxMax: 1500,
     lxMin: 0,
+
     ly: 300,
     lyMax: 1500,
     lyMin: 0,
+
     lz: 5,
     lzMax: 1500,
     lzMin: 0,
 
-    zDepth: 1000,
+    zDepth: 386,
     zDepthMax: 2000,
     zDepthMin: 10,
 
@@ -28,7 +31,7 @@ let p = {
     noiseLevelStep: 0.05,
   
     // tile size
-    numAgents: 30,
+    numAgents: 200,
     numAgentsMin: 1,
     numAgentsMax: 1000,
   
@@ -52,6 +55,9 @@ let p = {
     forceMultiplierMax: 10000,
     forceMultiplierMin: 0.01,
     forceMultiplierStep: 0.01,
+
+    ghostFade: 1,
+    ghostFadeMax: 10,
   
     ghostZ: 5,
   };

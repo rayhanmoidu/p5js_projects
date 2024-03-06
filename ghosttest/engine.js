@@ -18,7 +18,6 @@ class Engine {
         let newpos = verletpos;
 
         let finalpos = this.applyWorldConstraints(newpos, this.ghost.getPos());
-        print(finalpos)
 
         this.ghost.setOldPos(finalpos[1]);
         this.ghost.setPos(finalpos[0]);
@@ -49,7 +48,7 @@ class Engine {
     // }
 
     getLightSourcePos() {
-        let lightpos = new Vec3(p.lx, p.ly, p.lz);
+        let lightpos = new Vec3(lx, ly, lz);
         let d = this.ghost.getPos().subtract(lightpos).length2();
         let alpha = (p.lr - d)/p.lr;
         let attractedpos = this.ghost.getPos();
