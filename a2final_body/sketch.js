@@ -15,13 +15,17 @@ let widthScaleFactor;
 
 let om1, om2, om3, om4, om5;
 
-let lx = [0];
-let ly = [0];
-let lz = [0];
+let lx = [];
+let ly = [];
+let lz = [];
 
 let randomImgs = [];
 let om_agents = [];
 
+let opticalFlow = 0;
+let globalOffset = 0;
+
+let lalaxdiff = 0;
 
 function setup() {
   w = windowWidth;
@@ -40,6 +44,10 @@ function setup() {
   loadImages();
 
   createOmAgents();
+
+  lx.push(0)
+  ly.push(0)
+  lz.push(0)
 
   video = createCapture(VIDEO);
   video.size(640, 480);
@@ -90,6 +98,8 @@ function draw() {
   }
   recomputeLightPositions();
 
+  // opticalFlow = getOpticalFlow();
+
   // drawAllAnnotations();
 
   // for (let i = 0; i < lx.length; i++) {
@@ -127,6 +137,9 @@ function drawAllAnnotations() {
 let prevNL = [];
 let prevNR = [];
 
+let prevNoseX = -1;
+let prevNoseY = -1;
+
 let alpha = 0.2;
 
 function smoothing(curValue, prev) {
@@ -141,25 +154,50 @@ let xDiffMin = 10000000;
 let xDiffMax = -1;
 
 function getPrevIndex(leftShoulder, rightShoulder) {
-    let finalI = -1;
-    let minDiff = 1000000000;
-    for (let i = 0; i < prevNL.length; i++) {
-      let diffxL = abs(leftShoulder.x - prevNL[i].x);
-      let diffyL = abs(leftShoulder.y - prevNL[i].y);
-      let diffxR = abs(rightShoulder.x - prevNR[i].x);
-      let diffyR = abs(rightShoulder.y - prevNR[i].y);
+  let finalI = -1;
+  let minDiff = 1000000000;
+  for (let i = 0; i < prevNL.length; i++) {
+    let diffxL = abs(leftShoulder.x - prevNL[i].x);
+    let diffyL = abs(leftShoulder.y - prevNL[i].y);
+    let diffxR = abs(rightShoulder.x - prevNR[i].x);
+    let diffyR = abs(rightShoulder.y - prevNR[i].y);
 
-      let diffFactor = diffxL + diffxR + diffyL + diffyR;
-      if (diffFactor < minDiff) {
-        minDiff = diffFactor;
-        finalI = i;
-      }
+    let diffFactor = diffxL + diffxR + diffyL + diffyR;
+    if (diffFactor < minDiff) {
+      minDiff = diffFactor;
+      finalI = i;
     }
-    return finalI;
   }
+  return finalI;
+}
+
+function getNoseDiff(preds) {
+  closestNoseX = -1;
+  closestNoseY = -1;
+  closestDiff = 0;
+  if (prevNoseX!=-1 && prevNoseY!=-1) {
+    closestDiff = 10000000;
+    preds.forEach((pred, i) => { 
+      let curNose = pred.pose["nose"];
+      let diff = abs(curNose.x - prevNoseX) + abs(curNose.y - prevNoseY);
+      if (diff < closestDiff) {
+        closestDiff = diff;
+        closestNoseX = curNose.x;
+        closestNoseY = curNose.y;
+      }
+    });
+    prevNoseX = closestNoseX;
+    prevNoseY = closestNoseY;
+  } else if (preds.length > 0) {
+    prevNoseX = preds[0].pose["nose"].x;
+    prevNoseY = preds[0].pose["nose"].y;
+  }
+  
+  return closestDiff;
+}
 
 function recomputeLightPositions() {
-  let confidencethreshold = 0.2;
+  let confidencethreshold = 0.5;
   numPredictions = 0;
 
   actualPredictions = [];
@@ -188,11 +226,20 @@ function recomputeLightPositions() {
     }
   }
 
+  newOpticalFlow = getNoseDiff(actualPredictions);
+
+  // if (newOpticalFlow < opticalFlow - 0.1) {
+  //   newOpticalFlow = opticalFlow - 0.1;
+  // }
+  opticalFlow = newOpticalFlow;
+
+
   actualPredictions.forEach((pred, i) => {
-    print(pred)
-    // print(pred)
     let leftShoulder = pred.pose["leftShoulder"];
     let rightShoulder = pred.pose["rightShoulder"];
+
+    // let nose = pred.pose["nose"];
+    // getNoseDiff(nos)
 
     if (leftShoulder.x && rightShoulder.x && leftShoulder.y && rightShoulder.y) {
       let middlePosX = (leftShoulder.x + rightShoulder.x) / 2;
@@ -200,17 +247,6 @@ function recomputeLightPositions() {
 
       lx[i] = width - middlePosX*widthScaleFactor;
       ly[i] = middlePosY*heightScaleFactor;
-
-      // let ind = i;
-
-      // if (prevNL[ind] && prevNR[ind] && prevNL[ind].x && prevNL[ind].y && prevNR[ind].x && prevNR[ind].y) {
-      //   // print("SMOOTHING")
-      //   leftShoulder = smoothing(leftShoulder, prevNL[ind])
-      //   rightShoulder = smoothing(rightShoulder, prevNR[ind])
-      // }
-
-      // prevNL[ind] = leftShoulder;
-      // prevNR[ind] = rightShoulder;
 
       let xDiff = abs(leftShoulder.x - rightShoulder.x);
       if (xDiff > xDiffMax) {
@@ -220,37 +256,17 @@ function recomputeLightPositions() {
         xDiffMin = xDiff;
       }
 
-      lz[i] = map(xDiff, 30, 450, 0, int(p.zDepth));
+      lalaxdiff = xDiff;
+      // print(xDiff)
+
+      // lz[i] = (0.00283446712)*(xDiff-30)*(xDiff-30)
+      // lz[i] = sqrt(600*xDiff)
+      xDiff = min(250, xDiff);
+
+      lz[i] = map(xDiff, 30, 250, 0, int(p.zDepth));
       lz[i] = int(p.zDepth) - lz[i];
+      // print(lz[i])
     }
-    // lz[i] = 0;
-
-    // print(xDiffMin, xDiffMax)
-
-    // print(lx, ly, lz)
-
-    // print(leftShoulder, rightShoulder)
-    // if (p["faceInViewConfidence"]>=1) {
-      // let noseLeftCorner = pred.annotations["noseLeftCorner"];
-      // let noseRightCorner = pred.annotations["noseRightCorner"];
-
-      // let noseTip = pred.annotations["noseTip"];
-
-      // lx[i] = width - noseTip[0][0]*widthScaleFactor;
-      // ly[i] = noseTip[0][1]*heightScaleFactor;
-
-      // if (prevNL[i]!=-1 && prevNR[i]!=-1) {
-      //   noseLeftCorner[0] = smoothing(noseLeftCorner, prevNL[i])
-      //   noseRightCorner[0] = smoothing(noseRightCorner, prevNR[i])
-      // }
-
-      // prevNL[i] = noseLeftCorner[0];
-      // prevNR[i] = noseRightCorner[0];
-
-      // let xDiff = noseLeftCorner[0][0] - noseRightCorner[0][0];
-      // lz[i] = map(xDiff, 10, 80, 0, int(p.zDepth));
-      // lz[i] = int(p.zDepth) - lz[i];
-    // }
   })
 }
 
@@ -267,6 +283,12 @@ function paramChanged(name) {
   if (name == "numAgents") {
     createOmAgents();
   }
+  // if (name == "lx" || name=="ly" || name=="lz") {
+  //   lx[0] = p.lx;
+  //   ly[0] = p.ly;
+  //   lz[0] = p.lz;
+  // }
+  
 }
 
 fps = 0;
@@ -278,5 +300,5 @@ function drawFps() {
   fill(0);
   textAlign(LEFT, TOP);
   textSize(20.0);
-  text(this.fps.toFixed(1), 10, 10);
+  text(lalaxdiff, 10, 10);
 }

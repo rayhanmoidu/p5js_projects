@@ -30,7 +30,7 @@ class Engine {
 
     computeNewPosition(timeStep) {
         // compute new position using Verlet integration
-        let newF = this.f.scalarmult(this.ghost.getInverseMass()).scalarmult(0.001);
+        let newF = this.f.scalarmult(this.ghost.getInverseMass()).scalarmult(0.005);
         
         let posDiff = this.ghost.getPos().subtract(this.ghost.getOldPos());
         let term1 = this.ghost.getPos().add(posDiff);
