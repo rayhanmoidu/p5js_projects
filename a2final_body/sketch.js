@@ -89,9 +89,9 @@ function modelReady() {
 }
 
 function draw() {
-  background("#FFFDD0");
+  // background("#FFFDD0");
 
-  // background(16,12,47);
+  background(16,12,47);
   for (om of om_agents) {
     om.update();
     om.draw();
@@ -137,8 +137,8 @@ function drawAllAnnotations() {
 let prevNL = [];
 let prevNR = [];
 
-let prevNoseX = -1;
-let prevNoseY = -1;
+let prevNoseX = [];
+let prevNoseY = [];
 
 let alpha = 0.2;
 
@@ -172,32 +172,82 @@ function getPrevIndex(leftShoulder, rightShoulder) {
 }
 
 function getNoseDiff(preds) {
-  closestNoseX = -1;
-  closestNoseY = -1;
-  closestDiff = 0;
-  if (prevNoseX!=-1 && prevNoseY!=-1) {
-    closestDiff = 10000000;
-    preds.forEach((pred, i) => { 
-      let curNose = pred.pose["nose"];
-      let diff = abs(curNose.x - prevNoseX) + abs(curNose.y - prevNoseY);
-      if (diff < closestDiff) {
-        closestDiff = diff;
-        closestNoseX = curNose.x;
-        closestNoseY = curNose.y;
-      }
-    });
-    prevNoseX = closestNoseX;
-    prevNoseY = closestNoseY;
-  } else if (preds.length > 0) {
-    prevNoseX = preds[0].pose["nose"].x;
-    prevNoseY = preds[0].pose["nose"].y;
+  let theclosestdiff = -1;
+  let thefinalperson = -1;
+  if (prevNoseX.length > preds.length) {
+    prevNoseX = prevNoseX.slice(0, numPredictions);
+    prevNoseY = prevNoseY.slice(0, numPredictions);
+  } else if (prevNoseX.length < preds.length) {
+    prevNoseX = [];
+    prevNoseY = [];
+
+    for (let i = 0; i < preds.length; i++) {
+      prevNoseX.push(preds[i].pose["nose"].x)
+      prevNoseY.push(preds[i].pose["nose"].y)
+    }
+  } else {
+    closestNoseX = -1;
+    closestNoseY = -1;
+    closestDiff = 1;
+    closestIndex = -1;
+    for (let i = 0; i < prevNoseX.length; i++) {
+      // print("prev nose", i, prevNoseX[i], prevNoseY[i]);
+      closestDiff = 10000000;
+      preds.forEach((pred, j) => { 
+        // print("cur nose", j, pred.pose["nose"]);
+        let curNose = pred.pose["nose"];
+        let diff = abs(curNose.x - prevNoseX[i]) + abs(curNose.y - prevNoseY[i]);
+        if (diff < closestDiff) {
+          closestIndex = j;
+          closestDiff = diff;
+          closestNoseX = curNose.x;
+          closestNoseY = curNose.y;
+        }
+      });
+      // print("closestindex", closestIndex)
+      // print("closestdiff", closestDiff)
+      prevNoseX[i] = closestNoseX;
+      prevNoseY[i] = closestNoseY;
+    }
+    if (closestDiff > theclosestdiff) {
+      theclosestdiff = closestDiff;
+      thefinalperson = closestIndex;
+    }
   }
-  
-  return closestDiff;
+  // print("final", thefinalperson)
+  if (theclosestdiff==-1) {
+    return 1;
+  }
+  return theclosestdiff;
 }
 
+// function getNoseDiff(preds) {
+//   closestNoseX = -1;
+//   closestNoseY = -1;
+//   closestDiff = 1;
+//   if (prevNoseX!=-1 && prevNoseY!=-1) {
+//     closestDiff = 10000000;
+//     preds.forEach((pred, i) => { 
+//       let curNose = pred.pose["nose"];
+//       let diff = abs(curNose.x - prevNoseX) + abs(curNose.y - prevNoseY);
+//       if (diff < closestDiff) {
+//         closestDiff = diff;
+//         closestNoseX = curNose.x;
+//         closestNoseY = curNose.y;
+//       }
+//     });
+//     prevNoseX = closestNoseX;
+//     prevNoseY = closestNoseY;
+//   } else if (preds.length > 0) {
+//     prevNoseX = preds[0].pose["nose"].x;
+//     prevNoseY = preds[0].pose["nose"].y;
+//   }
+  
+//   return closestDiff;
+// }
+
 function recomputeLightPositions() {
-  let confidencethreshold = 0.5;
+  let confidencethreshold = p.confidence;
   numPredictions = 0;
 
   actualPredictions = [];
@@ -227,6 +277,7 @@ function recomputeLightPositions() {
   }
 
   newOpticalFlow = getNoseDiff(actualPredictions);
+  // print(newOpticalFlow)
 
   // if (newOpticalFlow < opticalFlow - 0.1) {
   //   newOpticalFlow = opticalFlow - 0.1;
@@ -235,9 +286,11 @@ function recomputeLightPositions() {
 
 
   actualPredictions.forEach((pred, i) => {
+    // let leftShoulder = pred.pose["leftEye"];
+    // let rightShoulder = pred.pose["rightEye"];
     let leftShoulder = pred.pose["leftShoulder"];
     let rightShoulder = pred.pose["rightShoulder"];
-
+    // print(lx, ly, lz)
     // let nose = pred.pose["nose"];
     // getNoseDiff(nos)
 
@@ -261,9 +314,9 @@ function recomputeLightPositions() {
 
       // lz[i] = (0.00283446712)*(xDiff-30)*(xDiff-30)
       // lz[i] = sqrt(600*xDiff)
-      xDiff = min(250, xDiff);
+      xDiff = min(150, xDiff);
 
-      lz[i] = map(xDiff, 30, 250, 0, int(p.zDepth));
+      lz[i] = map(xDiff, 30, 150, 0, int(p.zDepth));
       lz[i] = int(p.zDepth) - lz[i];
       // print(lz[i])
     }

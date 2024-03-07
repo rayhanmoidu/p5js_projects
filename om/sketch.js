@@ -36,7 +36,7 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   createParamGui(p, paramChanged);
   // print(ghostImg_png)
-
+  
   om1 = loadImage('data/om1.svg');
   om2 = loadImage('data/om2.svg');
   om3 = loadImage('data/om3.svg');
@@ -64,14 +64,40 @@ function draw() {
 
 function drawOm() {
   push();
-  scale(1/p.z)
   let x = width/2;
   let y = height/2;
-  image(om1, x+p.om1x, y+p.om1y);
-  image(om2, x+p.om2x, y+p.om2y);
-  image(om3, x+p.om3x, y+p.om3y);
-  image(om4, x+p.om4x, y+p.om4y);
-  image(om5, x+p.om5x, y+p.om5y);
+
+  push();
+  translate(x+p.om1x, y+p.om1y);
+  rotate(p.om1r)
+  image(om1, 0, 0);
+  pop();
+
+  push();
+  translate(x+p.om2x, y+p.om2y);
+  rotate(p.om2r)
+  image(om2, 0, 0);
+  pop();
+
+  push();
+  translate(x+p.om3x, y+p.om3y);
+  rotate(p.om3r)
+  image(om3, 0, 0);
+  pop();
+
+  push();
+  translate(x+p.om4x, y+p.om4y);
+  rotate(p.om4r)
+  image(om4, 0, 0);
+  pop();
+
+  push();
+  translate(x+p.om5x, y+p.om5y);
+  rotate(p.om5r)
+  image(om5, 0, 0);
+  pop();
+
+  
   pop();
 }
 

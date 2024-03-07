@@ -4,19 +4,24 @@ let p = {
     fillScreen: false,
     color: false,
 
+    confidence: 0.5,
+    confidenceMin: 0,
+    confidenceMax: 1,
+    confidenceStep: 0.01,
+
     zscale: 20,
     zscaleMax: 100,
     zscaleMin: 0.01,
     zscaleStep: 0.01,
 
-    componentOffset: 100,
+    componentOffset: 300,
     componentOffsetMax: 500,
 
     offsetMult: 1,
     offsetMultMin: 0,
     offsetMultStep: 0.01,
   
-    lr: 100,
+    lr: 200,
     lrMax: 1500,
     lrMin: 0,
 
@@ -32,7 +37,7 @@ let p = {
     lzMax: 1500,
     lzMin: 0,
 
-    zDepth: 250,
+    zDepth: 600,
     zDepthMax: 2000,
     zDepthMin: 10,
 
@@ -42,7 +47,7 @@ let p = {
     noiseLevelStep: 0.05,
   
     // tile size
-    numAgents: 100,
+    numAgents: 250,
     numAgentsMin: 1,
     numAgentsMax: 1000,
   
