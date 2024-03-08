@@ -28,6 +28,7 @@ let globalOffset = 0;
 let lalaxdiff = 0;
 
 function setup() {
+  noCursor();
   w = windowWidth;
   h = windowHeight;
   widthScaleFactor = w / 640;
@@ -107,7 +108,7 @@ function draw() {
   //   circle(lx[i], ly[i], 50);
   // }
 
-  drawFps();
+  // drawFps();
 }
 
 function drawAnnotation(prediction, name, color = "#0000ff") {
@@ -314,9 +315,9 @@ function recomputeLightPositions() {
 
       // lz[i] = (0.00283446712)*(xDiff-30)*(xDiff-30)
       // lz[i] = sqrt(600*xDiff)
-      xDiff = min(150, xDiff);
+      xDiff = min(120, xDiff);
 
-      lz[i] = map(xDiff, 30, 150, 0, int(p.zDepth));
+      lz[i] = map(xDiff, 50, 120, 0, int(p.zDepth));
       lz[i] = int(p.zDepth) - lz[i];
       // print(lz[i])
     }
@@ -350,7 +351,7 @@ function drawFps() {
   fps = a * frameRate() + (1 - a) * fps;
   stroke(255);
   strokeWeight(0.5);
-  fill(0);
+  fill(255);
   textAlign(LEFT, TOP);
   textSize(20.0);
   text(lalaxdiff, 10, 10);

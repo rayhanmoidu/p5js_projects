@@ -68,30 +68,35 @@ function drawOm() {
   let y = height/2;
 
   push();
+  scale(1/p.z)
   translate(x+p.om1x, y+p.om1y);
   rotate(p.om1r)
   image(om1, 0, 0);
   pop();
 
   push();
+  scale(1/p.z)
   translate(x+p.om2x, y+p.om2y);
   rotate(p.om2r)
   image(om2, 0, 0);
   pop();
 
   push();
+  scale(1/p.z)
   translate(x+p.om3x, y+p.om3y);
   rotate(p.om3r)
   image(om3, 0, 0);
   pop();
 
   push();
+  scale(1/p.z)
   translate(x+p.om4x, y+p.om4y);
   rotate(p.om4r)
   image(om4, 0, 0);
   pop();
 
   push();
+  scale(1/p.z)
   translate(x+p.om5x, y+p.om5y);
   rotate(p.om5r)
   image(om5, 0, 0);

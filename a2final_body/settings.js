@@ -9,7 +9,7 @@ let p = {
     confidenceMax: 1,
     confidenceStep: 0.01,
 
-    zscale: 20,
+    zscale: 30,
     zscaleMax: 100,
     zscaleMin: 0.01,
     zscaleStep: 0.01,

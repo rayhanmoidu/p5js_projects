@@ -27,6 +27,6 @@ class OmComponents {
         let c = this.offsets[i].scalarmult(0.5);
         let z = sqrt(1 - 2*cos(t)*cos(t));
         let lalala = ((PI - abs(PI - t)) + 1) / PI;
-        return new Vec3(c.getX() - c.getX()*cos(t), c.getY()*sin(t), c.getZ()*lalala);
+        return new Vec3((c.getX() - c.getX()*cos(t))*(lalala), c.getY()*sin(t)*(lalala), c.getZ()*lalala);
     }
 };
