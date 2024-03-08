@@ -36,6 +36,7 @@ class CV_Helper {
             }
         })
 
+        // when done computation, save cur positions in prev state var
         for (let i = 0; i < prevNosePos.length; i++) {
             prevNosePos[i] = curNosePositions[i];
         }
@@ -61,7 +62,7 @@ class CV_Helper {
         
         // size light source array to match numPredictions
         if (lightSources.length > numPredictions) {
-          lightSources.slice(0, numPredictions);
+            lightSources = lightSources.slice(0, numPredictions);
         } else if (lightSources.length < numPredictions) {
           for (let i = 0; i < numPredictions-lightSources.length; i++) {
             lightSources.push(new Vec3(0, 0, 0));
@@ -81,7 +82,7 @@ class CV_Helper {
             lightSources[i].setY(middlePosY*heightScaleFactor);
       
             let xDiff = abs(leftShoulder.x - rightShoulder.x);
-            shoulderWidth = xDiff;
+            shoulderWidth = xDiff; // debug var
             xDiff = min(120, xDiff);
             xDiff = max(50, xDiff);
       

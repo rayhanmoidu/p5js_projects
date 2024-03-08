@@ -1,5 +1,7 @@
 class Entity {
   constructor(id, pos, m) {
+
+    // main variables
     this.id = id;
 
     this.pos = pos;
@@ -10,16 +12,19 @@ class Entity {
     this.opacity = 0;
     this.prevOpacity = 0;
 
+    // entity physics
     this.timestep = 0.5;
     this.engine = new Engine(id, this, this.timestep);
 
+    // visual components
     this.numComponents = 5;
     this.components = new EntityComponents(this.numComponents);
 
     this.imgs = coloredImgs[int(random(0, coloredImgs.length - 1))]
 
-    // this.lalaoffset = 1;
-    // this.time = 0;
+    // orbit and shape indexing
+    this.sinoffset = 1;
+    this.time = 0;
 
     this.circle_t = 0;
     this.shifted_circle_t = 0;
@@ -31,6 +36,7 @@ class Entity {
   update() {
     this.engine.update();
 
+    // adjust t
     let mult = 1;
     if (opticalFlow > 7 && opticalFlow < 100) {
       mult = opticalFlow
@@ -43,11 +49,13 @@ class Entity {
 
     this.circle_t += abs(this.timestep*pidiff/circleSpeed);
 
+    // if t > 2pi, bring back to 0
     if (this.circle_t > 2*PI) {
       this.circle_t -= 2*PI;
       this.pastPi = false;
     }
 
+    // when t crosses pi, increment shape index
     if (this.circle_t > PI && !this.pastPi) {
       this.pastPi = true;
       this.shape_index += 1;
@@ -58,12 +66,14 @@ class Entity {
   }
 
   draw() {
-    // let step = 150;
-    // this.lalaoffset = sin(this.time/step)+1;
+    let step = 150;
+    this.sinoffset = sin(this.time/step)+1;
 
+    // shift t to be [0, 1]
     let sct = (abs(PI - this.circle_t)) / PI;
     this.shifted_circle_t = sct;
 
+    // render all visual components
     for (let i = 0; i < this.numComponents; i++) {
       this.renderComponent(shapes[this.shape_index], i, this.components.getOrbitPos(i, this.circle_t), this.imgs[i]);
     }
@@ -76,11 +86,11 @@ class Entity {
     let pos = this.pos.add(orbitPos);
 
     // get max opacity based on degree to which the current shape is fulfilled
-    // let maxOpacity = 255 - map(this.lalaoffset, 0, 2, 0, 100);
+    // let maxOpacity = 255 - map(this.sinoffset, 0, 2, 0, 100);
     let maxOpacity = 255 - map(this.shifted_circle_t, 0, 1, 100, 0);
 
     // get light source based on degree to which the current shape is fulfilled
-    // let lightradius_adder = map(this.lalaoffset, 0, 2, 0, 100);
+    // let lightradius_adder = map(this.sinoffset, 0, 2, 0, 100);
     let lightradius_adder = 100 - map(this.shifted_circle_t, 0, 1, 100, 0);
     let lightsource_radius = p.lr + lightradius_adder;
 

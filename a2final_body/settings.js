@@ -1,6 +1,5 @@
 // parameters
 let p = {
-    // toggle filling screen or not
     fillScreen: false,
     color: false,
 
@@ -46,18 +45,15 @@ let p = {
     noiseLevelMax: 1,
     noiseLevelStep: 0.05,
   
-    // tile size
     numAgents: 250,
     numAgentsMin: 1,
     numAgentsMax: 1000,
   
-    // fish speed
     speed: 0.5,
     speedMin: 0,
     speedMax: 1,
     speedStep: 0.05,
   
-    // shape scale
     shapeScale: 0.5,
     shapeScaleMin: 0.1,
     shapeScaleMax: 3,
@@ -117,6 +113,9 @@ let p = {
     om5xMax: 500,
     om5xMin: -500,
   };
+
+
+// ******************* HARDCODED VALUES FOR SHAPES - FROM SEPERATE SKETCH ******************* //
 
 let numShapes = 2;
 

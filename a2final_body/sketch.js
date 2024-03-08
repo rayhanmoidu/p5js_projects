@@ -1,17 +1,18 @@
+// CV variables
 let posenet;
 let predictions = [];
 let video;
 let cv_helper;
 
+// scaling between video and display
 let heightScaleFactor;
 let widthScaleFactor;
 
+// global variables
 let lightSources = [];
-
 let coloredImgs = [];
 let entities = [];
 let shapes = [];
-
 let prevNosePos = [];
 let opticalFlow = 0;
 
@@ -34,11 +35,6 @@ function setup() {
   video = createCapture(VIDEO);
   video.size(640, 480);
 
-  // const options = {
-  //   maxFaces: 2,
-  //   detectionConfidence: 0.15,
-  // };
-
   facemesh = ml5.poseNet(video, modelReady);
   facemesh.on("pose", (results) => {
     predictions = results;
@@ -49,6 +45,7 @@ function setup() {
   video.hide();
 }
 
+// creates offset packages for resulting shapes (Om, Ghost) based on hardcoded values generated in seperate sketch
 function createShapes() {
   for (let i = 0; i < numShapes; i++) {
     let xOffsets = [om1x[i], om2x[i], om3x[i], om4x[i], om5x[i]];
@@ -58,19 +55,18 @@ function createShapes() {
   }
 }
 
+// organized automatically generated colored SVGs (data/colored) into list
 function loadSVGs() {
   for (let i = 0; i <= 360; i+=10) {
-    // for (let j = 50; j <= 100; j+=10) {
-      for (let k = 50; k <= 100; k+=10) {
-        let newset = [];
-        for (let img_count = 0; img_count < 5; img_count ++) {
-          let imgString = 'data/colored/output' + img_count + "_" + i + "_50" + "_" + k + '.svg'
-          let newimg = loadImage(imgString);
-          newset.push(newimg);
-        }
-        coloredImgs.push(newset);
+    for (let k = 50; k <= 100; k+=10) {
+      let newset = [];
+      for (let img_count = 0; img_count < 5; img_count ++) {
+        let imgString = 'data/colored/output' + img_count + "_" + i + "_50" + "_" + k + '.svg'
+        let newimg = loadImage(imgString);
+        newset.push(newimg);
       }
-    // }
+      coloredImgs.push(newset);
+    }
   }
 }
 
@@ -80,15 +76,15 @@ function modelReady() {
 
 function draw() {
   background(16, 12, 47);
+
   for (e of entities) {
     e.update();
     e.draw();
   }
   cv_helper.recomputeLightPositions();
-
-  // drawFps();
 }
 
+// on startup, create entities at random locations in 3D space
 function createEntities() {
   entities = [];
   for (let i = 0; i < p.numAgents; i++) {
@@ -102,16 +98,4 @@ function paramChanged(name) {
   if (name == "numAgents") {
     createEntities();
   }
-}
-
-fps = 0;
-function drawFps() {
-  let a = 0.01;
-  fps = a * frameRate() + (1 - a) * fps;
-  stroke(255);
-  strokeWeight(0.5);
-  fill(255);
-  textAlign(LEFT, TOP);
-  textSize(20.0);
-  text(shoulderWidth, 10, 10);
 }
