@@ -1,4 +1,4 @@
-class OmComponents {
+class EntityComponents {
     constructor(numComponents) {
         this.numComponents = numComponents;
         this.offsets = [];
@@ -25,8 +25,7 @@ class OmComponents {
 
     getPosition_circle(i, t) {
         let c = this.offsets[i].scalarmult(0.5);
-        let z = sqrt(1 - 2*cos(t)*cos(t));
-        let lalala = ((PI - abs(PI - t)) + 1) / PI;
-        return new Vec3((c.getX() - c.getX()*cos(t))*(lalala), c.getY()*sin(t)*(lalala), c.getZ()*lalala);
+        let shifted_t = ((PI - abs(PI - t)) + 1) / PI;
+        return new Vec3((c.getX() - c.getX()*cos(t))*(shifted_t), c.getY()*sin(t)*(shifted_t), c.getZ()*shifted_t);
     }
 };
