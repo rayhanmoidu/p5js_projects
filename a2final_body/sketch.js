@@ -10,6 +10,7 @@ let lightSources = [];
 
 let coloredImgs = [];
 let entities = [];
+let shapes = [];
 
 let prevNosePos = [];
 let opticalFlow = 0;
@@ -27,6 +28,7 @@ function setup() {
   createParamGui(p, paramChanged);
 
   loadSVGs();
+  createShapes();
   createEntities();
 
   video = createCapture(VIDEO);
@@ -45,6 +47,15 @@ function setup() {
   cv_helper = new CV_Helper();
 
   video.hide();
+}
+
+function createShapes() {
+  for (let i = 0; i < numShapes; i++) {
+    let xOffsets = [om1x[i], om2x[i], om3x[i], om4x[i], om5x[i]];
+    let yOffsets = [om1y[i], om2y[i], om3y[i], om4y[i], om5y[i]];
+    let rOffsets = [om1r[i], om2r[i], om3r[i], om4r[i], om5r[i]];
+    shapes.push(new Shape(getShouldPreTranslate(i), xOffsets, yOffsets, rOffsets));
+  }
 }
 
 function loadSVGs() {

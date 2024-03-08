@@ -1,19 +1,3 @@
-let om1x = [-50, 78]
-let om1y = [-347, -116]
-let om1r = [0, 1.1]
-let om2x = [-379, 231]
-let om2y = [9, -132]
-let om2r = [0, 7.5]
-let om3x = [-42, -99]
-let om3y = [-56, 156]
-let om3r = [0, 4.6]
-let om4x = [-333, 198]
-let om4y = [-278, 464]
-let om4r = [0, 4.5]
-let om5x = [-76, -172]
-let om5y = [-407, -341]
-let om5r = [0, 0]
-
 class Entity {
   constructor(id, pos, m) {
     this.id = id;
@@ -29,8 +13,8 @@ class Entity {
     this.timestep = 0.5;
     this.engine = new Engine(id, this, this.timestep);
 
-
-    this.components = new EntityComponents(5);
+    this.numComponents = 5;
+    this.components = new EntityComponents(this.numComponents);
 
     this.imgs = coloredImgs[int(random(0, coloredImgs.length - 1))]
 
@@ -40,21 +24,22 @@ class Entity {
     this.circle_t = 0;
     this.shifted_circle_t = 0;
 
-    this.shapeshift_index = 0;
+    this.shape_index = 0;
     this.past_pi = false;
   }
 
   update() {
     this.engine.update();
+
     let mult = 1;
     if (opticalFlow > 7 && opticalFlow < 100) {
       mult = opticalFlow
     }
 
-    let circleSpeed = (75/mult);
+    let circleSpeed = (150/mult);
 
     let pidiff = ((PI - abs(PI - this.circle_t)) + 1) / PI;
-    pidiff = pidiff*pidiff
+    pidiff = pidiff;
 
     this.circle_t += abs(this.timestep*pidiff/circleSpeed);
 
@@ -65,9 +50,9 @@ class Entity {
 
     if (this.circle_t > PI && !this.pastPi) {
       this.pastPi = true;
-      this.shapeshift_index += 1;
-      if (this.shapeshift_index > 1) {
-        this.shapeshift_index = 0;
+      this.shape_index += 1;
+      if (this.shape_index > 1) {
+        this.shape_index = 0;
       }
     }
   }
@@ -76,22 +61,19 @@ class Entity {
     // let step = 150;
     // this.lalaoffset = sin(this.time/step)+1;
 
-    let i = this.shapeshift_index;
-
     let sct = (abs(PI - this.circle_t)) / PI;
     this.shifted_circle_t = sct;
 
-    this.renderComponent(i, this.components.getPosition_circle(0, this.circle_t), this.imgs[0], sct*om1x[i], sct*om1y[i], sct*om1r[i])
-    this.renderComponent(i, this.components.getPosition_circle(1, this.circle_t), this.imgs[1], sct*om2x[i], sct*om2y[i], sct*om2r[i])
-    this.renderComponent(i, this.components.getPosition_circle(2, this.circle_t), this.imgs[2], sct*om3x[i], sct*om3y[i], sct*om3r[i])
-    this.renderComponent(i, this.components.getPosition_circle(3, this.circle_t), this.imgs[3], sct*om4x[i], sct*om4y[i], sct*om4r[i])
-    this.renderComponent(i, this.components.getPosition_circle(4, this.circle_t), this.imgs[4], sct*om5x[i], sct*om5y[i], sct*om5r[i])
+    for (let i = 0; i < this.numComponents; i++) {
+      this.renderComponent(shapes[this.shape_index], i, this.components.getOrbitPos(i, this.circle_t), this.imgs[i]);
+    }
   }
 
-  renderComponent(ind, offset, img, imgOffX, imgOffY, rot) {
+  renderComponent(shape, ind, orbitPos, img) {
+    // print(shape, ind, orbitPos, img)
     push();
 
-    let pos = this.pos.add(offset);
+    let pos = this.pos.add(orbitPos);
 
     // get max opacity based on degree to which the current shape is fulfilled
     // let maxOpacity = 255 - map(this.lalaoffset, 0, 2, 0, 100);
@@ -110,17 +92,19 @@ class Entity {
 
     // render if non-transparent
     if (this.opacity > 0) {
+      let shapeOffset = shape.getOffset(ind).scalarmult(this.shifted_circle_t);
+      print(shape.shouldPreTranslate())
 
       // transform
-      if (ind==0) {
+      if (shape.shouldPreTranslate()) {
         translate(pos.getX(), pos.getY());
         scale(p.zscale/pos.getZ());
-      } else if (ind==1) {
+      } else {
         scale(p.zscale/pos.getZ());
         let scaledPos = pos.scalarmult(pos.getZ()/p.zscale)
-        translate(scaledPos.getX()+imgOffX, scaledPos.getY()+imgOffY);
+        translate(scaledPos.getX()+shapeOffset.getX(), scaledPos.getY()+shapeOffset.getY());
       }
-      rotate(rot);
+      rotate(shapeOffset.getZ());
       
       // render
       let finalOpacity = (this.opacity+this.prevOpacity)/2;
@@ -128,9 +112,9 @@ class Entity {
       noFill();
       tint(255, 255, 255, finalOpacity)
       
-      if (ind==0) {
-        image(img, imgOffX, imgOffY);
-      } else if (ind==1) {
+      if (shape.shouldPreTranslate()) {
+        image(img, shapeOffset.getX(), shapeOffset.getY());
+      } else {
         image(img, 0, 0);
       }
 

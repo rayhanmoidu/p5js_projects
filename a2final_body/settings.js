@@ -117,3 +117,31 @@ let p = {
     om5xMax: 500,
     om5xMin: -500,
   };
+
+let numShapes = 2;
+
+let om1x = [-50, 78]
+let om1y = [-347, -116]
+let om1r = [0, 1.1]
+let om2x = [-379, 231]
+let om2y = [9, -132]
+let om2r = [0, 7.5]
+let om3x = [-42, -99]
+let om3y = [-56, 156]
+let om3r = [0, 4.6]
+let om4x = [-333, 198]
+let om4y = [-278, 464]
+let om4r = [0, 4.5]
+let om5x = [-76, -172]
+let om5y = [-407, -341]
+let om5r = [0, 0]
+
+function getShouldPreTranslate(ind) {
+  if (ind==0) { // om
+    return true;
+  }
+  if (ind==1) { // ghost
+    return false;
+  }
+}
+
