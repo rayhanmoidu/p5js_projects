@@ -36,10 +36,10 @@ class Entity {
       mult = opticalFlow
     }
 
-    let circleSpeed = (150/mult);
+    let circleSpeed = (75/mult);
 
     let pidiff = ((PI - abs(PI - this.circle_t)) + 1) / PI;
-    pidiff = pidiff;
+    pidiff = pidiff*pidiff;
 
     this.circle_t += abs(this.timestep*pidiff/circleSpeed);
 
