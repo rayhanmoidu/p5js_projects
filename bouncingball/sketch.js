@@ -102,7 +102,7 @@ function draw() {
     particle.computeNewPosition(timeStep);
   }
 
-  let camerapos = particle.getPos();
+  let camerapos = new Vec2(0, 0);
   let imagePos_x = camerapos.getX() % img_w;
   let imagePos_y = camerapos.getY() % img_h;
   let numPixels_x = (canvasw / p.pixelSize);
