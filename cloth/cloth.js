@@ -27,13 +27,13 @@ class Cloth {
         // m.computeNormals();
         // print(m.faces)
 
-        for (let i = 0; i < this.springEndpoints.length; i++) {
+        // for (let i = 0; i < this.springEndpoints.length; i++) {
 
         // for (let i = 0; i < m.vertices.length; i++) {
 
             // print(m.vertices)
 
-            push();
+            // push();
 
             ambientLight(128,128,128);
             specularColor(200,200,200);
@@ -43,19 +43,19 @@ class Cloth {
             shininess(map(300, 0, width, 1, 30));
             specularMaterial(128);
 
-            let curpos = this.springEndpoints[i].getPos();
+            // let curpos = this.springEndpoints[i].getPos();
             // print(curpos)
-            translate(curpos.getX(), curpos.getY(), curpos.getZ());
-            sphere(22);
+            // translate(curpos.getX(), curpos.getY(), curpos.getZ());
+            // sphere(22);
             // print("hi", curpos)
-            // model(m)
+            model(m)
             // loadModel(m);
             // model(m)
 
         
 
-            pop();
-        }
+            // pop();
+        // }
 
         pop();
     }
@@ -74,7 +74,7 @@ class Cloth {
             // The callback must be an anonymous function, not an arrow function in
             // order for "this" to be bound correctly.
             function createCloth() {
-                // this.gid = `my-example-geometry ${count}`;
+                this.gid = `my-example-geometry ${count}`;
                 // print(springEndpoints[5].getPos());
                 for (let i = 0; i < springEndpoints.length; i++) {
                     let curPos = springEndpoints[i].getPos();
@@ -107,7 +107,7 @@ class Cloth {
         let id = 0;
 
         let width = 400;
-        let density = 10;
+        let density = 4;
         let dim = density - 1;
         let se_dist = width / density;
         
@@ -117,7 +117,7 @@ class Cloth {
             for (let j = 0; j < density; j++) {
                 let x = i * se_dist - width/2;
                 let y = j * se_dist - height/2;
-                let z = 0;
+                let z = 5 + random(-0.1, 0.1);
 
                 let new_endpoint = new SpringEndpoint(id++, new Vec3(x, y, z), 500);
                 newrow.push(new_endpoint);
@@ -131,7 +131,7 @@ class Cloth {
             this.fixedIds.push(i);
         }
 
-        let newfixed = [this.fixedIds[this.fixedIds.length-1]];
+        let newfixed = [this.fixedIds[0], this.fixedIds[this.fixedIds.length-1]];
         this.fixedIds = newfixed;
 
         // create springs

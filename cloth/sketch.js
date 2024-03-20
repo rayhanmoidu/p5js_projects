@@ -1,6 +1,6 @@
 let cloth;
 let simulation;
-let timestep = 0.25;
+let timestep = 0.5;
 
 function setup() {
   // need to set the "renderer" to WEBGL

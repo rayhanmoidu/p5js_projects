@@ -67,7 +67,7 @@ class SpringEndpoint {
     }
 
     getMass() {
-        return this.mass;
+        return this.m;
     }
 
     getIsFixed() {
