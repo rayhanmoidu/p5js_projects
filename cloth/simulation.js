@@ -1,7 +1,3 @@
-//
-// Created by Rayhan Moidu on 2023-07-08.
-//
-
 class Simulation {
     constructor(timestep, cloth) {
         this.timestep = timestep;
@@ -24,7 +20,7 @@ class Simulation {
 
     applyExternalForces() {
         for (let i = 0; i < this.particles.length; i++) {
-            let gravityF = new Vec3(0, 0, 0);
+            let gravityF = new Vec3(0, 200, 0);
             let windF = new Vec3(0, 0, 0); 
             this.particles[i].addForce(gravityF.add(windF));
         }
@@ -33,13 +29,13 @@ class Simulation {
     applySpringForces() {
         for (let i = 0; i < this.springs.length; i++) {
             let sf = this.physicsCalculator.computeSpringForce(this.springs[i]);
-            // let df = this.physicsCalculator.computeDampingForce(this.springs[i]);
+            let df = this.physicsCalculator.computeDampingForce(this.springs[i]);
 
             let endpoints = this.springs[i].getEndpoints();
             endpoints[0].addForce(sf);
             endpoints[1].addForce(sf.scalarmult(-1));
-            // endpoints[0].addForce(df);
-            // endpoints[1].addForce(df.scalarmult(-1));
+            endpoints[0].addForce(df.scalarmult(-1));
+            endpoints[1].addForce(df);
         }
     }
 

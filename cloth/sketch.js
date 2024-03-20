@@ -1,10 +1,11 @@
 let cloth;
 let simulation;
-let timestep = 0.05;
+let timestep = 0.25;
 
 function setup() {
   // need to set the "renderer" to WEBGL
-  createCanvas(700, 700);
+  createCanvas(700, 700, WEBGL);
+  
 
   cloth = new Cloth();
   simulation = new Simulation(timestep, cloth);
@@ -15,14 +16,4 @@ function draw() {
 
   simulation.update();
   cloth.draw();
-}
-
-function keyPressed() {
-  switch (key) {
-    case 'r': mode = 0; break;
-    case 'l': mode = 1; break;
-    case 's': mode = 2; break;
-    case 'm': matMode = (matMode + 1) % 2; break;
-    default: break;
-  }
 }
