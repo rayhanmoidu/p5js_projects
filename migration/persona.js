@@ -1,15 +1,28 @@
 class Persona {
-    constructor(pos, scale) {
+    constructor(pos, scale, endpos) {
         this.pos = pos;
         this.destpos = new Vec2(0, 0);
         this.dir = new Vec2(0, 0);
         this.scale = scale;
+        this.endpos = endpos;
 
         this.opacityFactor = 1;
     }
 
-    update() {
+    update(personas) {
         this.pos = this.pos.add(this.dir.scalarmult(s.personaSpeed));
+
+        let dist = this.endpos.subtract(this.pos).length2();
+        if (dist < s.fadeDist) {
+            this.opacityFactor = map(dist, 2, s.fadeDist, 0.1, 1);
+        }
+
+        if (this.opacityFactor <= 0.1) {
+            const index = personas.indexOf(this);
+            if (index > -1) {
+                personas.splice(index, 1);
+            }
+        }
     }
 
     assignNewDestination(destpos) {
