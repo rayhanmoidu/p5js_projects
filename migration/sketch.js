@@ -12,7 +12,7 @@ function setup() {
 
 function draw() {
   background(16, 12, 47);
-
+  world_outside.update();
   world_outside.draw();
 }
 

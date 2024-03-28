@@ -41,4 +41,9 @@ class Vec2 {
     scalarmult(val) {
         return new Vec2(this.x*val, this.y*val);
     }
+
+    normalize() {
+        let l = this.length2();
+        return new Vec2(this.x / l, this.y / l);
+    }
 }

@@ -1,6 +1,9 @@
 class Hill {
-    constructor(vertexPositions) {
-        this.vertexPositions = vertexPositions;
+    constructor(id, vertices, baseWidth, scale) {
+        this.id = id;
+        this.vertices = vertices;
+        this.baseWidth = baseWidth;
+        this.scale = scale;
     }
 
     draw() {
@@ -10,11 +13,7 @@ class Hill {
         fill(16, 12, 47);
         stroke(10, 108, 224, 100);
         strokeWeight(25);
-        beginShape();
-        for (let i = 0; i < this.vertexPositions.length; i++) {
-            curveVertex(this.vertexPositions[i].getX(), this.vertexPositions[i].getY());
-        }
-        endShape();
+        this.drawStroke();
 
         // main line
         noFill();
@@ -32,9 +31,21 @@ class Hill {
 
     drawStroke() {
         beginShape();
-        for (let i = 0; i < this.vertexPositions.length; i++) {
-            curveVertex(this.vertexPositions[i].getX(), this.vertexPositions[i].getY());
+        for (let i = 0; i < this.vertices.length; i++) {
+            curveVertex(this.vertices[i].getX(), this.vertices[i].getY());
         }
         endShape();
+    }
+
+    getVertices() {
+        return this.vertices;
+    }
+
+    getBaseWidth() {
+        return this.baseWidth;
+    }
+
+    getScale() {
+        return this.scale;
     }
 }
