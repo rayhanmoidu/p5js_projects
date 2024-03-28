@@ -1,0 +1,9 @@
+class Castle {
+    constructor() {
+        
+    }
+
+    draw() {
+
+    }
+}
