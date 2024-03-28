@@ -6,6 +6,8 @@ class PersonaString {
         // this.dir = new Vec2(endpos.getX() - startpos.getX(), endpos.getY() - startpos.getY());
         // this.dir = this.dir.normalize();
 
+        this.scale = scale;
+
         this.startpos = startpos;
         this.endpos = endpos;
         this.diff = endpos.subtract(startpos);
@@ -29,7 +31,7 @@ class PersonaString {
     }
 
     update() {
-        this.t += s.stepSize;
+        this.t += s.stepSize*this.scale;
         this.t = min(this.t, 1);
 
         // this.head = this.personas[0].getPos().add(this.dir.scalarmult(s.stepSize));
