@@ -32,9 +32,9 @@ let s = {
     stepSizeMin: 0,
     stepSizeStep: 0.05,
 
-    fadeDist: 10,
+    fadeDist: 25,
     fadeDistMax: 100,
     fadeDistMin: 0,
-    
+
 
 }

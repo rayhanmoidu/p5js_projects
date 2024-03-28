@@ -13,16 +13,22 @@ class Persona {
         this.pos = this.pos.add(this.dir.scalarmult(s.personaSpeed));
 
         let dist = this.endpos.subtract(this.pos).length2();
-        if (dist < s.fadeDist) {
-            this.opacityFactor = map(dist, 2, s.fadeDist, 0.1, 1);
-        }
+        if (this.opacityFactor > 0 && dist < s.fadeDist) {
+            this.opacityFactor = map(dist, 5, s.fadeDist, 0, 1);
 
-        if (this.opacityFactor <= 0.1) {
-            const index = personas.indexOf(this);
-            if (index > -1) {
-                personas.splice(index, 1);
+            if (this.opacityFactor <= 0) {
+                return 1;
             }
         }
+        
+        return 0;
+
+        // if (this.opacityFactor <= 0.1) {
+        //     const index = personas.indexOf(this);
+        //     if (index > -1) {
+        //         personas.splice(index, 1);
+        //     }
+        // }
     }
 
     assignNewDestination(destpos) {
@@ -38,7 +44,7 @@ class Persona {
         push();
 
         translate(this.pos.getX(), this.pos.getY());
-        scale(s.scale);
+        scale(this.scale);
 
         // shadow
         noFill();

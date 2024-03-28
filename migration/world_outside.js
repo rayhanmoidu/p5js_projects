@@ -4,41 +4,67 @@ class World_Outside {
         this.w = w;
         this.h = h;
 
+        this.numHills = 3;
         this.hills = [];
         this.createHills();
 
         this.castle = new Castle();
 
         this.stringFactory = new StringFactory(this.hills);
-        this.personaStrings = [];
-
-        // this.personastring = new PersonaString(1, new Vec2(300, 300), new Vec2(500, 500));
+        this.personaStrings = []
+        for (let i = 0; i < this.numHills; i++) {
+            this.personaStrings.push([this.stringFactory.createString(i)]);
+        }
     }
 
     update() {
         this.stringFactory.update(this.personaStrings);
-        for (let i = 0; i < this.personaStrings.length; i++) {
-            this.personaStrings[i].update();
+        // let toRemove = [];
+        for (let i = 0; i < this.numHills; i++) {
+            for (let j = 0; j < this.personaStrings[i].length; j++) {
+                if (this.personaStrings[i][j].update(this.personaStrings, i, j)) {
+                    // toRemove.push(new Vec2(i, j));
+                    this.personaStrings[i].splice(j, 1);
+                    this.personaStrings[i].push(this.stringFactory.createString(i));
+                }
+            }
         }
-        // this.personastring.update();
+
+        // print(this.personaStrings)
+
+        // for (let i = 0; i < toRemove.length; i++) {
+        //     this.personaStrings[toRemove[i].getX()].splice(toRemove[i].getY(), 1)
+        //     this.personaStrings[toRemove[i].getX()].push(this.stringFactory.createString(i));
+        // }
     }
 
     draw() {
         this.createHills();
-        this.hills[2].draw();
-        this.hills[1].draw();
-        this.hills[0].draw();
 
-        for (let i = 0; i < this.personaStrings.length; i++) {
-            this.personaStrings[i].draw();
+        for (let i = this.numHills - 1; i >= 0; i--) {
+            this.hills[i].draw();
+            this.drawPersonas(i);
         }
 
-        // this.personastring.draw();
+        // this.hills[2].draw();
+        // this.drawPersonas(2);
+
+        // this.hills[1].draw();
+        // this.drawPersonas(1);
+
+        // this.hills[0].draw();
+        // this.drawPersonas(0);
+    }
+
+    drawPersonas(hillId) {
+        for (let i = 0; i < this.personaStrings[hillId].length; i++) {
+            this.personaStrings[hillId][i].draw();
+        }
     }
 
     createHills() {
         let vertices;
-        let v1, v2, v3, v4, v5, v6, v7, v8, v9, v10;
+        let v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11;
 
         // hill 1
         v1 = new Vec2(-50, this.h - this.h * 0.1);
@@ -48,8 +74,10 @@ class World_Outside {
         v5 = new Vec2(this.w * 0.65, this.h - this.h * 0.05);
         v6 = new Vec2(this.w * 0.9, height + 50);
         v7 = new Vec2(this.w * 0.9, height + 50);
-        vertices = [v1, v2, v3, v4, v5, v6, v7];
-        let hill1 = new Hill(0, vertices, this.w * 0.7, 1);
+        v8 = new Vec2(-50, height + 50)
+        v9 = new Vec2(-50, height + 50)
+        vertices = [v1, v2, v3, v4, v5, v6, v7, v8, v9];
+        let hill1 = new Hill(0, vertices, this.w * 0.7, 0.8, this.w * 0.2, this.w * 0.5);
 
         // hill 2
         v1 = new Vec2(-50, this.h - this.h * 0.3);
@@ -59,8 +87,12 @@ class World_Outside {
         v5 = new Vec2(this.w * 0.9, this.h - this.h * 0.35);
         v6 = new Vec2(width + 50, this.h - this.h * 0.375);
         v7 = new Vec2(width + 50, this.h - this.h * 0.375);
-        vertices = [v1, v2, v3, v4, v5, v6, v7];
-        let hill2 = new Hill(1, vertices, this.w, 0.6);
+        v8 = new Vec2(width + 50, height + 50);
+        v9 = new Vec2(width + 50, height + 50);
+        v10 = new Vec2(-50, height + 50);
+        v11 = new Vec2(-50, height + 50);
+        vertices = [v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11];
+        let hill2 = new Hill(1, vertices, this.w, 0.4, this.w * 0.3, this.w * 0.9);
 
         // hill 3
         v1 = new Vec2(-50, this.h - this.h * 0.5);
@@ -70,8 +102,12 @@ class World_Outside {
         v5 = new Vec2(this.w * 0.7, this.h - this.h * 0.5);
         v6 = new Vec2(width + 50, this.h - this.h * 0.6);
         v7 = new Vec2(width + 50, this.h - this.h * 0.6);
-        vertices = [v1, v2, v3, v4, v5, v6, v7];
-        let hill3 = new Hill(2, vertices, this.w, 0.3);
+        v8 = new Vec2(width + 50, height + 50);
+        v9 = new Vec2(width + 50, height + 50);
+        v10 = new Vec2(-50, height + 50);
+        v11 = new Vec2(-50, height + 50);
+        vertices = [v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11];
+        let hill3 = new Hill(2, vertices, this.w, 0.15, this.w * 0.1, this.w * 0.7);
 
         this.hills = [hill1, hill2, hill3];
     }

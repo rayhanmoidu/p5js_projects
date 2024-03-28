@@ -8,11 +8,11 @@ class StringFactory {
 
     update(personaStrings) {
         // random chance to produce a string for any hill
-        if (this.time==0) {
-            personaStrings.push(this.createString(0));
-        }
+        // if (this.time==0) {
+        //     personaStrings[2].push(this.createString(2));
+        // }
 
-        this.time += 0.1;
+        // this.time += 0.1;
 
     }
 
@@ -22,15 +22,21 @@ class StringFactory {
 
         let maxX = hill.getBaseWidth();
         let startX = random(0, maxX);
+        while (hill.testStartPos_x(startX)) {
+            startX = random(0, maxX);
+        }
         let percX = startX / maxX;
 
         let startpos = new Vec2(startX, height + 50);
-        let destpos = this.getDestPos(vertices, percX);
+        // let destpos = this.getDestPos(vertices, percX);
+        let destpos = hill.getEndPos();
 
         return new PersonaString(hill.getScale(), startpos, destpos);
     }
 
-    getDestPos(vertices, percX) {
+    getDestPos(hill, vertices, percX) {
+        // let endpos_x = hill.
+
         let pos1 = new Vec2(0, 0);
         let pos2 = new Vec2(0, 0);
         while (pos2.subtract(pos1).length2() == 0) {

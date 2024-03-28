@@ -12,7 +12,8 @@ class PersonaString {
         this.dir = this.diff.normalize();
         this.t = 1;
 
-        this.numPersonas = random(10, 30);
+        this.numPersonas = int(random(10, 30));
+        this.numComplete = 0;
 
         this.personas = [];
         for (let i = 0; i < this.numPersonas; i++) {
@@ -33,6 +34,8 @@ class PersonaString {
 
         // this.head = this.personas[0].getPos().add(this.dir.scalarmult(s.stepSize));
         this.updateDirections();
+
+        return this.numComplete == this.numPersonas;
     }
 
     draw() {
@@ -46,10 +49,10 @@ class PersonaString {
             this.head = this.startpos.add(this.diff.scalarmult(this.t));
 
             this.personas[0].assignNewDestination(this.head);
-            this.personas[0].update(this.personas);
+            this.numComplete += this.personas[0].update(this.personas);
             for (let i = 1; i < this.personas.length; i++) {
                 this.personas[i].assignNewDestination(this.personas[i-1].getPos());
-                this.personas[i].update(this.personas);
+                this.numComplete += this.personas[i].update(this.personas);
             }
         }
     }
