@@ -12,7 +12,7 @@ class PersonaString {
         this.endpos = endpos;
         this.diff = endpos.subtract(startpos);
         this.dir = this.diff.normalize();
-        this.t = 1;
+        this.t = 0;
 
         this.numPersonas = int(random(10, 30));
         this.numComplete = 0;
@@ -25,14 +25,15 @@ class PersonaString {
         }
 
         // this.head = startpos.add(this.dir.scalarmult(s.stepSize));
-        this.updateDirections();
+        // this.updateDirections();
 
 
     }
 
     update() {
+        print(this.t)
         this.t += s.stepSize*this.scale;
-        this.t = min(this.t, 1);
+        // this.t = min(this.t, 1);
 
         // this.head = this.personas[0].getPos().add(this.dir.scalarmult(s.stepSize));
         this.updateDirections();
@@ -51,10 +52,10 @@ class PersonaString {
             this.head = this.startpos.add(this.diff.scalarmult(this.t));
 
             this.personas[0].assignNewDestination(this.head);
-            this.numComplete += this.personas[0].update(this.personas);
+            this.numComplete += this.personas[0].update();
             for (let i = 1; i < this.personas.length; i++) {
                 this.personas[i].assignNewDestination(this.personas[i-1].getPos());
-                this.numComplete += this.personas[i].update(this.personas);
+                this.numComplete += this.personas[i].update();
             }
         }
     }

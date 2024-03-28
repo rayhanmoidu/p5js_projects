@@ -9,8 +9,8 @@ class Persona {
         this.opacityFactor = 1;
     }
 
-    update(personas) {
-        this.pos = this.pos.add(this.dir.scalarmult(s.personaSpeed));
+    update() {
+        this.pos = this.pos.add(this.dir.scalarmult(s.personaSpeed * this.scale));
 
         let dist = this.endpos.subtract(this.pos).length2();
         if (this.opacityFactor > 0 && dist < s.fadeDist) {

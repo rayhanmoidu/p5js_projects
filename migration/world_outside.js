@@ -77,7 +77,7 @@ class World_Outside {
         v8 = new Vec2(-50, height + 50)
         v9 = new Vec2(-50, height + 50)
         vertices = [v1, v2, v3, v4, v5, v6, v7, v8, v9];
-        let hill1 = new Hill(0, vertices, this.w * 0.7, 0.8, this.w * 0.2, this.w * 0.5);
+        let hill1 = new Hill(0, vertices, this.w * 0.7, 0.6, this.w * 0.2, this.w * 0.5);
 
         // hill 2
         v1 = new Vec2(-50, this.h - this.h * 0.3);
@@ -92,7 +92,7 @@ class World_Outside {
         v10 = new Vec2(-50, height + 50);
         v11 = new Vec2(-50, height + 50);
         vertices = [v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11];
-        let hill2 = new Hill(1, vertices, this.w, 0.4, this.w * 0.3, this.w * 0.9);
+        let hill2 = new Hill(1, vertices, this.w, 0.3, this.w * 0.3, this.w * 0.9);
 
         // hill 3
         v1 = new Vec2(-50, this.h - this.h * 0.5);
