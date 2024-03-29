@@ -11,6 +11,8 @@ class PersonaString {
         this.dir = this.diff.normalize();
 
         this.numcycles = 0;
+        this.numcyclescomplete = 0;
+        this.alreadyTickedCycle = false;
 
         this.slope = this.dir.getY() / this.dir.getX();
         this.slopesign = this.slope / abs(this.slope);
@@ -52,7 +54,7 @@ class PersonaString {
             this.isCircleMode = true;
             this.hitCircle = true;
             this.oldhead = this.head;
-            this.numcycles = int(random(1, 6))
+            this.numcycles = int(random(1, 2))
         }
 
         // this.t = min(this.t, 1);
@@ -92,10 +94,19 @@ class PersonaString {
                     theta = atan2(startpos.det(curpos), startpos.dot(curpos))
                 }
                 // theta = atan2(startpos.det(curpos), startpos.dot(curpos))
-                print(theta)
                 this.tinc = theta + s.personaDist*this.scale/(s.circleR);
 
-                if (this.tinc > 2*PI*this.numcycles) {
+                let fact = this.tinc / (2*PI);
+                if (!this.alreadyTickedCycle && fact < 0 && fact > -0.05) {
+                    this.numcyclescomplete += 1;
+                    this.alreadyTickedCycle = true;
+                }
+                if (this.alreadyTickedCycle && fact > 0) {
+                    this.alreadyTickedCycle = false;
+                }
+
+                if (this.numcyclescomplete == this.numcycles) {
+                    this.numcyclescomplete = 0;
                     this.tinc = 0;
                     this.isCircleMode = false;
                     this.dir = this.endpos.subtract(this.personas[0].getPos()).normalize();
