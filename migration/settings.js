@@ -3,6 +3,8 @@ let s = {
     wMin: 0,
     wMax: 1000,
 
+    gocircle: false,
+
     h: 540,
     hMin: 0,
     hMax: 1000,
@@ -22,10 +24,10 @@ let s = {
 
     personaDist: 60,
 
-    personaSpeed: 0.05,
+    personaSpeed: 0.03,
     personaSpeedMax: 10,
     personaSpeedMin: 0,
-    personaSpeedStep: 0.05,
+    personaSpeedStep: 0.01,
 
     stepSize: 0.05,
     stepSizeMax: 10,
@@ -35,6 +37,10 @@ let s = {
     fadeDist: 25,
     fadeDistMax: 100,
     fadeDistMin: 0,
+
+    circleR: 50,
+    circleRMax: 150,
+    circleRMin: 0,
 
 
 }

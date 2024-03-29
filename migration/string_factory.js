@@ -18,6 +18,6 @@ class StringFactory {
         let startpos = new Vec2(startX, height + 50);
         let destpos = hill.getEndPos();
 
-        return new PersonaString(hill.getScale(), startpos, destpos);
+        return new PersonaString(hillId, hill.getScale(), startpos, destpos);
     }
 }

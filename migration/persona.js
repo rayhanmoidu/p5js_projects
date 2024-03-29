@@ -10,7 +10,8 @@ class Persona {
     }
 
     update() {
-        this.pos = this.pos.add(this.dir.scalarmult(s.personaSpeed * this.scale));
+        // print(this.dir)
+        this.pos = this.pos.add(this.dir.scalarmult(s.personaSpeed));
 
         let dist = this.endpos.subtract(this.pos).length2();
         if (this.opacityFactor > 0 && dist < s.fadeDist) {
@@ -33,7 +34,7 @@ class Persona {
 
     assignNewDestination(destpos) {
         this.destpos = destpos;
-        this.dir = destpos.subtract(this.pos).normalize();
+        this.dir = destpos.subtract(this.pos);
     }
 
     getPos() {
@@ -48,20 +49,20 @@ class Persona {
 
         // shadow
         noFill();
-        stroke(111,107,72, 255*this.opacityFactor);
+        stroke(111,107,72, 255);
         strokeWeight(16);
 
         this.drawStrokes();
 
         // main line
         noFill();
-        stroke(255, 255, 112, 255*this.opacityFactor);
+        stroke(255, 255, 112, 255);
         strokeWeight(6);
         this.drawStrokes();
 
         // white highlight
         noFill();
-        stroke(255, 255, 255, 255*this.opacityFactor);
+        stroke(255, 255, 255, 255);
         strokeWeight(1);
         this.drawStrokes();
 
