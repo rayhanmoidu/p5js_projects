@@ -42,7 +42,7 @@ class World_Outside {
         this.createHills();
 
         for (let i = this.numHills - 1; i >= 0; i--) {
-            // this.hills[i].draw();
+            this.hills[i].draw();
             this.drawPersonas(i);
         }
 

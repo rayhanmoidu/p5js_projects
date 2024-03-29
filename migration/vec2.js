@@ -38,6 +38,10 @@ class Vec2 {
         return this.x*pos.x + this.y*pos.y;
     }
 
+    det(pos) {
+        return this.x*pos.y - this.y*pos.x;
+    }
+
     scalarmult(val) {
         return new Vec2(this.x*val, this.y*val);
     }

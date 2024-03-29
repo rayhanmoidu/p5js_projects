@@ -49,20 +49,20 @@ class Persona {
 
         // shadow
         noFill();
-        stroke(111,107,72, 255);
+        stroke(111,107,72, 255*this.opacityFactor);
         strokeWeight(16);
 
         this.drawStrokes();
 
         // main line
         noFill();
-        stroke(255, 255, 112, 255);
+        stroke(255, 255, 112, 255*this.opacityFactor);
         strokeWeight(6);
         this.drawStrokes();
 
         // white highlight
         noFill();
-        stroke(255, 255, 255, 255);
+        stroke(255, 255, 255, 255*this.opacityFactor);
         strokeWeight(1);
         this.drawStrokes();
 

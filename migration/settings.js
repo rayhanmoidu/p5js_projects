@@ -24,10 +24,10 @@ let s = {
 
     personaDist: 60,
 
-    personaSpeed: 0.03,
+    personaSpeed: 0.02,
     personaSpeedMax: 10,
     personaSpeedMin: 0,
-    personaSpeedStep: 0.01,
+    personaSpeedStep: 0.001,
 
     stepSize: 0.05,
     stepSizeMax: 10,
@@ -38,7 +38,7 @@ let s = {
     fadeDistMax: 100,
     fadeDistMin: 0,
 
-    circleR: 50,
+    circleR: 150,
     circleRMax: 150,
     circleRMin: 0,
 
