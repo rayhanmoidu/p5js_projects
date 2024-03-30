@@ -15,5 +15,6 @@ function draw() {
   background(0);
 
   simulation.update();
+  // print(cloth)
   cloth.draw();
 }

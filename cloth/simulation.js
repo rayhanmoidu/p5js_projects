@@ -12,7 +12,7 @@ class Simulation {
 
         this.physicsCalculator = new PhysicsCalculator();
         this.massMatrix = this.physicsCalculator.computeMassMatrix(this.n, this.particles);
-        this.hessian = this.physicsCalculator.computeHessian(this.n, this.springs, this.massMatrix, this.timestep);
+        // this.hessian = this.physicsCalculator.computeHessian(this.n, this.springs, this.massMatrix, this.timestep);
 
         // globals
         gravityF = new Vec3(0, 200, 0);
@@ -21,11 +21,11 @@ class Simulation {
     }
 
     update() {
-        // this.applyExternalForces();
-        // this.applySpringForces();
-        // this.computeNewParticleStates();
+        this.applyExternalForces();
+        this.applySpringForces();
+        this.computeNewParticleStates();
 
-        this.optimizationImplicitEuler();
+        // this.optimizationImplicitEuler();
         this.time += this.timestep;
     }
 

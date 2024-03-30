@@ -77,6 +77,8 @@ function setup() {
 
   // calcBuffer3D();
 
+  print(meltedFace.pixels)
+
   noCursor();
 }
 

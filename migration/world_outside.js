@@ -43,7 +43,7 @@ class World_Outside {
 
         for (let i = this.numHills - 1; i >= 0; i--) {
             this.hills[i].draw();
-            this.drawPersonas(i);
+            // this.drawPersonas(i);
         }
 
         // this.hills[2].draw();

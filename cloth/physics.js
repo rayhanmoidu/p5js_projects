@@ -68,24 +68,6 @@ class PhysicsCalculator {
     }
 
     computeHessian(n, springs, massMatrix, timestep) {
-        // let triplets = new eigen.TripletVector(springs.length * 4);
-
-        // for (let i = 0; i < springs.length; i++) {
-        //     let k_over_r = -springs[i].getKs() / springs[i].getR();
-
-        //     let ep1_id = springs[i].getEndpoints()[0].getID();
-        //     let ep2_id = springs[i].getEndpoints()[1].getID();
-
-        //     for (let c = 0; c < 2; c++) {
-        //         triplets.add(ep1_id*3 + c, ep2_id*3 + c, k_over_r);
-        //         triplets.add(ep2_id*3 + c, ep1_id*3 + c, k_over_r);
-        //         triplets.add(ep1_id*3 + c, ep1_id*3 + c, k_over_r);
-        //         triplets.add(ep2_id*3 + c, ep2_id*3 + c, k_over_r);
-        //     }
-        // }
-
-        // return new eigen.SparseMatrix.fromTriplets(3*n, 3*n, triplets);
-
         let hessian = new eigen.Matrix(3*n, 3*n);
 
         for (let i = 0; i < springs.length; i++) {
@@ -94,7 +76,7 @@ class PhysicsCalculator {
             let ep1_id = springs[i].getEndpoints()[0].getID();
             let ep2_id = springs[i].getEndpoints()[1].getID();
 
-            for (let c = 0; c < 2; c++) {
+            for (let c = 0; c < 3; c++) {
                 hessian.set(ep1_id*3 + c, ep2_id*3 + c, k_over_r);
                 hessian.set(ep2_id*3 + c, ep1_id*3 + c, k_over_r);
                 hessian.set(ep1_id*3 + c, ep1_id*3 + c, k_over_r);
@@ -102,8 +84,35 @@ class PhysicsCalculator {
             }
         }
 
+        let lala = [];
+
+        for (let i = 0; i < 3*n; i++) {
+            let lala2 = []
+            for (let j = 0; j < 3*n; j++) {
+                lala2.push(hessian.get(i, j))
+                // print("b4", i, j, hessian.get(i, j));
+            }
+            lala.push(lala2)
+        }
+
         let finalHessian = massMatrix.matSub(hessian.mul(timestep*timestep))
-        finalHessian = finalHessian.inverse();
+
+        let QR = eigen.Decompositions.qr(finalHessian);
+        
+
+        finalHessian = hessian.inverse();
+
+        let lala3 = []
+        for (let i = 0; i < 3*n; i++) {
+            let lala4 = []
+            for (let j = 0; j < 3*n; j++) {
+                // print("final", i, j, finalHessian.get(i, j));
+                lala4.push(finalHessian.get(i, j))
+            }
+            lala3.push(lala4)
+        }
+
+        // print(lala, lala3)
         return finalHessian;
     }
 
