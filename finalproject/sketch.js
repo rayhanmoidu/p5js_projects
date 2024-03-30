@@ -34,7 +34,8 @@ function setup() {
   // canvas
   widthScaleFactor = windowWidth / 640;
   heightScaleFactor = windowHeight / 480;
-  createCanvas(windowWidth, windowHeight, WEBGL);
+  print(createCanvas(windowWidth, windowHeight, WEBGL))
+  createCanvas(windowWidth, windowHeight, WEBGL).elt.getContext('2d', { willReadFrequently: true });
   createParamGui(s, paramChanged);
 
   // vision
@@ -43,7 +44,7 @@ function setup() {
 
   const options = {
     maxFaces: 1,
-    detectionConfidence: 0.5,
+    detectionConfidence: 0.2,
   };
 
   facemesh = ml5.facemesh(video, options, modelReady);

@@ -19,10 +19,13 @@ class MeltingBust {
     }
 
     setTargetFace(targetFace) {
+        if (!this.targetFace) {
+        print(this.setTargetFace)
         // target face should be same size as default bust, should just crop video along bounding box
         this.targetFace = targetFace;
         // print(this.targetFace)
         this.targetFace.loadPixels();
+        }
         // this.bust.clear();
     }
 
@@ -30,8 +33,8 @@ class MeltingBust {
         push();
 
         // print(this.bust.pixels)
-        scale(1.5);
-        image(this.bust, -width/2 + width*0.6, -height/2 + height*0.2)
+        scale(2.5);
+        image(this.bust, -width/2 + width*0.525, -height/2 + height*0.375)
 
         pop();
     }
@@ -60,7 +63,7 @@ class MeltingBust {
 
     melt(x0, f) {
 
-        this.bust.clear();
+        // this.bust.clear();
 
         // this.bust.updatePixels();
         // print(this.bust.height)
@@ -73,9 +76,9 @@ class MeltingBust {
         //     this.bust.pixels[i + 3] = 0;      
         // }
 
-        print(this.bust)
+        // print(this.bust)
 
-        this.bust.background(255);
+        // this.bust.background(255);
 
         // this.bust.clear();
 
@@ -111,7 +114,7 @@ class MeltingBust {
             if (newLoc.getX() >= 0 && newLoc.getX() < bust_default.width && newLoc.getY() >= 0 && newLoc.getY() < this.bust.height) {
                 // print(bust_default.pixels[i])
 
-                if (this.targetFace) {
+                if (this.targetFace && !s.targetFace) {
                     if (eye_hair_mask.pixels[i] && eye_hair_mask.pixels[i + 1*render_mult] && eye_hair_mask.pixels[i + 2*render_mult] && eye_hair_mask.pixels[i + 3*render_mult]) {
                         this.bust.pixels[final_i] = bust_default.pixels[i];
                         this.bust.pixels[final_i + 1*render_mult] = bust_default.pixels[i + 1*render_mult];

@@ -34,6 +34,7 @@ class CV_Helper {
 
 
         if (this.rest_period > 500 && singlepred && this.noCapture) {
+            print("CAPTURING")
             this.noCapture = false;
             this.capture = this.captureFace(singlepred);
             this.begin_decrement = true;
