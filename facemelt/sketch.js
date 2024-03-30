@@ -10,9 +10,18 @@ let s = {
   fxStep: 0.001,
 
   fy: 0,
-  fyMax: 5,
+  fyMax: 100,
   fyMin: -5,
   fyStep: 0.001,
+
+  epsilon: 70,
+  epsilonMax: 400,
+
+  mu: 0.0006,
+  muMin: 0,
+  muMax: 1,
+  muStep: 0.0001,
+
 }
 
 let buffer3D;
@@ -29,8 +38,7 @@ let myShader;
 
 let x0;
 let a, b;
-let mu, v;
-let epsilon;
+let v;
 let f;
 
 function preload() {
@@ -46,7 +54,7 @@ function setup() {
   // need to set the "renderer" to WEBGL
   // buffer3D = createGraphics(470*4, 531*4, WEBGL);
 
-  meltedFace = createGraphics(bust.width, bust.height, WEBGL);
+  meltedFace = createGraphics(bust.width/2, bust.height/2 + 1000, WEBGL);
   // Workaround for bug: https://github.com/processing/p5.js/issues/5634
   // Enables 3D graphics buffers to have transparent background.
   meltedFace.setAttributes("alpha", true);
@@ -54,12 +62,12 @@ function setup() {
   bust.loadPixels();
 
 
-  x0 = new Vec2(meltedFace.width/2, meltedFace.height/2);
+  x0 = new Vec2(bust.width/2, bust.height);
   f = new Vec2(s.fx, s.fy);
-  epsilon = 7;
-  mu = 	0.0006;
+  // epsilon = 70;
+  // mu = 	0.0006;
   v = 0.5;
-  a = 1 / (4 * PI * mu);
+  a = 1 / (4 * PI * s.mu);
   b = a / (4 * (1 - v));
 
   this.t = 0;
@@ -74,12 +82,12 @@ function setup() {
 
 function getKelvinlet(r) {
   let r_len = r.length2();
-  let r_e = sqrt(r_len*r_len + epsilon*epsilon);
+  let r_e = sqrt(r_len*r_len + s.epsilon*s.epsilon);
   let r_e_3 = r_e * r_e * r_e;
 
   let term1 = (a - b) / r_e;
   let term2 = b / (r_e_3);
-  let term3 = (a / 2) * ((epsilon*epsilon)/r_e_3);
+  let term3 = (a / 2) * ((s.epsilon*s.epsilon)/r_e_3);
 
   let rrt = [r.scalarmult(r.getX()), r.scalarmult(r.getY())];
 
@@ -100,7 +108,24 @@ function getKelvinlet(r) {
 
 function setMeltedFace() {
   // bust.loadPixels();
-  meltedFace.clear();
+  // meltedFace.loadPixels();
+  // meltedFace.clear();
+  // meltedFace = createGraphics(bust.width/2, bust.height/2 + 5000, WEBGL);
+
+  for (let i = 0; i < meltedFace.pixels.length; i += 4) {
+
+    // print(i, final_i)
+      // Red.
+      meltedFace.pixels[i] = 0;
+      // Green.
+      meltedFace.pixels[i + 1] = 0;
+      // Blue.
+      meltedFace.pixels[i + 2] = 0;
+      // Alpha.
+      meltedFace.pixels[i + 3] = 0;
+      // print(newLoc)
+
+  }
   
   // print(bust.width, bust.height)
   for (let i = 0; i < bust.pixels.length; i += 4) {
@@ -110,25 +135,44 @@ function setMeltedFace() {
     // print(i, curLoc)
     let r = curLoc.subtract(x0);
 
-    let newLoc = curLoc.add(getKelvinlet(r));
+    let d = getKelvinlet(r);
 
-    let final_i = int((newLoc.getX() + newLoc.getY() * bust.width))*4;
-    // final_i = i;
+    d.setX(floor(d.getX()))
+    d.setY(floor(d.getY()))
+
+
+    // print(d)
+
+    let newLoc = curLoc.add(d);
+
+    // print(newLoc)
+
+    let final_i = int((d.getX() + d.getY() * bust.width))*4;
+    final_i += i;
 
     // print(i, final_i)
+    if (newLoc.getX() >= 0 && newLoc.getX() < bust.width && newLoc.getY() >= 0 && newLoc.getY() < meltedFace.height) {
 
-    // Red.
-    meltedFace.pixels[final_i] = bust.pixels[i];
-    // Green.
-    meltedFace.pixels[final_i + 1] = bust.pixels[i+1];
-    // Blue.
-    meltedFace.pixels[final_i + 2] = bust.pixels[i+2];
-    // Alpha.
-    meltedFace.pixels[final_i + 3] = bust.pixels[i+3];
+      // Red.
+      meltedFace.pixels[final_i] = bust.pixels[i];
+      // Green.
+      meltedFace.pixels[final_i + 1] = bust.pixels[i+1];
+      // Blue.
+      meltedFace.pixels[final_i + 2] = bust.pixels[i+2];
+      // Alpha.
+      meltedFace.pixels[final_i + 3] = bust.pixels[i+3];
+      // print(newLoc)
+
+    } else {
+      // print(newLoc)
+    }
   }
-  // meltedFace.background(100)
-
+  // meltedFace.background(0, 0)
+  meltedFace.fill(100);
+  meltedFace.ellipse(0, 0, 100, 100)
+  // meltedFace.setInterpolation(NEAREST, NEAREST);
   meltedFace.updatePixels();
+  // meltedFace.background(0, 0)
 }
 
 // function calcBuffer3D() {
@@ -167,18 +211,23 @@ function setMeltedFace() {
 //   shaderBuffer.pop();
 // }
 
+function mousePressed() {
+  print("hfewuoo")
+  meltedFace.clear();
+}
+
 function draw() {
   // Draw background image to demonstrate p5.Graphics transparency
   // image(bgImg, 0, 0);
   background(255);
 
-  this.t += 0.01;
+  this.t += 0.1;
 
-  f = new Vec2(sin(this.t), cos(this.t));
+  f = new Vec2(0, 60*s.fy);
 
   setMeltedFace();
   // print(meltedFace)
-  image(meltedFace, 0, 0)
+  image(meltedFace, -300, -300)
 
   // storeTexture();
   // calcBuffer3D();
