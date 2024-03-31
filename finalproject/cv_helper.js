@@ -2,7 +2,8 @@ class CV_Helper {
     constructor() {
         this.rest_period = 0;
         this.begin_decrement = false;
-        this.noCapture = true;
+        this.hasCapture = false;
+        this.timeout = 0;
     }
 
     recomputeOpticalFlow(preds) {
@@ -20,28 +21,46 @@ class CV_Helper {
             prevNosePos = curNosePos;
         })
 
+        let retVal = true;
+
         if (opticalFlow < 3 && !this.begin_decrement) {
             this.rest_period += 5;
+            if (!this.hasCapture) {
+                this.capture = this.captureFace(singlepred);
+                this.hasCapture = true;
+                // return true;
+            }
         } else {
             this.begin_decrement = true;
             this.rest_period -= 150;
             this.rest_period = max(this.rest_period, 0);
+            this.hasCapture = false;
 
             if (this.rest_period <= 0) {
-                this.begin_decrement = false;
+                this.timeout += 1;
+                if (this.timeout > 1) {
+                    retVal = false;
+                }
+                // retVal = false;
             }
         }
 
-
-        if (this.rest_period > 500 && singlepred && this.noCapture) {
-            print("CAPTURING")
-            this.noCapture = false;
-            this.capture = this.captureFace(singlepred);
-            this.begin_decrement = true;
-            return true;
+        if (this.timeout > 100) {
+            this.begin_decrement = false;
+            this.timeout = 0;
+            // retVal = false;
         }
 
-        return false;
+
+        // if (this.rest_period > 500 && singlepred && this.noCapture) {
+        //     print("CAPTURING")
+        //     this.noCapture = false;
+        //     this.capture = this.captureFace(singlepred);
+        //     this.begin_decrement = true;
+        //     return true;
+        // }
+
+        return retVal;
     }
 
     captureFace(p) {
@@ -67,12 +86,12 @@ class CV_Helper {
         // // Update the image.
         // capture.updatePixels();
         video.loadPixels();
-        print(video.pixels)
+        // print(video.pixels)
 
         let pixel_w = s.imgW / w;
         let pixel_h = s.imgH / h;
 
-        print(x, y, w, h)
+        // print(x, y, w, h)
 
         let mincol = 1000000
         let minrow = 1000000
@@ -114,12 +133,12 @@ class CV_Helper {
 
                     let intensity = 0.299 * video.pixels[bb_pixelpos*4 + 0] + 0.587 * video.pixels[bb_pixelpos*4 + 1] + 0.114 * video.pixels[bb_pixelpos*4 + 2]
 
-                    intensity += random(-50, 50);
+                    // intensity += random(-50, 50);
                     
-                    eye_hair_mask.pixels[i] = intensity;
-                    eye_hair_mask.pixels[i + 1] = intensity;
-                    eye_hair_mask.pixels[i + 2] = intensity;
-                    eye_hair_mask.pixels[i + 3] = video.pixels[bb_pixelpos*4 + 3];
+                    bust_dynamic.pixels[i] = intensity;
+                    bust_dynamic.pixels[i + 1] = intensity;
+                    bust_dynamic.pixels[i + 2] = intensity;
+                    bust_dynamic.pixels[i + 3] = video.pixels[bb_pixelpos*4 + 3];
                     // need to take a section of the video feed
                     // eye_hair_mask.pixels[i] = 170;
                     // eye_hair_mask.pixels[i + 1] = 6;
@@ -129,13 +148,13 @@ class CV_Helper {
             }
         }
 
-        print("final", minrow, maxrow, mincol, maxcol)
+        // print("final", minrow, maxrow, mincol, maxcol)
 
         // let capture = video.get(x, y, w, h);
         // capture.resize(s.imgW, s.imgH)
         // capture.filter(GRAY);
 
-        print("capture yay")
+        // print("capture yay")
         // print("capture", this.rest_period, capture)
 
         return 100;

@@ -5,6 +5,8 @@ class MeltingBust {
         // this.bust.loadPixels();
         bust_default.loadPixels();
         eye_hair_mask.loadPixels();
+        bust_dynamic.loadPixels();
+        bust_previous.loadPixels();
 
         // print(this.bust.width, this.bust.height, bust_default.width, bust_default.height)
 
@@ -34,6 +36,18 @@ class MeltingBust {
         // this.bust.clear();
     }
 
+    getPixels() {
+        // for (let i = 0; i < bust_default.pixels.length; i += 4) {
+        //     if (!(bust_default.pixels[i] || bust_default.pixels[i + 1] || bust_default.pixels[i + 2] || bust_default.pixels[i + 3])) {
+        //         this.bust.pixels[i] = 0;
+        //         this.bust.pixels[i+1] = 0;
+        //         this.bust.pixels[i+2] = 0;
+        //         this.bust.pixels[i+3] = 0;
+        //     }
+        // }
+        return this.bust.pixels;
+    }
+
     draw() {
         push();
 
@@ -42,6 +56,17 @@ class MeltingBust {
         image(this.bust, -width/2 + width*0.525, -height/2 + height*0.4)
 
         pop();
+    }
+
+    resetPicker() {
+        this.pickers = [];
+        for (let i = 0; i < bust_default.height; i++) {
+            this.pickers.push(Array(bust_default.width).fill(false));
+        }
+    }
+
+    getPicker(i, j) {
+        return this.pickers[i][j];
     }
 
     getKelvinlet(r, f) {
@@ -80,20 +105,20 @@ class MeltingBust {
 
     melt(x0, f) {
 
-        for (let i = 0; i < 100; i++) {
-            let ii = floor(random(0, bust_default.height-1))
-            let jj = floor(random(0, bust_default.width-1))
-            for (let iii = ii; iii < ii+15; iii++) {
-                for (let jjj = jj; jjj < jj+15; jjj++) {
-                    if (iii < this.pickers.length && jjj < this.pickers[0].length) {
-                    this.pickers[iii][jjj] = true;
-                    }
-                }
-            }
-            // this.pickers[floor(random(0, bust_default.height-1))][floor(random(0, bust_default.width-1))] = true;
+        for (let i = 0; i < 500; i++) {
+            // let ii = floor(random(0, bust_default.height-1))
+            // let jj = floor(random(0, bust_default.width-1))
+            // for (let iii = ii; iii < ii+15; iii++) {
+            //     for (let jjj = jj; jjj < jj+15; jjj++) {
+            //         if (iii < this.pickers.length && jjj < this.pickers[0].length) {
+            //         this.pickers[iii][jjj] = true;
+            //         }
+            //     }
+            // }
+            this.pickers[floor(random(0, bust_default.height-1))][floor(random(0, bust_default.width-1))] = true;
         }
 
-        print(this.countTrueElements(this.pickers))
+        // print(this.countTrueElements(this.pickers))
 
         let renderbackwards = false;
         let render_mult = renderbackwards ? -1 : 1;
@@ -122,23 +147,23 @@ class MeltingBust {
             // set values if within range
             if (newLoc.getX() >= 0 && newLoc.getX() < bust_default.width && newLoc.getY() >= 0 && newLoc.getY() < bust_default.height) {
 
-                if (this.targetFace && !s.targetFace) {
-                    if (eye_hair_mask.pixels[i] || eye_hair_mask.pixels[i + 1*render_mult] || eye_hair_mask.pixels[i + 2*render_mult] || eye_hair_mask.pixels[i + 3*render_mult]) {
+                // if (this.targetFace && !s.targetFace) {
+                    if (bust_default.pixels[i] || bust_default.pixels[i + 1*render_mult] || bust_default.pixels[i + 2*render_mult] || bust_default.pixels[i + 3*render_mult]) {
                         if (this.pickers[curLoc.getY()][curLoc.getX()]) {
-                            this.colorPixel(final_i, i, render_mult, true, eye_hair_mask.pixels);
+                            this.colorPixel(final_i, i, render_mult, true, bust_dynamic.pixels);
                         } else {
-                            this.colorPixel(final_i, i, render_mult, true, bust_default.pixels);
+                            this.colorPixel(final_i, i, render_mult, true, bust_previous.pixels);
                         }
                     } else {
                         this.colorPixel(final_i, i, render_mult, false, 183);
                     }
-                } else {
-                    if (bust_default.pixels[i] || bust_default.pixels[i + 1*render_mult] || bust_default.pixels[i + 2*render_mult] || bust_default.pixels[i + 3*render_mult]) {
-                        this.colorPixel(final_i, i, render_mult, true, bust_default.pixels);
-                    } else {
-                        this.colorPixel(final_i, i, render_mult, false, 183);
-                    }
-                }
+                // } else {
+                //     if (bust_default.pixels[i] || bust_default.pixels[i + 1*render_mult] || bust_default.pixels[i + 2*render_mult] || bust_default.pixels[i + 3*render_mult]) {
+                //         this.colorPixel(final_i, i, render_mult, true, bust_default.pixels);
+                //     } else {
+                //         this.colorPixel(final_i, i, render_mult, false, 183);
+                //     }
+                // }
             }
         }
 

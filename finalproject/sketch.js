@@ -2,6 +2,8 @@
 let windowframe;
 let bust_default;
 let eye_hair_mask;
+let bust_dynamic;
+let bust_previous;
 
 // scaling between video and display
 let heightScaleFactor;
@@ -12,7 +14,7 @@ let facemesh;
 let predictions = [];
 let video;
 let cv_helper;
-let hasFaceCapture;
+let did_melt;
 
 // global vars
 let world_inside;
@@ -27,6 +29,8 @@ function preload() {
   bust_default = loadImage("data/rayhan.png");
   target_face = loadImage("data/clown.jpg")
   eye_hair_mask = loadImage("data/eye_hair_mask.png")
+  bust_dynamic = loadImage("data/eye_hair_mask.png")
+  bust_previous = loadImage("data/rayhan.png")
 }
 
 function setup() {
@@ -52,7 +56,7 @@ function setup() {
   cv_helper = new CV_Helper();
   facemesh.on("predict", (results) => {
     predictions = results;
-    hasFaceCapture = cv_helper.recomputeOpticalFlow(predictions);
+    did_melt = cv_helper.recomputeOpticalFlow(predictions);
   });
 
   video.hide();
