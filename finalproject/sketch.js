@@ -44,7 +44,7 @@ function setup() {
 
   const options = {
     maxFaces: 1,
-    detectionConfidence: 0.2,
+    detectionConfidence: 0.75,
   };
 
   facemesh = ml5.facemesh(video, options, modelReady);
@@ -69,6 +69,8 @@ function draw() {
 
   world_inside.update();
   world_inside.draw();
+
+  // image(video, -width/2, -height/2)
 }
 
 // global callback from the settings GUI
