@@ -15,6 +15,11 @@ class MeltingBust {
 
         this.targetFace = 0;
 
+        this.pickers = [];
+        for (let i = 0; i < bust_default.height; i++) {
+            this.pickers.push(Array(bust_default.width).fill(false));
+        }
+
         // print(this.bust)
     }
 
@@ -61,28 +66,34 @@ class MeltingBust {
         return final;
     }
 
+    countTrueElements(arr) {
+        let count = 0;
+        for (let i = 0; i < arr.length; i++) {
+            for (let j = 0; j < arr[i].length; j++) {
+                if (arr[i][j] === true) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
     melt(x0, f) {
 
-        // this.bust.clear();
+        for (let i = 0; i < 100; i++) {
+            let ii = floor(random(0, bust_default.height-1))
+            let jj = floor(random(0, bust_default.width-1))
+            for (let iii = ii; iii < ii+15; iii++) {
+                for (let jjj = jj; jjj < jj+15; jjj++) {
+                    if (iii < this.pickers.length && jjj < this.pickers[0].length) {
+                    this.pickers[iii][jjj] = true;
+                    }
+                }
+            }
+            // this.pickers[floor(random(0, bust_default.height-1))][floor(random(0, bust_default.width-1))] = true;
+        }
 
-        // this.bust.updatePixels();
-        // print(this.bust.height)
-
-        // clear pixels
-        // for (let i = 0; i < this.bust.pixels.length; i += 4) {
-        //     this.bust.pixels[i] = 0;
-        //     this.bust.pixels[i + 1] = 0;
-        //     this.bust.pixels[i + 2] = 0;
-        //     this.bust.pixels[i + 3] = 0;      
-        // }
-
-        // print(this.bust)
-
-        // this.bust.background(255);
-
-        // this.bust.clear();
-
-        // set new pixel values
+        print(this.countTrueElements(this.pickers))
 
         let renderbackwards = false;
         let render_mult = renderbackwards ? -1 : 1;
@@ -108,54 +119,42 @@ class MeltingBust {
             let final_i = int((d.getX() + d.getY() * bust_default.width))*4;
             final_i += i;
 
-            // print(bust_default.width, bust_default.height)
-
             // set values if within range
             if (newLoc.getX() >= 0 && newLoc.getX() < bust_default.width && newLoc.getY() >= 0 && newLoc.getY() < bust_default.height) {
-                // print(bust_default.pixels[i])
 
                 if (this.targetFace && !s.targetFace) {
-                    // if (bust_default.pixels[i] && bust_default.pixels[i + 1*render_mult] && bust_default.pixels[i + 2*render_mult] && bust_default.pixels[i + 3*render_mult]) {
-                    if (eye_hair_mask.pixels[i] && eye_hair_mask.pixels[i + 1*render_mult] && eye_hair_mask.pixels[i + 2*render_mult] && eye_hair_mask.pixels[i + 3*render_mult]) {
-                        this.bust.pixels[final_i] = eye_hair_mask.pixels[i];
-                        this.bust.pixels[final_i + 1*render_mult] = eye_hair_mask.pixels[i + 1*render_mult];
-                        this.bust.pixels[final_i + 2*render_mult] = eye_hair_mask.pixels[i + 2*render_mult];
-                        this.bust.pixels[final_i + 3*render_mult] = eye_hair_mask.pixels[i + 3*render_mult];
+                    if (eye_hair_mask.pixels[i] || eye_hair_mask.pixels[i + 1*render_mult] || eye_hair_mask.pixels[i + 2*render_mult] || eye_hair_mask.pixels[i + 3*render_mult]) {
+                        if (this.pickers[curLoc.getY()][curLoc.getX()]) {
+                            this.colorPixel(final_i, i, render_mult, true, eye_hair_mask.pixels);
+                        } else {
+                            this.colorPixel(final_i, i, render_mult, true, bust_default.pixels);
+                        }
                     } else {
-                        // if (bust_default.pixels[i] && bust_default.pixels[i + 1*render_mult] && bust_default.pixels[i + 2*render_mult] && bust_default.pixels[i + 3*render_mult]) {
-                            // this.bust.pixels[final_i] = this.targetFace.pixels[i];
-                            // this.bust.pixels[final_i + 1*render_mult] = this.targetFace.pixels[i + 1*render_mult];
-                            // this.bust.pixels[final_i + 2*render_mult] = this.targetFace.pixels[i + 2*render_mult];
-                            // this.bust.pixels[final_i + 3*render_mult] = this.targetFace.pixels[i + 3*render_mult];
-                        // } else {
-                            this.bust.pixels[final_i] = 183;
-                            this.bust.pixels[final_i + 1*render_mult] = 183;
-                            this.bust.pixels[final_i + 2*render_mult] = 183;
-                            this.bust.pixels[final_i + 3*render_mult] = 255;
-                        // }
+                        this.colorPixel(final_i, i, render_mult, false, 183);
                     }
                 } else {
-                    if (bust_default.pixels[i] && bust_default.pixels[i + 1*render_mult] && bust_default.pixels[i + 2*render_mult] && bust_default.pixels[i + 3*render_mult]) {
-                        this.bust.pixels[final_i] = bust_default.pixels[i];
-                        this.bust.pixels[final_i + 1*render_mult] = bust_default.pixels[i + 1*render_mult];
-                        this.bust.pixels[final_i + 2*render_mult] = bust_default.pixels[i + 2*render_mult];
-                        this.bust.pixels[final_i + 3*render_mult] = bust_default.pixels[i + 3*render_mult];
+                    if (bust_default.pixels[i] || bust_default.pixels[i + 1*render_mult] || bust_default.pixels[i + 2*render_mult] || bust_default.pixels[i + 3*render_mult]) {
+                        this.colorPixel(final_i, i, render_mult, true, bust_default.pixels);
                     } else {
-                        this.bust.pixels[final_i] = 183;
-                        this.bust.pixels[final_i + 1*render_mult] = 183;
-                        this.bust.pixels[final_i + 2*render_mult] = 183;
-                        this.bust.pixels[final_i + 3*render_mult] = 255;
+                        this.colorPixel(final_i, i, render_mult, false, 183);
                     }
                 }
-            } else {
-                // print("WHAT")
             }
-
         }
 
-        // this.bust.clear();
-
         this.bust.updatePixels();
-        // this.bust.clear();
+    }
+
+    colorPixel(i1, i2, render_mult, fromPixels, val) {
+        for (let i = 0; i < 4; i++) {
+            if (fromPixels) {
+                this.bust.pixels[i1 + i*render_mult] = val[i2 + i*render_mult];
+            } else if (i < 3) {
+                this.bust.pixels[i1 + i*render_mult] = val;
+            }
+        }
+        if (!fromPixels) {
+            this.bust.pixels[i1 + 3*render_mult] = 255;
+        }
     }
 }
