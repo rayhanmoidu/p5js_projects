@@ -45,24 +45,56 @@ class CV_Helper {
     }
 
     captureFace(p) {
-            const bb = p.boundingBox;
-            // get bb coordinates
-            const x = bb.topLeft[0][0];
-            const y = bb.topLeft[0][1];
-            const w = bb.bottomRight[0][0] - x;
-            const h = bb.bottomRight[0][1] - y;
+        const bb = p.boundingBox;
+        // get bb coordinates
+        const x = bb.topLeft[0][0];
+        const y = bb.topLeft[0][1];
+        const w = bb.bottomRight[0][0] - x;
+        const h = bb.bottomRight[0][1] - y;
 
-            let capture = video.get(x, y, w, h);
-            capture.resize(s.imgW, s.imgH)
-            capture.filter(GRAY);
+        // let capture = createImage(w, h);
 
-            // print("capture", this.rest_period, capture)
+        // // Load the image's pixels.
+        // capture.loadPixels();
 
-            return capture;
+        // // Set the pixels to black.
+        // for (let i = 0; i < capture.width; i += 1) {
+        //     for (let j = 0; j < capture.height; j += 1) {
+        //         capture.set(i, j, 255);
+        //     }
+        // }
+
+        // // Update the image.
+        // capture.updatePixels();
+        video.loadPixels();
+        print(video.pixels)
+
+        for (let i = 0; i < eye_hair_mask.pixels.length; i+=4) {
+            if (!(eye_hair_mask.pixels[i] && eye_hair_mask.pixels[i + 1] && eye_hair_mask.pixels[i + 2] && eye_hair_mask.pixels[i + 3])) {
+                if (bust_default.pixels[i] && bust_default.pixels[i + 1] && bust_default.pixels[i + 2] && bust_default.pixels[i + 3]) {
+                    // need to take a section of the video feed
+                    eye_hair_mask.pixels[i] = 170;
+                    eye_hair_mask.pixels[i + 1] = 6;
+                    eye_hair_mask.pixels[i + 2] = 170;
+                    eye_hair_mask.pixels[i + 3] = 170;
+                }
+            }
+        }
+
+        // let capture = video.get(x, y, w, h);
+        // capture.resize(s.imgW, s.imgH)
+        // capture.filter(GRAY);
+
+        print("capture yay")
+        // print("capture", this.rest_period, capture)
+
+        return 100;
     }
 
     getFaceCapture() {
-        return this.capture;
+        let lala = this.capture;
+        this.capture = 0;
+        return lala;
     }
 
     getRestPeriod() {

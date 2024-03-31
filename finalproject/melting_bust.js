@@ -1,6 +1,6 @@
 class MeltingBust {
     constructor() {
-        this.bust = createGraphics(bust_default.width/2, bust_default.height/2 + height, WEBGL);
+        this.bust = createGraphics(bust_default.width/2, bust_default.height/2, WEBGL);
         this.bust.setAttributes("alpha", true);
         // this.bust.loadPixels();
         bust_default.loadPixels();
@@ -20,11 +20,11 @@ class MeltingBust {
 
     setTargetFace(targetFace) {
         if (!this.targetFace) {
-        print(this.setTargetFace)
-        // target face should be same size as default bust, should just crop video along bounding box
+        // print(this.setTargetFace)
+        // // target face should be same size as default bust, should just crop video along bounding box
         this.targetFace = targetFace;
-        // print(this.targetFace)
-        this.targetFace.loadPixels();
+        // // print(this.targetFace)
+        // this.targetFace.loadPixels();
         }
         // this.bust.clear();
     }
@@ -34,7 +34,7 @@ class MeltingBust {
 
         // print(this.bust.pixels)
         scale(2.5);
-        image(this.bust, -width/2 + width*0.525, -height/2 + height*0.375)
+        image(this.bust, -width/2 + width*0.525, -height/2 + height*0.4)
 
         pop();
     }
@@ -111,27 +111,28 @@ class MeltingBust {
             // print(bust_default.width, bust_default.height)
 
             // set values if within range
-            if (newLoc.getX() >= 0 && newLoc.getX() < bust_default.width && newLoc.getY() >= 0 && newLoc.getY() < this.bust.height) {
+            if (newLoc.getX() >= 0 && newLoc.getX() < bust_default.width && newLoc.getY() >= 0 && newLoc.getY() < bust_default.height) {
                 // print(bust_default.pixels[i])
 
                 if (this.targetFace && !s.targetFace) {
+                    // if (bust_default.pixels[i] && bust_default.pixels[i + 1*render_mult] && bust_default.pixels[i + 2*render_mult] && bust_default.pixels[i + 3*render_mult]) {
                     if (eye_hair_mask.pixels[i] && eye_hair_mask.pixels[i + 1*render_mult] && eye_hair_mask.pixels[i + 2*render_mult] && eye_hair_mask.pixels[i + 3*render_mult]) {
-                        this.bust.pixels[final_i] = bust_default.pixels[i];
-                        this.bust.pixels[final_i + 1*render_mult] = bust_default.pixels[i + 1*render_mult];
-                        this.bust.pixels[final_i + 2*render_mult] = bust_default.pixels[i + 2*render_mult];
-                        this.bust.pixels[final_i + 3*render_mult] = bust_default.pixels[i + 3*render_mult];
+                        this.bust.pixels[final_i] = eye_hair_mask.pixels[i];
+                        this.bust.pixels[final_i + 1*render_mult] = eye_hair_mask.pixels[i + 1*render_mult];
+                        this.bust.pixels[final_i + 2*render_mult] = eye_hair_mask.pixels[i + 2*render_mult];
+                        this.bust.pixels[final_i + 3*render_mult] = eye_hair_mask.pixels[i + 3*render_mult];
                     } else {
-                        if (bust_default.pixels[i] && bust_default.pixels[i + 1*render_mult] && bust_default.pixels[i + 2*render_mult] && bust_default.pixels[i + 3*render_mult]) {
-                            this.bust.pixels[final_i] = this.targetFace.pixels[i];
-                            this.bust.pixels[final_i + 1*render_mult] = this.targetFace.pixels[i + 1*render_mult];
-                            this.bust.pixels[final_i + 2*render_mult] = this.targetFace.pixels[i + 2*render_mult];
-                            this.bust.pixels[final_i + 3*render_mult] = this.targetFace.pixels[i + 3*render_mult];
-                        } else {
+                        // if (bust_default.pixels[i] && bust_default.pixels[i + 1*render_mult] && bust_default.pixels[i + 2*render_mult] && bust_default.pixels[i + 3*render_mult]) {
+                            // this.bust.pixels[final_i] = this.targetFace.pixels[i];
+                            // this.bust.pixels[final_i + 1*render_mult] = this.targetFace.pixels[i + 1*render_mult];
+                            // this.bust.pixels[final_i + 2*render_mult] = this.targetFace.pixels[i + 2*render_mult];
+                            // this.bust.pixels[final_i + 3*render_mult] = this.targetFace.pixels[i + 3*render_mult];
+                        // } else {
                             this.bust.pixels[final_i] = 183;
                             this.bust.pixels[final_i + 1*render_mult] = 183;
                             this.bust.pixels[final_i + 2*render_mult] = 183;
                             this.bust.pixels[final_i + 3*render_mult] = 255;
-                        }
+                        // }
                     }
                 } else {
                     if (bust_default.pixels[i] && bust_default.pixels[i + 1*render_mult] && bust_default.pixels[i + 2*render_mult] && bust_default.pixels[i + 3*render_mult]) {
