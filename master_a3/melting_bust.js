@@ -118,7 +118,6 @@ class MeltingBust {
     }
 
     fillEyes() {
-        print("filling eyes", eyeMaskIndex)
         for (let i = 0; i < this.eyeImagePositions.length; i++) {
             let curIndex = this.eyeImagePositions[i];
             this.colorPixel(curIndex, curIndex, 1, true, eyeMasks[eyeMaskIndex].pixels);

@@ -11,7 +11,7 @@ class Persona {
 
     update() {
         // print(this.dir)
-        this.pos = this.pos.add(this.dir.scalarmult(s.personaSpeed));
+        this.pos = this.pos.add(this.dir.scalarmult(45 * s.personaSpeed / frameRate()));
 
         let dist = this.endpos.subtract(this.pos).length2();
         if (this.opacityFactor > 0 && dist < s.fadeDist) {

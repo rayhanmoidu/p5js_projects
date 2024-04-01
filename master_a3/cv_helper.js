@@ -47,9 +47,12 @@ class CV_Helper {
         if (this.begin_decrement) { // bust is zooming back up
             if (this.rest_period <= 0) { // if finished
                 this.timeout += 1;
+                if (opticalFlow >= 3) {
+                    this.timeout = 0;
+                }
                 retVal = false;
             } else {
-                this.rest_period -= 0.7 * (this.rest_period);
+                this.rest_period -= 0.4 * (this.rest_period);
                 if (this.rest_period < 3) {
                     this.rest_period = 0;
                 }
@@ -73,6 +76,8 @@ class CV_Helper {
                 this.timeout = 0;
             }
         }
+
+        // print(retVal, this.timeout)
 
 
 
@@ -112,6 +117,8 @@ class CV_Helper {
             this.timeout = 0;
             // retVal = false;
         }
+
+        print(retVal, this.timeout)
 
         // print(this.timeout, retVal)
 
