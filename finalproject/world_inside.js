@@ -15,7 +15,7 @@ class World_Inside {
         // only do this if force has changed?
         if (did_melt) {
             this.hasMelted = true;
-            this.melting_bust.melt(this.x0, new Vec2(s.fx, cv_helper.getRestPeriod()/10));
+            this.melting_bust.melt(this.x0, new Vec2(s.fx, cv_helper.getRestPeriod()/50));
         } else {
             if (this.hasMelted) {
                 this.hasMelted = false;

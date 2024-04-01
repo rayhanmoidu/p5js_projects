@@ -62,6 +62,7 @@ function setup() {
   video.hide();
 
   world_inside = new World_Inside();
+  world_outside = new World_Outside(s.w, s.h);
 }
 
 function modelReady() {
@@ -72,11 +73,21 @@ function draw() {
   background(183, 183, 183);
 
   world_inside.update();
+  world_outside.update();
+
+  // world_inside.draw();
+  let lala = world_outside.getGraphicsObject();
+  image(lala, -width/2 + s.woffsetx, -height/2 + s.woffsety)
   world_inside.draw();
 
   // image(video, -width/2, -height/2)
 }
 
 // global callback from the settings GUI
-function paramChanged(name) {}
+function paramChanged(name) {
+  if (name == "w" || name == "h") {
+    // resizeCanvas(s.w, s.h)
+    world_outside = new World_Outside(s.w, s.h);
+  }
+}
 
