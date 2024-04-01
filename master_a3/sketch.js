@@ -41,13 +41,14 @@ function preload() {
   eye_hair_mask = loadImage("data/hairmask_700.png")
   bust_dynamic = loadImage("data/hairmask_700.png")
   bust_previous = loadImage("data/rayhan_700.png")
+  eye_mask = loadImage("data/new_eye_mask.png")
 
-  for (let i = 0; i < 24; i++) {
+  for (let i = 0; i < 45; i++) {
     stringname = "data/eyemask_" + i + ".png";
-    print(stringname)
     let newEyeMask = loadImage(stringname);
     eyeMasks.push(newEyeMask);
   }
+  print(eyeMasks.length)
 }
 
 function setup() {
@@ -55,7 +56,6 @@ function setup() {
   // canvas
   widthScaleFactor = windowWidth / 640;
   heightScaleFactor = windowHeight / 480;
-  print(createCanvas(windowWidth, windowHeight, WEBGL))
   createCanvas(windowWidth, windowHeight, WEBGL).elt.getContext('2d', { willReadFrequently: true });
   createParamGui(s, paramChanged);
 

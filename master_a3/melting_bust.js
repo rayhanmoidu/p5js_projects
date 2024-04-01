@@ -7,8 +7,9 @@ class MeltingBust {
         eye_hair_mask.loadPixels();
         bust_dynamic.loadPixels();
         bust_previous.loadPixels();
+        eye_mask.loadPixels();
 
-        for (let i = 0; i < 24; i++) {
+        for (let i = 0; i < 45; i++) {
             eyeMasks[i].loadPixels();
         }
 
@@ -56,8 +57,11 @@ class MeltingBust {
         push();
 
         // print(this.bust.pixels)
+        translate((width*0.125), height/2 + (-this.bust.height)*1.5)
         scale(1.5);
-        image(this.bust, -width/2 + width*0.575, height/2 - height*0.575)
+        // print(height, (-height/2 + height - this.bust.height) + this.bust.height)
+        imageMode(CORNER)
+        image(this.bust, 0, 0)
 
         pop();
     }
@@ -133,6 +137,9 @@ class MeltingBust {
             max = 0;
             min = bust_default.pixels.length - 1;
         }
+
+        // print("eyemaskindex", eyeMaskIndex)
+
  
         for (let i = min; i < max; i += 4*render_mult) {
 
@@ -152,9 +159,9 @@ class MeltingBust {
             if (newLoc.getX() >= 0 && newLoc.getX() < bust_default.width && newLoc.getY() >= 0 && newLoc.getY() < bust_default.height) {
 
                 // if (this.targetFace && !s.targetFace) {
-                    // if (eyeMasks[10].pixels[i] || eyeMasks[10].pixels[i + 1*render_mult] || eyeMasks[10].pixels[i + 2*render_mult] || eyeMasks[10].pixels[i + 3*render_mult]) {
-                    //     this.colorPixel(final_i, i, render_mult, true, eyeMasks[eyeMaskIndex].pixels);
-                    // } else {
+                    if (eye_mask.pixels[i] || eye_mask.pixels[i + 1*render_mult] || eye_mask.pixels[i + 2*render_mult] || eye_mask.pixels[i + 3*render_mult]) {
+                        this.colorPixel(final_i, i, render_mult, true, eyeMasks[eyeMaskIndex].pixels);
+                    } else {
                         if (bust_default.pixels[i] || bust_default.pixels[i + 1*render_mult] || bust_default.pixels[i + 2*render_mult] || bust_default.pixels[i + 3*render_mult]) {
                             if (this.pickers[curLoc.getY()][curLoc.getX()]) {
                                 this.colorPixel(final_i, i, render_mult, true, bust_dynamic.pixels);
@@ -164,7 +171,8 @@ class MeltingBust {
                         } else {
                             this.colorPixel(final_i, i, render_mult, false, 183);
                         }
-                    // }
+                    }
+                // }
                 // } else {
                 //     if (bust_default.pixels[i] || bust_default.pixels[i + 1*render_mult] || bust_default.pixels[i + 2*render_mult] || bust_default.pixels[i + 3*render_mult]) {
                 //         this.colorPixel(final_i, i, render_mult, true, bust_default.pixels);

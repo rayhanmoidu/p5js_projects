@@ -4,6 +4,8 @@ class CV_Helper {
         this.begin_decrement = false;
         this.hasCapture = false;
         this.timeout = 0;
+
+        this.targetEyeMask = -1;
     }
 
     recomputeOpticalFlow(preds) {
@@ -13,8 +15,22 @@ class CV_Helper {
             singlepred = pred;
             let curNosePos = new Vec2(pred.annotations["noseTip"][0][0], pred.annotations["noseTip"][0][1]);
 
-            eyeMaskIndex = int(map(video.width - curNosePos.getX(), 0, video.width, 0, 24-1));
-            print(eyeMaskIndex)
+            this.targetEyeMask = int(map(video.width - curNosePos.getX(), 0, video.width, 0, 44));
+            this.targetEyeMask = max(0, this.targetEyeMask);
+            this.targetEyeMask = min(44, this.targetEyeMask);
+
+            let dir = this.targetEyeMask - eyeMaskIndex;
+
+            eyeMaskIndex += dir * 0.5;
+            eyeMaskIndex = int(eyeMaskIndex)
+
+            // if (this.oldEyeMaskIndex != -1) {
+            //     let temp = this.oldEyeMaskIndex;
+            //     this.oldEyeMaskIndex = eyeMaskIndex;
+            //     eyeMaskIndex = ceil((eyeMaskIndex + temp) / 2)
+            // }
+
+            // print("eyemaskindex", eyeMaskIndex)
 
             if (prevNosePos) {
                 let diff = curNosePos.subtract(prevNosePos).length2();
@@ -45,7 +61,7 @@ class CV_Helper {
 
             if (this.rest_period <= 0) {
                 this.timeout += 1;
-                print("timeout", this.timeout)
+                // print("timeout", this.timeout)
                 if (this.timeout > 1) {
                     retVal = false;
                 }
@@ -83,7 +99,7 @@ class CV_Helper {
         const w = bb.bottomRight[0][0] - x;
         const h = bb.bottomRight[0][1] - y;
 
-        print(x, y, w, h)
+        // print(x, y, w, h)
 
         // let capture = createImage(w, h);
 
@@ -119,7 +135,7 @@ class CV_Helper {
         lalala2 = []
 
         let density = pixelDensity()
-        print("density", density)
+        // print("density", density)
 
         for (let i = 0; i < eye_hair_mask.pixels.length; i+=4) {
             if (!(eye_hair_mask.pixels[i] && eye_hair_mask.pixels[i + 1] && eye_hair_mask.pixels[i + 2] && eye_hair_mask.pixels[i + 3])) {
@@ -182,7 +198,7 @@ class CV_Helper {
         lala1 = (avgpp / nn) / video.width;
         lala2 = (avgpp / nn) % video.width;
 
-        print("final", (avgpp / nn) / video.width, (avgpp / nn) % video.width);
+        // print("final", (avgpp / nn) / video.width, (avgpp / nn) % video.width);
 
         // print("final", minrow, maxrow, mincol, maxcol)
 
