@@ -28,6 +28,12 @@ class MeltingBust {
         }
 
         // print(this.bust)
+        this.eyeImagePositions = []
+        for (let i = 0; i < bust_default.pixels.length; i += 4) {
+            if (eye_mask.pixels[i] || eye_mask.pixels[i + 1] || eye_mask.pixels[i + 2] || eye_mask.pixels[i + 3]) {
+                this.eyeImagePositions.push(i);
+            }
+        }
     }
 
     setTargetFace(targetFace) {
@@ -111,20 +117,32 @@ class MeltingBust {
         return count;
     }
 
+    fillEyes() {
+        print("filling eyes", eyeMaskIndex)
+        for (let i = 0; i < this.eyeImagePositions.length; i++) {
+            let curIndex = this.eyeImagePositions[i];
+            this.colorPixel(curIndex, curIndex, 1, true, eyeMasks[eyeMaskIndex].pixels);
+        }
+        this.bust.updatePixels();
+    }
+
     melt(x0, f) {
 
-        for (let i = 0; i < 1000; i++) {
-            // let ii = floor(random(0, bust_default.height-1))
-            // let jj = floor(random(0, bust_default.width-1))
-            // for (let iii = ii; iii < ii+15; iii++) {
-            //     for (let jjj = jj; jjj < jj+15; jjj++) {
-            //         if (iii < this.pickers.length && jjj < this.pickers[0].length) {
-            //         this.pickers[iii][jjj] = true;
-            //         }
-            //     }
-            // }
-            this.pickers[floor(random(0, bust_default.height-1))][floor(random(0, bust_default.width-1))] = true;
-        }
+        // if (shouldMelt) {
+
+            for (let i = 0; i < 1000; i++) {
+                // let ii = floor(random(0, bust_default.height-1))
+                // let jj = floor(random(0, bust_default.width-1))
+                // for (let iii = ii; iii < ii+15; iii++) {
+                //     for (let jjj = jj; jjj < jj+15; jjj++) {
+                //         if (iii < this.pickers.length && jjj < this.pickers[0].length) {
+                //         this.pickers[iii][jjj] = true;
+                //         }
+                //     }
+                // }
+                this.pickers[floor(random(0, bust_default.height-1))][floor(random(0, bust_default.width-1))] = true;
+            }
+        // }
 
         // print(this.countTrueElements(this.pickers))
 

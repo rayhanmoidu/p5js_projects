@@ -14,10 +14,14 @@ class World_Inside {
         // }
         // only do this if force has changed?
         // this.melting_bust.melt(this.x0, new Vec2(s.fx, cv_helper.getRestPeriod()));
+
+        // this.melting_bust.melt(did_melt, this.x0, new Vec2(s.fx, cv_helper.getRestPeriod()/5));
+
         if (did_melt) {
             this.hasMelted = true;
             this.melting_bust.melt(this.x0, new Vec2(s.fx, cv_helper.getRestPeriod()/5));
         } else {
+            this.melting_bust.fillEyes();
             if (this.hasMelted) {
                 this.hasMelted = false;
                 // print(bust_default.pixels.length, this.melting_bust.getPixels().length)

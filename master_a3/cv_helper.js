@@ -9,7 +9,7 @@ class CV_Helper {
     }
 
     recomputeOpticalFlow(preds) {
-        let opticalFlow = 0;
+        let opticalFlow = 10;
         let singlepred;
         preds.forEach((pred, i) => {
             singlepred = pred;
@@ -40,44 +40,80 @@ class CV_Helper {
             prevNosePos = curNosePos;
         })
 
+        // melting logic
         let retVal = true;
 
-        if (opticalFlow < 3 && !this.begin_decrement) {
-            this.rest_period += 2;
-            if (!this.hasCapture && singlepred) {
-                // print(singlepred)
-                this.capture = this.captureFace(singlepred);
-                this.hasCapture = true;
-                // return true;
-            }
-        } else {
-            this.begin_decrement = true;
-            this.rest_period -= 0.7 * (this.rest_period);
-            if (this.rest_period < 3) {
-                this.rest_period = 0;
-            }
-            this.rest_period = max(this.rest_period, 0);
-            this.hasCapture = false;
-
-            if (this.rest_period <= 0) {
+        
+        if (this.begin_decrement) { // bust is zooming back up
+            if (this.rest_period <= 0) { // if finished
                 this.timeout += 1;
-                // print("timeout", this.timeout)
-                if (this.timeout > 1) {
+                retVal = false;
+            } else {
+                this.rest_period -= 0.7 * (this.rest_period);
+                if (this.rest_period < 3) {
+                    this.rest_period = 0;
+                }
+                this.rest_period = max(this.rest_period, 0);
+                this.hasCapture = false;
+
+                if (this.rest_period <= 0) {
+                    this.timeout += 1;
                     retVal = false;
                 }
-                // retVal = false;
+            }
+        } else {
+            if (opticalFlow < 3) { 
+                this.rest_period += 2;
+                if (!this.hasCapture && singlepred) {
+                    this.capture = this.captureFace(singlepred);
+                    this.hasCapture = true;
+                }
+            } else {
+                this.begin_decrement = true;
+                this.timeout = 0;
             }
         }
 
-        if (opticalFlow > 3) {
-            this.timeout = 0;
-        }
+
+
+        // if (opticalFlow < 3 && !this.begin_decrement) {
+        //     this.rest_period += 2;
+        //     if (!this.hasCapture && singlepred) {
+        //         // print(singlepred)
+        //         this.capture = this.captureFace(singlepred);
+        //         this.hasCapture = true;
+        //         // return true;
+        //     }
+        // } else {
+        //     this.begin_decrement = true;
+        //     this.rest_period -= 0.7 * (this.rest_period);
+        //     if (this.rest_period < 3) {
+        //         this.rest_period = 0;
+        //     }
+        //     this.rest_period = max(this.rest_period, 0);
+        //     this.hasCapture = false;
+
+        //     if (this.rest_period <= 0) {
+        //         this.timeout += 1;
+        //         // print("timeout", this.timeout)
+        //         if (this.timeout > 1) {
+        //             retVal = false;
+        //         }
+        //         // retVal = false;
+        //     }
+        // }
+
+        // if (opticalFlow > 3) {
+        //     this.timeout = 0;
+        // }
 
         if (this.timeout > 250) {
             this.begin_decrement = false;
             this.timeout = 0;
             // retVal = false;
         }
+
+        // print(this.timeout, retVal)
 
 
         // if (this.rest_period > 500 && singlepred && this.noCapture) {
