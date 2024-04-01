@@ -24,6 +24,12 @@ let prevNosePos;
 
 let target_face;
 
+let lala1 = 0;
+let lala2 = 0;
+
+let lalala1 = []
+let lalala2 = []
+
 function preload() {
   windowframe = loadImage("data/windowframe.png");
   bust_default = loadImage("data/rayhan.png");
@@ -80,7 +86,36 @@ function draw() {
   image(lala, -width/2 + s.woffsetx, -height/2 + s.woffsety)
   world_inside.draw();
 
-  // image(video, -width/2, -height/2)
+  image(video, -width/2, -height/2)
+  drawBoundingBoxes();
+
+  for (let i = 0; i < lalala1.length; i++) {
+    fill(100)
+    noStroke();
+    circle(lalala2[i] - width/2, lalala1[i] - height/2, 5)
+  }
+
+//   fill(255)
+//   circle(lala2 - width/2, lala1 - height/2, 50)
+}
+
+function drawBoundingBoxes() {
+  let c = "#ff0000";
+
+  predictions.forEach((p) => {
+    const bb = p.boundingBox;
+    // get bb coordinates
+    const x = bb.topLeft[0][0];
+    const y = bb.topLeft[0][1];
+    const w = bb.bottomRight[0][0] - x;
+    const h = bb.bottomRight[0][1] - y;
+
+    // draw the bounding box
+    stroke(c);
+    strokeWeight(2);
+    noFill();
+    rect(x-width/2, y-height/2, w, h);
+  });
 }
 
 // global callback from the settings GUI

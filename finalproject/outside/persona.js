@@ -48,7 +48,7 @@ class Persona {
         graphicsObject.scale(this.scale);
 
         // shadow
-        graphicsObject. noFill();
+        graphicsObject.noFill();
         graphicsObject.stroke(111,107,72, 255*this.opacityFactor);
         graphicsObject.strokeWeight(16);
 

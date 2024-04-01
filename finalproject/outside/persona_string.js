@@ -43,6 +43,27 @@ class PersonaString {
         this.isCircleMode = false;
         this.hitCircle = false;
 
+        this.circleStart = -1;
+
+        if (random(0, 1) > 0.3) {
+            if (this.id == 0) {
+                this.circleStart = random(0.1, 0.3);
+                this.circleR = random(30, 50)
+            } else if (this.id == 1) {
+                this.circleStart = random(0.2, 0.7)
+                this.circleR = random(50, 90)
+            } else {
+                this.circleStart = random(0.2, 0.7)
+                this.circleR = random(75, 125)
+            }
+        }
+
+        this.addedstring = false;
+
+        // this.circleStart = random(0.1, 0.6);
+
+        // this.circleR = random(200, 300) * this.scale;
+
         // this.head = startpos.add(this.dir.scalarmult(s.stepSize));
         // this.updateDirections();
 
@@ -50,12 +71,19 @@ class PersonaString {
     }
 
     update() {
-        if (!this.hitCircle && s.gocircle) {
-            this.isCircleMode = true;
-            this.hitCircle = true;
-            this.oldhead = this.head;
-            this.numcycles = int(random(1, 2))
+        if (!this.hitCircle) {
+            if (this.getPercAlongPath() > this.circleStart) {
+                this.isCircleMode = true;
+                this.hitCircle = true;
+                this.oldhead = this.head;
+                this.numcycles = int(random(1, 2))
+            }
         }
+
+        // if (this.getPercAlongPath > 0.6 && !this.addedstring) {
+        //     world_outside.addString(this.id);
+        //     this.addedstring = true;
+        // }
 
         // this.t = min(this.t, 1);
 
@@ -63,6 +91,19 @@ class PersonaString {
         this.updateDirections();
 
         return this.numComplete == this.numPersonas;
+    }
+
+    shouldAddNew() {
+        if (this.getPercAlongPath > 0.6 && !this.addedstring) {
+            // world_outside.addString(this.id);
+            this.addedstring = true;
+            return true;
+        }
+    }
+
+    getPercAlongPath() {
+        let diff = this.head.getX() - this.startpos.getX();
+        return diff / (this.endpos.getX() - this.startpos.getX());
     }
 
     draw(graphicsObject) {
@@ -78,9 +119,9 @@ class PersonaString {
 
             if (this.isCircleMode) {
                 let perp_dir = new Vec2(-this.dir.getY(), this.dir.getX());
-                let circle_center = this.oldhead.add(perp_dir.scalarmult(-this.slopesign*s.circleR));
+                let circle_center = this.oldhead.add(perp_dir.scalarmult(-this.slopesign*this.circleR));
 
-                let posOnCircle = circle_center.add(new Vec2(-s.circleR * cos(this.t+ -this.slopesign*this.tinc), -s.circleR * sin(this.t+ -this.slopesign*this.tinc)));
+                let posOnCircle = circle_center.add(new Vec2(-this.circleR * cos(this.t+ -this.slopesign*this.tinc), -this.circleR * sin(this.t+ -this.slopesign*this.tinc)));
                 this.head = posOnCircle
 
                 // dont do +=, set it equal to the 
@@ -94,7 +135,7 @@ class PersonaString {
                     theta = atan2(startpos.det(curpos), startpos.dot(curpos))
                 }
                 // theta = atan2(startpos.det(curpos), startpos.dot(curpos))
-                this.tinc = theta + s.personaDist*this.scale/(s.circleR);
+                this.tinc = theta + s.personaDist*this.scale/(this.circleR);
 
                 let fact = this.tinc / (2*PI);
                 if (!this.alreadyTickedCycle && fact < 0 && fact > -0.05) {

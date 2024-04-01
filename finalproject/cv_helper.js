@@ -25,14 +25,15 @@ class CV_Helper {
 
         if (opticalFlow < 3 && !this.begin_decrement) {
             this.rest_period += 5;
-            if (!this.hasCapture) {
+            if (!this.hasCapture && singlepred) {
+                // print(singlepred)
                 this.capture = this.captureFace(singlepred);
                 this.hasCapture = true;
                 // return true;
             }
         } else {
             this.begin_decrement = true;
-            this.rest_period -= 150;
+            this.rest_period -= 300;
             this.rest_period = max(this.rest_period, 0);
             this.hasCapture = false;
 
@@ -71,6 +72,8 @@ class CV_Helper {
         const w = bb.bottomRight[0][0] - x;
         const h = bb.bottomRight[0][1] - y;
 
+        print(x, y, w, h)
+
         // let capture = createImage(w, h);
 
         // // Load the image's pixels.
@@ -98,6 +101,15 @@ class CV_Helper {
         let maxrow = -1
         let maxcol = -1
 
+        let avgpp = 0;
+        let nn = 0;
+
+        lalala1 = []
+        lalala2 = []
+
+        let density = pixelDensity()
+        print("density", density)
+
         for (let i = 0; i < eye_hair_mask.pixels.length; i+=4) {
             if (!(eye_hair_mask.pixels[i] && eye_hair_mask.pixels[i + 1] && eye_hair_mask.pixels[i + 2] && eye_hair_mask.pixels[i + 3])) {
                 if (bust_default.pixels[i] && bust_default.pixels[i + 1] && bust_default.pixels[i + 2] && bust_default.pixels[i + 3]) {
@@ -118,21 +130,29 @@ class CV_Helper {
                     }
 
 
-                    let boundingbox_samplerow = floor(map(row, 120, 435, 0, h));
-                    let boundingbox_samplecol = floor(map(col, 120, 355, 0, w));
+                    let boundingbox_samplerow = floor(map(row, 120, 435, h*0.2, h*0.8));
+                    let boundingbox_samplecol = floor(map(col, 120, 355, w*0.2, w*0.8));
+
+                    lalala1.push(y + boundingbox_samplerow)
+                    lalala2.push(x + boundingbox_samplecol)
 
                     // print(x, y, w, h)
 
-                    let bb_pixelpos = floor((y+boundingbox_samplerow)*video.width + ((x+boundingbox_samplecol)));
+                    let bb_pixelpos = (floor(y) + boundingbox_samplerow)*video.width + (floor(x) + boundingbox_samplecol)
 
+                    // let bb_pixelpos = floor((y+boundingbox_samplerow)*video.width + ((x+boundingbox_samplecol)));
+                    avgpp += bb_pixelpos;
+                    nn += 1;
+                    // print("mod", bb_pixelpos % 4)
                     if (bb_pixelpos%4 != 0) {
                         // print("ERROR OMG")
                     }
-                    bb_pixelpos -= bb_pixelpos%4;
+                    // bb_pixelpos -= bb_pixelpos%4;
+
                     // print(bb_pixelpos)
 
                     let intensity = 0.299 * video.pixels[bb_pixelpos*4 + 0] + 0.587 * video.pixels[bb_pixelpos*4 + 1] + 0.114 * video.pixels[bb_pixelpos*4 + 2]
-
+                    // intensity = 255 - intensity
                     // intensity += random(-50, 50);
                     
                     bust_dynamic.pixels[i] = intensity;
@@ -147,6 +167,11 @@ class CV_Helper {
                 }
             }
         }
+
+        lala1 = (avgpp / nn) / video.width;
+        lala2 = (avgpp / nn) % video.width;
+
+        print("final", (avgpp / nn) / video.width, (avgpp / nn) % video.width);
 
         // print("final", minrow, maxrow, mincol, maxcol)
 
