@@ -86,14 +86,14 @@ function draw() {
   image(lala, -width/2 + s.woffsetx, -height/2 + s.woffsety)
   world_inside.draw();
 
-  image(video, -width/2, -height/2)
-  drawBoundingBoxes();
+  // image(video, -width/2, -height/2)
+  // drawBoundingBoxes();
 
-  for (let i = 0; i < lalala1.length; i++) {
-    fill(100)
-    noStroke();
-    circle(lalala2[i] - width/2, lalala1[i] - height/2, 5)
-  }
+  // for (let i = 0; i < lalala1.length; i++) {
+  //   fill(100)
+  //   noStroke();
+  //   circle(lalala2[i] - width/2, lalala1[i] - height/2, 5)
+  // }
 
 //   fill(255)
 //   circle(lala2 - width/2, lala1 - height/2, 50)
