@@ -45,6 +45,11 @@ class World_Outside {
             }
         }
 
+        // if (random(0, 1) < 0.0005) {
+        //     let i = round(random(-0.49, 2.49));
+        //     this.personaStrings[i].push(this.stringFactory.createString(i));
+        // }
+
         // print(this.personaStrings)
 
         // for (let i = 0; i < toRemove.length; i++) {
@@ -127,7 +132,7 @@ class World_Outside {
         v11 = new Vec2(-50, this.h + 50);
         vertices = [v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11];
 
-        startpos_piecewise = [new Vec2(this.w*0.35, this.h - this.h*0.3), new Vec2(this.w*0.65, this.h + 50), new Vec2(this.w, this.h + 50), new Vec2(this.w*1.1, this.h - this.h*0.3)]
+        startpos_piecewise = [new Vec2(this.w*0.35, this.h - this.h*0.3), new Vec2(this.w*0.65, this.h + 50), new Vec2(this.w, this.h + 50), new Vec2(this.w*1.1, this.h - this.h*0.15)]
         let hill2 = new Hill(1, vertices, 0.25, this.w * 0.45, this.w * 0.9, [this.w*0.4, this.w*1.1], startpos_piecewise);
 
         // hill 3
@@ -144,8 +149,8 @@ class World_Outside {
         v11 = new Vec2(-50, this.h + 50);
         vertices = [v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11];
 
-        startpos_piecewise = [new Vec2(-this.w*0.1, this.h - this.h * 0.3), new Vec2(0, this.h - this.h*0.2), new Vec2(this.w*0.6, this.h - this.h*0.5)]
-        let hill3 = new Hill(2, vertices, 0.125, this.w * 0.1, this.w * 0.6, [-this.w*0.1, this.w*0.55], startpos_piecewise);
+        startpos_piecewise = [new Vec2(0, this.h - this.h*0.2), new Vec2(this.w*0.6, this.h - this.h*0.5)]
+        let hill3 = new Hill(2, vertices, 0.125, this.w * 0.1, this.w * 0.6, [0, this.w*0.55], startpos_piecewise);
 
         this.hills = [hill1, hill2, hill3];
     }

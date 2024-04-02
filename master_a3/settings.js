@@ -70,7 +70,7 @@ let s = {
 
     personaDist: 60,
 
-    personaSpeed: 0.05,
+    personaSpeed: 0.02,
     personaSpeedMax: 1,
     personaSpeedMin: 0,
     personaSpeedStep: 0.001,
@@ -80,7 +80,7 @@ let s = {
     stepSizeMin: 0,
     stepSizeStep: 0.05,
 
-    fadeDist: 50,
+    fadeDist: 100,
     fadeDistMax: 100,
     fadeDistMin: 0,
 

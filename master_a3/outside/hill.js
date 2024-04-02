@@ -54,7 +54,7 @@ class Hill {
     getEndPos(startpos) {
         if (this.id == 2) {
             let rand = random();
-            if (rand < 0.333) {
+            if (rand < 0.6) {
                 print("GOING TO CASTLE")
                 let lala = new Vec2(s.w*0.35, s.h*0.3);
                 // print(lala)
@@ -62,26 +62,32 @@ class Hill {
             }
         }
 
-        let start_x = this.startpos_xbounds[0];
-        let end_x = this.startpos_xbounds[1];
-        let startpos_xperc = (startpos.getX() - start_x) / (end_x - start_x);
+        // let start_x = this.startpos_xbounds[0];
+        // let end_x = this.startpos_xbounds[1];
+        // let startpos_xperc = (startpos.getX() - start_x) / (end_x - start_x);
 
-        let minp, maxp;
-        if (startpos_xperc > 0.5) {
-            minp = 0;
-            maxp = 1 - startpos_xperc;
-        } else {
-            minp = 1 - startpos_xperc;
-            maxp = 0;
+        // let minp, maxp;
+        // if (startpos_xperc > 0.5) {
+        //     minp = 0;
+        //     maxp = 1 - startpos_xperc;
+        // } else {
+        //     minp = 1 - startpos_xperc;
+        //     maxp = 0;
+        // }
+
+        // // print(minp, maxp)
+
+        // let endpos_x = this.endpos_min + (random(minp, maxp) * (this.endpos_max - this.endpos_min))
+
+        let endpos_x = random(this.endpos_min, this.endpos_max);
+
+        while (abs(endpos_x - startpos.getX()) < 200) {
+            endpos_x = random(this.endpos_min, this.endpos_max);
         }
-
-        // print(minp, maxp)
-
-        let endpos_x = this.endpos_min + (random(minp, maxp) * (this.endpos_max - this.endpos_min))
 
         if (this.id == 2) {
             while (this.doubleCheck_noCastleIntersection(endpos_x)) {
-                endpos_x = this.endpos_min + (random(minp, maxp) * (this.endpos_max - this.endpos_min)) 
+                endpos_x = random(this.endpos_min, this.endpos_max) 
             }
         }
 
