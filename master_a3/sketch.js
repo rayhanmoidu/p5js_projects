@@ -4,6 +4,8 @@ let bust_default;
 let eye_hair_mask;
 let bust_dynamic;
 let bust_previous;
+let shirtmask;
+let houndstooth;
 
 // scaling between video and display
 let heightScaleFactor;
@@ -42,6 +44,10 @@ function preload() {
   bust_dynamic = loadImage("data/hairmask_700.png")
   bust_previous = loadImage("data/rayhan_700.png")
   eye_mask = loadImage("data/new_eye_mask.png")
+  shirtmask = loadImage("data/shirtmask.png")
+  houndstooth = loadImage("data/houndstooth3.png")
+
+
 
   for (let i = 0; i < 45; i++) {
     stringname = "data/eyemask_" + i + ".png";
@@ -80,6 +86,25 @@ function setup() {
 
   world_inside = new World_Inside();
   world_outside = new World_Outside(s.w, s.h);
+  
+  // createShirt();
+}
+
+function createShirt() {
+
+  shirtmask.loadPixels();
+  houndstooth.loadPixels();
+
+  for (let i = 0; i < shirtmask.pixels.length; i+=4) {
+    for (let j = 0; j < 4; j++) {
+      if (shirtmask.pixels[i+j]) {
+        shirtmask.pixels[i + j] = houndstooth.pixels[(i+j)%houndstooth.pixels.length]
+      }
+    }
+  }
+
+  shirtmask.updatePixels();
+
 }
 
 function modelReady() {
@@ -96,6 +121,9 @@ function draw() {
   let lala = world_outside.getGraphicsObject();
   image(lala, -width/2 + s.woffsetx, -height/2 + s.woffsety)
   world_inside.draw();
+
+  // scale(0.65)
+  // image(shirtmask, (width*0.325), height/2)
 
   // image(video, -width/2, -height/2)
   // drawBoundingBoxes();

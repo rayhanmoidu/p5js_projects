@@ -63,7 +63,7 @@ class MeltingBust {
         push();
 
         // print(this.bust.pixels)
-        translate((width*0.125), height/2 + (-this.bust.height)*1.5)
+        translate((width*0.125), height/2 - (this.bust.height)*1.5)
         scale(1.5);
         // print(height, (-height/2 + height - this.bust.height) + this.bust.height)
         imageMode(CORNER)
