@@ -35,6 +35,20 @@ class Hill {
         graphicsObject.pop();
     }
 
+    drawStartPositions(graphicsObject) {
+
+        graphicsObject.push();
+
+        for (let i = 0; i < this.startpos_piecewise.length - 1; i++) {
+            graphicsObject.stroke(0);
+            graphicsObject.strokeWeight(10)
+            graphicsObject.line(this.startpos_piecewise[i].getX(), this.startpos_piecewise[i].getY(), this.startpos_piecewise[i + 1].getX(), this.startpos_piecewise[i + 1].getY())
+        }
+
+        graphicsObject.pop();
+
+    }
+
     drawStroke(graphicsObject) {
         graphicsObject.beginShape();
         for (let i = 0; i < this.vertices.length; i++) {

@@ -178,6 +178,8 @@ class CV_Helper {
         let density = pixelDensity()
         // print("density", density)
 
+        let intensityoffset = random(-25, 25);
+
         for (let i = 0; i < eye_hair_mask.pixels.length; i+=4) {
             if (!(eye_hair_mask.pixels[i] && eye_hair_mask.pixels[i + 1] && eye_hair_mask.pixels[i + 2] && eye_hair_mask.pixels[i + 3])) {
                 if (bust_default.pixels[i] && bust_default.pixels[i + 1] && bust_default.pixels[i + 2] && bust_default.pixels[i + 3]) {
@@ -221,7 +223,7 @@ class CV_Helper {
 
                     let intensity = 0.299 * video.pixels[bb_pixelpos*4 + 0] + 0.587 * video.pixels[bb_pixelpos*4 + 1] + 0.114 * video.pixels[bb_pixelpos*4 + 2]
                     // intensity = 255 - intensity
-                    // intensity += random(-50, 50);
+                    intensity += intensityoffset;
                     
                     bust_dynamic.pixels[i] = intensity;
                     bust_dynamic.pixels[i + 1] = intensity;

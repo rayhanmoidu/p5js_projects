@@ -81,7 +81,6 @@ class World_Outside {
             this.drawPersonas(i);
         }
 
-
         this.graphics_object.pop();
 
         return this.graphics_object;
@@ -152,7 +151,7 @@ class World_Outside {
         v11 = new Vec2(-50, this.h + 50);
         vertices = [v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11];
 
-        startpos_piecewise = [new Vec2(0, this.h - this.h*0.2), new Vec2(this.w*0.6, this.h - this.h*0.5)]
+        startpos_piecewise = [new Vec2(0, this.h - this.h*0.15), new Vec2(this.w*0.6, this.h - this.h*0.5)]
         let hill3 = new Hill(2, vertices, 0.125, this.w * 0.1, this.w * 0.6, [0, this.w*0.55], startpos_piecewise);
 
         this.hills = [hill1, hill2, hill3];
