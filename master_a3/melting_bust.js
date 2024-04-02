@@ -129,7 +129,7 @@ class MeltingBust {
 
         // if (shouldMelt) {
 
-            for (let i = 0; i < 1000; i++) {
+            for (let i = 0; i < 5000; i++) {
                 // let ii = floor(random(0, bust_default.height-1))
                 // let jj = floor(random(0, bust_default.width-1))
                 // for (let iii = ii; iii < ii+15; iii++) {

@@ -18,6 +18,8 @@ class StringFactory {
         let startpos = hill.getStartPos();
         let destpos = hill.getEndPos(startpos);
 
-        return new PersonaString(hillId, hill.getScale(), startpos, destpos);
+        print(startpos, destpos, hillId)
+
+        return new PersonaString(hillId, hill, hill.getScale(), startpos, destpos);
     }
 }

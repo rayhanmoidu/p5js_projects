@@ -1,7 +1,8 @@
 class PersonaString {
-    constructor(id, scale, startpos, endpos) {
+    constructor(id, hill, scale, startpos, endpos) {
 
         this.id = id;
+        this.hill = hill;
 
         this.scale = scale;
 
@@ -33,7 +34,7 @@ class PersonaString {
         this.personas = [];
         for (let i = 0; i < this.numPersonas; i++) {
             let pos = startpos.add(this.dir.scalarmult(-i * s.personaDist*scale));
-            let newpersona = new Persona(pos, scale, endpos);
+            let newpersona = new Persona(this.id, hill, pos, scale, endpos);
             this.personas.push(newpersona);
         }
 
@@ -45,20 +46,24 @@ class PersonaString {
 
         this.circleStart = -1;
 
-        if (random(0, 1) > 0.3) {
+        this.SStep = 10;
+
+        if (random(0, 1) > 0.2) {
             if (this.id == 0) {
-                this.circleStart = random(0.1, 0.3);
-                this.circleR = random(30, 50)
+                this.circleStart = random(0.25, 0.3);
+                this.circleR = random(50, 80)
             } else if (this.id == 1) {
-                this.circleStart = random(0.2, 0.7)
-                this.circleR = random(50, 90)
+                this.circleStart = random(0.3, 0.7)
+                this.circleR = random(35, 50)
             } else {
-                this.circleStart = random(0.2, 0.7)
-                this.circleR = random(75, 125)
+                this.circleStart = random(0.4, 0.7)
+                this.circleR = random(25, 35)
             }
         }
 
         this.addedstring = false;
+
+        this.offset_t = 1;
 
         // this.circleStart = random(0.1, 0.6);
 
@@ -72,11 +77,11 @@ class PersonaString {
 
     update() {
         if (!this.hitCircle) {
-            if (this.getPercAlongPath() > this.circleStart) {
+            if (this.head.subtract(this.startpos).length2() > this.diff.length2()*this.circleStart) {
                 this.isCircleMode = true;
                 this.hitCircle = true;
                 this.oldhead = this.head;
-                this.numcycles = int(random(1, 2))
+                this.numcycles = int(random(3, 7))
             }
         }
 
@@ -108,16 +113,20 @@ class PersonaString {
 
     draw(graphicsObject) {
         for (let i = 0; i < this.personas.length; i++) {
-            this.personas[i].draw(graphicsObject);
+            this.personas[i].draw(graphicsObject, this.offset_t);
         }
-        // fill(255)
-        // circle(this.head.getX(), this.head.getY(), 10);
+
+        graphicsObject.fill(255)
+        graphicsObject.circle(this.endpos.getX(), this.endpos.getY(), 10);
     }
 
     updateDirections() {
         if (this.personas.length) {
 
             if (this.isCircleMode) {
+                this.offset_t -= 0.005;
+                this.offset_t = max(0, this.offset_t);
+
                 let perp_dir = new Vec2(-this.dir.getY(), this.dir.getX());
                 let circle_center = this.oldhead.add(perp_dir.scalarmult(-this.slopesign*this.circleR));
 
@@ -152,7 +161,18 @@ class PersonaString {
                     this.isCircleMode = false;
                     this.dir = this.endpos.subtract(this.personas[0].getPos()).normalize();
                 }
+            } else if (this.SMode) {
+                this.offset_t -= 0.005;
+                this.offset_t = max(0, this.offset_t);
+
+                let perp_dir = new Vec2(-this.dir.getY(), this.dir.getX());
+                let circle_center = this.oldhead.add(dir.scalarmult(this.SStep)).add(perp_dir.scalarmult(-this.slopesign*this.circleR));
+
             } else {
+                this.offset_t += 0.005;
+                this.offset_t = min(1, this.offset_t);
+
+                
                 // let dir = this.endpos.subtract(this.personas[0].getPos()).normalize();
                 this.head = this.personas[0].getPos().add(this.dir.scalarmult(s.personaDist*this.scale));
                 // print(this.head)
@@ -163,6 +183,9 @@ class PersonaString {
 
             this.personas[0].assignNewDestination(this.head);
             this.numComplete += this.personas[0].update();
+            if (this.id==0) {
+                // print(this.numComplete)
+            }
             for (let i = 1; i < this.personas.length; i++) {
                 this.personas[i].assignNewDestination(this.personas[i-1].getPos());
                 this.numComplete += this.personas[i].update();

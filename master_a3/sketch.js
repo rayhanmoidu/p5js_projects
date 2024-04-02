@@ -48,7 +48,7 @@ function preload() {
     let newEyeMask = loadImage(stringname);
     eyeMasks.push(newEyeMask);
   }
-  print(eyeMasks.length)
+  // print(eyeMasks.length)
 }
 
 function setup() {

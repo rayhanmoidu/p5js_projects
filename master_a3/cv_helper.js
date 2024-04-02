@@ -30,7 +30,6 @@ class CV_Helper {
             //     eyeMaskIndex = ceil((eyeMaskIndex + temp) / 2)
             // }
 
-            // print("eyemaskindex", eyeMaskIndex)
 
             if (prevNosePos) {
                 let diff = curNosePos.subtract(prevNosePos).length2();
@@ -77,7 +76,6 @@ class CV_Helper {
             }
         }
 
-        // print(retVal, this.timeout)
 
 
 
@@ -118,7 +116,7 @@ class CV_Helper {
             // retVal = false;
         }
 
-        print(retVal, this.timeout)
+        // print(retVal, this.timeout)
 
         // print(this.timeout, retVal)
 

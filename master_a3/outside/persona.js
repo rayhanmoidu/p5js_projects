@@ -1,22 +1,32 @@
 class Persona {
-    constructor(pos, scale, endpos) {
+    constructor(id, hill, pos, scale, endpos) {
+        this.id = id;
         this.pos = pos;
         this.destpos = new Vec2(0, 0);
         this.dir = new Vec2(0, 0);
         this.scale = scale;
         this.endpos = endpos;
+        this.hill = hill;
 
         this.opacityFactor = 1;
+
+        this.offset = new Vec2(random(-50, 0), random(0, 50));
     }
 
     update() {
         // print(this.dir)
-        this.pos = this.pos.add(this.dir.scalarmult(45 * s.personaSpeed / frameRate()));
+
+        let finalFrameRate = frameRate();
+        finalFrameRate = min(65, finalFrameRate);
+        finalFrameRate = max(15, finalFrameRate)
+        this.pos = this.pos.add(this.dir.scalarmult(45 * s.personaSpeed / finalFrameRate));
 
         let dist = this.endpos.subtract(this.pos).length2();
+        // let dist = this.hill.getDist(this.pos);
         if (this.opacityFactor > 0 && dist < s.fadeDist) {
+            // print(dist, this.id)
             this.opacityFactor = map(dist, 5, s.fadeDist, 0, 1);
-
+            // return 1;
             if (this.opacityFactor <= 0) {
                 return 1;
             }
@@ -41,10 +51,11 @@ class Persona {
         return this.pos;
     }
 
-    draw(graphicsObject) {
+    draw(graphicsObject, t) {
+        // print(t)
         graphicsObject.push();
 
-        graphicsObject.translate(this.pos.getX(), this.pos.getY());
+        graphicsObject.translate(this.pos.getX() + this.offset.getX()*t, this.pos.getY() + this.offset.getY()*t);
         graphicsObject.scale(this.scale);
 
         // shadow

@@ -1,5 +1,13 @@
 let s = {
 
+    castleX: 100,
+
+    castleY: 100,
+
+    castleW:  100,
+    castleH: 135,
+    castleHMax: 200,
+
     imgW: 706,
     imgH: 774,
 
@@ -62,8 +70,8 @@ let s = {
 
     personaDist: 60,
 
-    personaSpeed: 0.02,
-    personaSpeedMax: 10,
+    personaSpeed: 0.05,
+    personaSpeedMax: 1,
     personaSpeedMin: 0,
     personaSpeedStep: 0.001,
 
@@ -72,7 +80,7 @@ let s = {
     stepSizeMin: 0,
     stepSizeStep: 0.05,
 
-    fadeDist: 25,
+    fadeDist: 50,
     fadeDistMax: 100,
     fadeDistMin: 0,
 

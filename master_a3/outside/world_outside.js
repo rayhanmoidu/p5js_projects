@@ -10,7 +10,7 @@ class World_Outside {
         this.hills = [];
         this.createHills();
 
-        this.castle = new Castle(this.w * 0.275, this.h - this.h * 0.875, 75, 100);
+        this.castle = new Castle(this.w * 0.275, this.h - this.h * 0.875, s.castleW, s.castleH);
 
         this.stringFactory = new StringFactory(this.hills);
         this.personaStrings = []
@@ -20,12 +20,15 @@ class World_Outside {
     }
 
     update() {
+        // print(s.castleW)
+        this.castle = new Castle(this.w * 0.275, this.h - this.h * 0.875, s.castleW, s.castleH);
         this.stringFactory.update(this.personaStrings);
         // let toRemove = [];
         for (let i = 0; i < this.numHills; i++) {
             for (let j = 0; j < this.personaStrings[i].length; j++) {
                 if (this.personaStrings[i][j].update(this.personaStrings, i, j)) {
                     // toRemove.push(new Vec2(i, j));
+                    // print("adding new ", i)
                     this.personaStrings[i].splice(j, 1);
                     this.personaStrings[i].push(this.stringFactory.createString(i));
                 }
@@ -107,8 +110,8 @@ class World_Outside {
         v9 = new Vec2(-50, this.h + 50)
         vertices = [v1, v2, v3, v4, v5, v6, v7, v8, v9];
 
-        let startpos_piecewise = [new Vec2(-this.w*0.2, this.h + 50), new Vec2(0, this.h + 100), new Vec2(this.w*0.65, this.h + 100)]
-        let hill1 = new Hill(0, vertices, 0.5, this.w * 0.2, this.w * 0.5, [-this.w*0.2, this.w*0.65], startpos_piecewise);
+        let startpos_piecewise = [new Vec2(-this.w*0.1, this.h + 50), new Vec2(0, this.h + 100), new Vec2(this.w*0.65, this.h + 100)]
+        let hill1 = new Hill(0, vertices, 0.5, this.w * 0.2, this.w * 0.5, [-this.w*0.1, this.w*0.65], startpos_piecewise);
 
         // hill 2
         v1 = new Vec2(-50, this.h - this.h * 0.3);
@@ -125,7 +128,7 @@ class World_Outside {
         vertices = [v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11];
 
         startpos_piecewise = [new Vec2(this.w*0.35, this.h - this.h*0.3), new Vec2(this.w*0.65, this.h + 50), new Vec2(this.w, this.h + 50), new Vec2(this.w*1.1, this.h - this.h*0.3)]
-        let hill2 = new Hill(1, vertices, 0.25, this.w * 0.3, this.w * 0.9, [this.w*0.4, this.w*1.1], startpos_piecewise);
+        let hill2 = new Hill(1, vertices, 0.25, this.w * 0.45, this.w * 0.9, [this.w*0.4, this.w*1.1], startpos_piecewise);
 
         // hill 3
         v1 = new Vec2(-50, this.h - this.h * 0.5);
@@ -141,8 +144,8 @@ class World_Outside {
         v11 = new Vec2(-50, this.h + 50);
         vertices = [v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11];
 
-        startpos_piecewise = [new Vec2(-this.w*0.2, this.h - this.h * 0.3), new Vec2(0, this.h - this.h*0.2), new Vec2(this.w*0.6, this.h - this.h*0.5)]
-        let hill3 = new Hill(2, vertices, 0.125, this.w * 0.1, this.w * 0.7, [-this.w*0.2, this.w*0.55], startpos_piecewise);
+        startpos_piecewise = [new Vec2(-this.w*0.1, this.h - this.h * 0.3), new Vec2(0, this.h - this.h*0.2), new Vec2(this.w*0.6, this.h - this.h*0.5)]
+        let hill3 = new Hill(2, vertices, 0.125, this.w * 0.1, this.w * 0.6, [-this.w*0.1, this.w*0.55], startpos_piecewise);
 
         this.hills = [hill1, hill2, hill3];
     }

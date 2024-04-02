@@ -43,13 +43,21 @@ class Hill {
         graphicsObject.endShape();
     }
 
+    doubleCheck_noCastleIntersection(ep_x) {
+        print("TESTING ", ep_x, " against: ", s.w * 0.275, s.w * 0.275 + s.castleW)
+        if (ep_x > s.w * 0.275 && ep_x < s.w * 0.275 + s.castleW) {
+            return true;
+        }
+        return false;
+    }
+
     getEndPos(startpos) {
         if (this.id == 2) {
             let rand = random();
             if (rand < 0.333) {
-                print("hello")
+                print("GOING TO CASTLE")
                 let lala = new Vec2(s.w*0.35, s.h*0.3);
-                print(lala)
+                // print(lala)
                 return lala;
             }
         }
@@ -67,9 +75,15 @@ class Hill {
             maxp = 0;
         }
 
-        print(minp, maxp)
+        // print(minp, maxp)
 
         let endpos_x = this.endpos_min + (random(minp, maxp) * (this.endpos_max - this.endpos_min))
+
+        if (this.id == 2) {
+            while (this.doubleCheck_noCastleIntersection(endpos_x)) {
+                endpos_x = this.endpos_min + (random(minp, maxp) * (this.endpos_max - this.endpos_min)) 
+            }
+        }
 
         // if id is 2, make sure endposx is not at castle
 
@@ -86,6 +100,26 @@ class Hill {
         return new Vec2(0, 0); 
     }
 
+    getDist_lineSegment(p, v, w) {
+        let l2 = v.subtract(w).length2();
+        if (l2 == 0.0) return p.subtract(v).length2();
+        let dotres = p.subtract(v).dot(w.subtract(v));
+        let t = max(0, min(1, dotres / l2));
+        let projection = v.add(w.subtract(v).scalarmult(t));
+        return p.subtract(projection).length2();
+    }
+
+    getDist(p) {
+        let minDist = 1000000;
+        for (let i = 0; i < this.vertices.length - 1; i++) {
+            let curDist = this.getDist_lineSegment(p, this.vertices[i], this.vertices[i+1]);
+            if (curDist < minDist) {
+                minDist = curDist;
+            }
+        }
+        return minDist;
+    }
+
     getStartPos() {
         let x_bounds = this.startpos_xbounds;
 
@@ -97,7 +131,7 @@ class Hill {
         let ret = new Vec2(start_x, this.getStartY(start_x));
 
         if (this.id == 0) {
-            print("here", ret)
+            // print("here", ret)
         }
         return ret;
     }
@@ -108,8 +142,9 @@ class Hill {
             let next = this.startpos_piecewise[i + 1];
             if (cur.getX() < start_x && next.getX() > start_x) {
                 let slope = (next.getY() - cur.getY()) / (next.getX() - cur.getX());
-                print(slope)
-                if (slope!=undefined) {
+                // print(this.id, slope)
+                // print(slope)
+                if (slope) {
                     return cur.getY() + (slope * (start_x - cur.getX()));
                 } else {
                     return cur.getY();
