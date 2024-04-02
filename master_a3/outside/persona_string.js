@@ -21,20 +21,6 @@ class PersonaString {
         let up = new Vec2(0, 1);
         this.dir_theta = acos(this.dir.dot(up)/(this.dir.length2()*up.length2()));
 
-        if (this.slopesign > 0) {
-            this.t = this.dir_theta;
-        } else {
-            this.t = PI - this.dir_theta;
-        }
-
-        if (this.slopesign > 0) {
-            
-            this.t = (PI/2) + this.dir_theta;
-        } else {
-            this.t = (PI/2) - this.dir_theta;
-        }
-        this.tinc = 0;
-
         this.numPersonas = int(random(10, 30));
         this.numComplete = 0;
 
@@ -48,30 +34,56 @@ class PersonaString {
         this.head = this.personas[0].getPos()
         this.oldhead = new Vec2(0, 0)
 
-        this.isCircleMode = false;
-        this.hitCircle = false;
 
-        this.circleStart = -1;
 
-        this.Sdir = -1*this.slopesign;
+        // s and o shapes
 
-        
-        this.SMode = false;
+        let randfactor = random(0, 1);
 
-        if (random(0, 1) > 0) {
-            if (this.id == 0) {
-                this.circleStart = random(0.15, 0.2);
-                this.circleR = random(20, 30)
-            } else if (this.id == 1) {
-                this.circleStart = random(0.3, 0.4)
-                this.circleR = random(35, 50)
+        this.should_o = false;
+        this.should_s = false;
+
+        if (randfactor < 0.3) {
+            this.should_o = true;
+        } else {
+            this.should_s = true;
+        }
+
+        if (this.should_o) {
+            if (this.slopesign > 0) {
+                this.t = this.dir_theta;
             } else {
-                this.circleStart = random(0.4, 0.5)
-                this.circleR = random(25, 35)
+                this.t = PI - this.dir_theta;
+            }
+        } else if (this.should_s) {
+            if (this.slopesign > 0) {
+                this.t = (PI/2) + this.dir_theta;
+            } else {
+                this.t = (PI/2) - this.dir_theta;
             }
         }
 
-        this.SStep = this.circleR;
+        this.tinc = 0;
+
+        this.isShapeMode = false;
+        this.hitShape = false;
+
+        this.shapeStart = -1;
+
+        this.Sdir = -1*this.slopesign;
+
+        if (random(0, 1) > 0) {
+            if (this.id == 0) {
+                this.shapeStart = random(0.15, 0.2);
+                this.circleR = random(50, 60)
+            } else if (this.id == 1) {
+                this.shapeStart = random(0.3, 0.4)
+                this.circleR = random(40, 50)
+            } else {
+                this.shapeStart = random(0.4, 0.5)
+                this.circleR = random(25, 35)
+            }
+        }
 
         this.addedstring = false;
 
@@ -88,40 +100,21 @@ class PersonaString {
     }
 
     update() {
-        if (!this.hitCircle) {
-            if (this.head.subtract(this.startpos).length2() > this.diff.length2()*this.circleStart) {
+        if (!this.hitShape) {
+            if (this.head.subtract(this.startpos).length2() > this.diff.length2()*this.shapeStart) {
                 print("starting S");
-                this.SMode = true;
-                this.hitCircle = true;
+                this.isShapeMode = true;
+                this.hitShape = true;
                 this.oldhead = this.head;
-                this.numcycles = int(random(3, 7))
+                this.numcycles = int(random(2, 4))
             }
         }
-
-        // if (this.getPercAlongPath > 0.6 && !this.addedstring) {
-        //     world_outside.addString(this.id);
-        //     this.addedstring = true;
-        // }
-
         // this.t = min(this.t, 1);
 
         // this.head = this.personas[0].getPos().add(this.dir.scalarmult(s.stepSize));
         this.updateDirections();
 
         return this.numComplete == this.numPersonas;
-    }
-
-    shouldAddNew() {
-        if (this.getPercAlongPath > 0.6 && !this.addedstring) {
-            // world_outside.addString(this.id);
-            this.addedstring = true;
-            return true;
-        }
-    }
-
-    getPercAlongPath() {
-        let diff = this.head.getX() - this.startpos.getX();
-        return diff / (this.endpos.getX() - this.startpos.getX());
     }
 
     draw(graphicsObject) {
@@ -136,7 +129,7 @@ class PersonaString {
     updateDirections() {
         if (this.personas.length) {
 
-            if (this.isCircleMode) { // CIRCLE
+            if (this.isShapeMode && this.should_o) { // CIRCLE
                 this.offset_t -= s.personaSpeed*this.scale;
                 this.offset_t = max(0, this.offset_t);
 
@@ -171,16 +164,16 @@ class PersonaString {
                 if (this.numcyclescomplete == this.numcycles) {
                     this.numcyclescomplete = 0;
                     this.tinc = 0;
-                    this.isCircleMode = false;
+                    this.isShapeMode = false;
                     this.dir = this.endpos.subtract(this.personas[0].getPos()).normalize();
                 }
-            } else if (this.SMode) { // S
+            } else if (this.isShapeMode && this.should_s) { // S
 
                 this.offset_t -= s.personaSpeed*this.scale;
                 this.offset_t = max(0, this.offset_t);
 
                 let perp_dir = new Vec2(-this.dir.getY(), this.dir.getX());
-                let circle_center = this.oldhead.add(this.dir.normalize().scalarmult(this.SStep))
+                let circle_center = this.oldhead.add(this.dir.normalize().scalarmult(this.circleR))
 
                 let posOnCircle = circle_center.add(new Vec2(-this.circleR * cos(this.t + -this.slopesign*this.tinc), -this.circleR * sin(this.t + -this.slopesign*this.tinc)));
                 this.head = posOnCircle
@@ -210,7 +203,7 @@ class PersonaString {
                     this.tinc = 0;
                 } else if (this.Sdir==-1 && fact < -0.5) {
                     this.tinc = 0;
-                    this.SMode = false;
+                    this.isShapeMode = false;
                     this.dir = this.endpos.subtract(this.personas[0].getPos()).normalize();
                 }
                 // print(this.id, fact)

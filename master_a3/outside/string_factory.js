@@ -6,7 +6,7 @@ class StringFactory {
     update(personaStrings) {
     }
 
-    createString(hillId) {
+    createString(hillId, mult) {
         let hill = this.hills[hillId];
 
         // let maxX = hill.getBaseWidth();
@@ -18,8 +18,14 @@ class StringFactory {
         let startpos = hill.getStartPos();
         let destpos = hill.getEndPos(startpos);
 
-        print(startpos, destpos, hillId)
+        let fact = mult - 1;
 
-        return new PersonaString(hillId, hill, hill.getScale(), startpos, destpos);
+        print("hello", hillId, fact, mult)
+
+        let adder = startpos.subtract(destpos).scalarmult(fact);
+
+        // print(startpos, destpos, hillId)
+
+        return new PersonaString(hillId, hill, hill.getScale(), startpos.add(adder), destpos);
     }
 }

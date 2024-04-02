@@ -15,11 +15,23 @@ class World_Outside {
         this.stringFactory = new StringFactory(this.hills);
         this.personaStrings = []
         for (let i = 0; i < this.numHills; i++) {
-            this.personaStrings.push([this.stringFactory.createString(i)]);
+            this.personaStrings.push([this.stringFactory.createString(i, 1)]);
+            if (i > 0) {
+                this.personaStrings[i].push(this.stringFactory.createString(i, 1.5));
+            }
         }
+
+        this.t = 0;
     }
 
     update() {
+        this.t += 0.0005;
+        let spawnFreq = sin(this.t) + 0.5;
+
+        // print(this.t / PI)
+
+        
+
         // print(s.castleW)
         this.castle = new Castle(this.w * 0.275, this.h - this.h * 0.875, s.castleW, s.castleH);
         this.stringFactory.update(this.personaStrings);
@@ -30,22 +42,13 @@ class World_Outside {
                     // toRemove.push(new Vec2(i, j));
                     // print("adding new ", i)
                     this.personaStrings[i].splice(j, 1);
-                    this.personaStrings[i].push(this.stringFactory.createString(i));
+                    this.personaStrings[i].push(this.stringFactory.createString(i, 1));
+                    // this.personaStrings[i].push(this.stringFactory.createString(i, 1.5));
                 }
             }
         }
 
-        for (let i = 0; i < this.numHills; i++) {
-            for (let j = 0; j < this.personaStrings[i].length; j++) {
-                if (this.personaStrings[i][j].shouldAddNew()) {
-                    // toRemove.push(new Vec2(i, j));
-                    // this.personaStrings[i].splice(j, 1);
-                    this.personaStrings[i].push(this.stringFactory.createString(i));
-                }
-            }
-        }
-
-        // if (random(0, 1) < 0.0005) {
+        // if (random(0, 1) < 0.0005*spawnFreq) {
         //     let i = round(random(-0.49, 2.49));
         //     this.personaStrings[i].push(this.stringFactory.createString(i));
         // }
@@ -115,8 +118,8 @@ class World_Outside {
         v9 = new Vec2(-50, this.h + 50)
         vertices = [v1, v2, v3, v4, v5, v6, v7, v8, v9];
 
-        let startpos_piecewise = [new Vec2(-this.w*0.1, this.h + 50), new Vec2(0, this.h + 100), new Vec2(this.w*0.65, this.h + 100)]
-        let hill1 = new Hill(0, vertices, 0.5, this.w * 0.2, this.w * 0.5, [-this.w*0.1, this.w*0.65], startpos_piecewise);
+        let startpos_piecewise = [new Vec2(-this.w*0.05, this.h + 50), new Vec2(0, this.h + 100), new Vec2(this.w*0.65, this.h + 100)]
+        let hill1 = new Hill(0, vertices, 0.5, this.w * 0.2, this.w * 0.5, [-this.w*0.05, this.w*0.65], startpos_piecewise);
 
         // hill 2
         v1 = new Vec2(-50, this.h - this.h * 0.3);
