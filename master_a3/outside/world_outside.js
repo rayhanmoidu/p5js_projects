@@ -16,8 +16,11 @@ class World_Outside {
         this.personaStrings = []
         for (let i = 0; i < this.numHills; i++) {
             this.personaStrings.push([this.stringFactory.createString(i, 1)]);
-            if (i > 0) {
+            if (i == 1) {
                 this.personaStrings[i].push(this.stringFactory.createString(i, 1.5));
+            } else if (i==2) {
+                this.personaStrings[i].push(this.stringFactory.createString(i, 1.3333));
+                this.personaStrings[i].push(this.stringFactory.createString(i, 1.6666));
             }
         }
 
@@ -152,7 +155,7 @@ class World_Outside {
         vertices = [v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11];
 
         startpos_piecewise = [new Vec2(0, this.h - this.h*0.15), new Vec2(this.w*0.6, this.h - this.h*0.5)]
-        let hill3 = new Hill(2, vertices, 0.125, this.w * 0.1, this.w * 0.6, [0, this.w*0.55], startpos_piecewise);
+        let hill3 = new Hill(2, vertices, 0.125, this.w * 0.25, this.w * 0.6, [0, this.w*0.55], startpos_piecewise);
 
         this.hills = [hill1, hill2, hill3];
     }

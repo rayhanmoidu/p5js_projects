@@ -88,6 +88,8 @@ function setup() {
   world_outside = new World_Outside(s.w, s.h);
   
   // createShirt();
+
+  noCursor();
 }
 
 function createShirt() {

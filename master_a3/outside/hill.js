@@ -58,7 +58,7 @@ class Hill {
     }
 
     doubleCheck_noCastleIntersection(ep_x) {
-        print("TESTING ", ep_x, " against: ", s.w * 0.275, s.w * 0.275 + s.castleW)
+        // print("TESTING ", ep_x, " against: ", s.w * 0.275, s.w * 0.275 + s.castleW)
         if (ep_x > s.w * 0.275 && ep_x < s.w * 0.275 + s.castleW) {
             return true;
         }
@@ -69,7 +69,7 @@ class Hill {
         if (this.id == 2) {
             let rand = random();
             if (rand < 0.6) {
-                print("GOING TO CASTLE")
+                // print("GOING TO CASTLE")
                 let lala = new Vec2(s.w*0.35, s.h*0.3);
                 // print(lala)
                 return lala;
@@ -95,7 +95,7 @@ class Hill {
 
         let endpos_x = random(this.endpos_min, this.endpos_max);
 
-        while (abs(endpos_x - startpos.getX()) < 200) {
+        while (abs(endpos_x - startpos.getX()) < 150) {
             endpos_x = random(this.endpos_min, this.endpos_max);
         }
 
