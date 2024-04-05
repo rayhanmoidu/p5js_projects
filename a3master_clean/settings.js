@@ -8,24 +8,24 @@ let p = {
     personaSpeedMin: 0,
     personaSpeedStep: 0.001,
 
-    intensityOffsetLow: 25,
-    intensityOffsetLowMax: 100,
-    intensityOffsetLowMin: -100,
+    intensityOffsetL: -75,
+    intensityOffsetLMax: 100,
+    intensityOffsetLMin: -100,
 
-    intensityOffsetHigh: 75,
-    intensityOffsetHighMax: 100,
-    intensityOffsetHighMin: -100,
+    intensityOffsetH: -10,
+    intensityOffsetHMax: 100,
+    intensityOffsetHMin: -100,
 
     meltingSpeed: 0.16,
     meltingSpeedMax: 1,
     meltingSpeedMin: 0,
     meltingSpeedStep: 0.01,
 
-    meltingTimeout: 5,
+    meltingTimeout: 300,
     meltingTimeoutMax: 5000,
     meltingTimeoutMin: 5,
 
-    emptyTimeout: 1,
+    emptyTimeout: 100000,
     emptyTimeoutMax: 100000,
     emptyTimeoutMin: 1,
 }

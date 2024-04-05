@@ -48,7 +48,7 @@ class CV_Helper {
                     } else { // no face in view
                         this.empty_timeout += 1;
                     }
-                    
+
                     this.nomelt_timeout = 0;
                 } else {
                     this.empty_timeout = 0;
@@ -88,20 +88,19 @@ class CV_Helper {
         }
 
         // if empty timeout complete (no face in view), begin reversion process
-        if (this.empty_timeout > p.emptyTimeout*100 || (shouldRevertToDefaultBust && !finishedRevertingToDefaultBust)) {
+        if (this.empty_timeout > p.emptyTimeout || (shouldRevertToDefaultBust && !finishedRevertingToDefaultBust)) {
             shouldRevertToDefaultBust = true;
             this.nomelt_timeout = true;
         } else {
             shouldRevertToDefaultBust = false;
         }
-
         return shouldMelt;
     }
 
-    captureFace(p) {
+    captureFace(pred) {
 
         // get prediction's bounding box coords
-        const bb = p.boundingBox;
+        const bb = pred.boundingBox;
         const x = bb.topLeft[0][0];
         const y = bb.topLeft[0][1];
         const w = bb.bottomRight[0][0] - x;
@@ -110,7 +109,7 @@ class CV_Helper {
         video.loadPixels();
 
         // offset video pixel intensity by random val, so successive captures are slightly different
-        let intensityOffset = random(p.intensityOffsetLow, p.intensityOffsetHigh)
+        let intensityOffset = random(p.intensityOffsetL, p.intensityOffsetH)
 
         // go through all pixels in mask
         for (let i = 0; i < eye_hair_mask.pixels.length; i+=4) {
@@ -132,7 +131,9 @@ class CV_Helper {
 
                     // set intensity from rgb, and add offset
                     let intensity = 0.299 * video.pixels[bb_pixelind*4 + 0] + 0.587 * video.pixels[bb_pixelind*4 + 1] + 0.114 * video.pixels[bb_pixelind*4 + 2]
+                    // print("before", intensity)
                     intensity += intensityOffset;
+                    // print("after", intensity)
                     intensity = min(255, intensity)
                     intensity = max(0, intensity)
                     
