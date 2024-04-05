@@ -43,7 +43,12 @@ class CV_Helper {
 
                 // if motion, reset timeout (also triggered when nothing is in view)
                 if (opticalFlow >= 3) {
-                    this.empty_timeout += 1;
+                    if (face_prediction) { // new face in view, reset reversion-complete flag
+                        finishedRevertingToDefaultBust = false;
+                    } else { // no face in view
+                        this.empty_timeout += 1;
+                    }
+                    
                     this.nomelt_timeout = 0;
                 } else {
                     this.empty_timeout = 0;
@@ -81,6 +86,15 @@ class CV_Helper {
             this.melting = true;
             this.nomelt_timeout = 0;
         }
+
+        // if empty timeout complete (no face in view), begin reversion process
+        if (this.empty_timeout > p.emptyTimeout*100 || (shouldRevertToDefaultBust && !finishedRevertingToDefaultBust)) {
+            shouldRevertToDefaultBust = true;
+            this.nomelt_timeout = true;
+        } else {
+            shouldRevertToDefaultBust = false;
+        }
+
         return shouldMelt;
     }
 

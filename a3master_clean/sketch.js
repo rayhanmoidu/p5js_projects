@@ -24,6 +24,8 @@ let previousBust;
 let world_inside;
 let world_outside;
 
+let shouldRevertToDefaultBust = false;
+let finishedRevertingToDefaultBust = false;
 let shouldMelt = false;
 let prevNosePos = 0;
 

@@ -56,7 +56,6 @@ class MeltingBust {
         }
         this.bust.updatePixels();
     }
-    
 
     melt(x0, f) {
 
@@ -103,6 +102,39 @@ class MeltingBust {
         }
 
         this.bust.updatePixels();
+    }
+
+    revertToDefault() {
+        // populate pickers (setting to true means pixel from defaultMask enters finalBuffer)
+        for (let i = 0; i < p.pixelTransfer; i++) {
+            this.pickers[floor(random(0, bust_default.height-1))][floor(random(0, bust_default.width-1))] = true;
+        }
+
+        // loop through all pixels in defaultMask
+        for (let i = 0; i < bust_default.pixels.length; i += 4) {
+
+            // get location of curPixel in defaultMask
+            let curLoc = new Vec2((i/4) % bust_default.width, floor((i/4) / bust_default.width));
+
+            // only replace pixels in defaultMask, but don't replace the eyes
+            if (bust_default.pixels[i] || bust_default.pixels[i + 1] || bust_default.pixels[i + 2] || bust_default.pixels[i + 3]) {
+                if (!(eye_mask.pixels[i] || eye_mask.pixels[i + 1] || eye_mask.pixels[i + 2] || eye_mask.pixels[i + 3])) {
+                    
+                    // if curPixel true in pickers, replace with value from default
+                    if (this.pickers[curLoc.getY()][curLoc.getX()]) {
+                        this.colorPixel(i, i, true, bust_default.pixels);
+
+                        // keep track of changes in previousBust
+                        for (let ii = 0; ii < 4; ii++) {
+                            previousBust.pixels[i + ii] = bust_default.pixels[i + ii];
+                        }
+                    }
+                }
+            }
+        }
+
+        this.bust.updatePixels();
+        previousBust.updatePixels();
     }
     
     // Section 4, 3D Regularized Kelvinlets, Equation 6 (https://graphics.pixar.com/library/Kelvinlets/paper.pdf)

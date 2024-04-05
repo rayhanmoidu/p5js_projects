@@ -4,6 +4,7 @@ class World_Inside {
         // melting bust
         this.melting_bust = new MeltingBust();
         this.isBustMelting = false;
+        this.reversionCounter = 0;
 
         // position where force is incited for Kelvinlet operation (melting)
         this.x0 = new Vec2(bust_default.width/2, bust_default.height/2);
@@ -15,6 +16,22 @@ class World_Inside {
 
             // melt bust using Kelvinlet operation, with a downwards force correlating to length of rest period
             this.melting_bust.melt(this.x0, new Vec2(0, cv_helper.getMeltingForce()*p.meltingSpeed));
+
+        } else if (shouldRevertToDefaultBust) { // shouldRevert is set by cv_helper, when no face in view for long time
+
+            // update eyes and revert
+            this.melting_bust.updateEyes();
+            this.melting_bust.revertToDefault();
+            this.reversionCounter += 1;
+
+            // will execute when reversion complete
+            if (this.reversionCounter > 500) {
+                this.reversionCounter = 0;
+                finishedRevertingToDefaultBust = true;
+                shouldRevertToDefaultBust = false;
+
+                this.melting_bust.resetPicker();
+            }
         } else {
 
             // update eyes based on eyeIndex set by cv_helper
@@ -25,9 +42,9 @@ class World_Inside {
                 this.isBustMelting = false;
 
                 // set previousBust buffer to current finalBust
-                previousBust.pixels = bust_default.pixels;
                 for (let i = 0; i < bust_default.pixels.length; i += 4) {
                     let curLoc = new Vec2((i/4) % bust_default.width, floor((i/4) / bust_default.width));
+
                     if (this.melting_bust.getPicker(curLoc.getY(), curLoc.getX())) {
                         for (let ii = 0; ii < 4; ii++) {
                             previousBust.pixels[i + ii] = videoBust.pixels[i + ii];

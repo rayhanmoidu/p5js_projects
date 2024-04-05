@@ -21,9 +21,13 @@ let p = {
     meltingSpeedMin: 0,
     meltingSpeedStep: 0.01,
 
-    meltingTimeout: 400,
+    meltingTimeout: 5,
     meltingTimeoutMax: 5000,
     meltingTimeoutMin: 5,
+
+    emptyTimeout: 1,
+    emptyTimeoutMax: 100000,
+    emptyTimeoutMin: 1,
 }
 
 let s = {
