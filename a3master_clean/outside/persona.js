@@ -17,7 +17,7 @@ class Persona {
     update() {
 
         // update position towards direction
-        this.pos = this.pos.add(this.dir.scalarmult(45 * s.personaSpeed / this.getFrameRate()));
+        this.pos = this.pos.add(this.dir.scalarmult(45 * p.personaSpeed / this.getFrameRate()));
 
         // begin fade out when position gets too close to endpos
         let dist = this.endpos.subtract(this.pos).length2();
@@ -27,7 +27,7 @@ class Persona {
 
         // fade persona out
         if (this.beginFadeOut) {
-            this.opacityFactor -= s.personaSpeed*2;
+            this.opacityFactor -= p.personaSpeed*2;
             this.opacityFactor = max(0, this.opacityFactor);
 
             // signal to parent that persona is faded out (by returning 1)

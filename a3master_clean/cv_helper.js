@@ -3,10 +3,11 @@ class CV_Helper {
         this.melting_force = 0;
         this.melting = true;
         this.nomelt_timeout = 0;
+        this.empty_timeout = 0;
 
         this.hasCapture = false;
 
-        this.eyeMaskIndex_target = -1;
+        this.eyeImageIndex_target = -1;
     }
 
     recomputeOpticalFlow(preds) {
@@ -40,9 +41,12 @@ class CV_Helper {
                 // increase timeout
                 this.nomelt_timeout += 1;
 
-                // if motion, reset timeout
+                // if motion, reset timeout (also triggered when nothing is in view)
                 if (opticalFlow >= 3) {
+                    this.empty_timeout += 1;
                     this.nomelt_timeout = 0;
+                } else {
+                    this.empty_timeout = 0;
                 }
                 shouldMelt = false;
             } else { // bust is snapping back up
@@ -73,7 +77,7 @@ class CV_Helper {
         }
 
         // if timeout complete, begin melting
-        if (this.nomelt_timeout > 250) {
+        if (this.nomelt_timeout > p.meltingTimeout) {
             this.melting = true;
             this.nomelt_timeout = 0;
         }
@@ -92,7 +96,7 @@ class CV_Helper {
         video.loadPixels();
 
         // offset video pixel intensity by random val, so successive captures are slightly different
-        let intensityoffset = random(25, 75);
+        let intensityOffset = random(p.intensityOffsetLow, p.intensityOffsetHigh)
 
         // go through all pixels in mask
         for (let i = 0; i < eye_hair_mask.pixels.length; i+=4) {
@@ -114,14 +118,15 @@ class CV_Helper {
 
                     // set intensity from rgb, and add offset
                     let intensity = 0.299 * video.pixels[bb_pixelind*4 + 0] + 0.587 * video.pixels[bb_pixelind*4 + 1] + 0.114 * video.pixels[bb_pixelind*4 + 2]
-                    intensity += intensityoffset;
+                    intensity += intensityOffset;
                     intensity = min(255, intensity)
+                    intensity = max(0, intensity)
                     
                     // fill videoBuffer
-                    bust_dynamic.pixels[i] = intensity;
-                    bust_dynamic.pixels[i + 1] = intensity;
-                    bust_dynamic.pixels[i + 2] = intensity;
-                    bust_dynamic.pixels[i + 3] = video.pixels[bb_pixelind*4 + 3];
+                    videoBust.pixels[i] = intensity;
+                    videoBust.pixels[i + 1] = intensity;
+                    videoBust.pixels[i + 2] = intensity;
+                    videoBust.pixels[i + 3] = video.pixels[bb_pixelind*4 + 3];
                 }
             }
         }
@@ -142,10 +147,10 @@ class CV_Helper {
         this.targetEyeMask = max(0, this.targetEyeMask);
         this.targetEyeMask = min(44, this.targetEyeMask);
 
-        let dir = this.targetEyeMask - eyeMaskIndex;
+        let dir = this.targetEyeMask - eyeImageIndex;
 
-        eyeMaskIndex += dir * 0.5;
-        eyeMaskIndex = int(eyeMaskIndex)
+        eyeImageIndex += dir * 0.5;
+        eyeImageIndex = int(eyeImageIndex)
     }
 
     getMeltingForce() {

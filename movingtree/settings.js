@@ -5,7 +5,7 @@ let s = {
     speedMax: 0.5,
     speedStep: 0.001,
   
-    treeCycleSpeed: 0.15,
+    treeCycleSpeed: 0.2,
     treeCycleSpeedMax: 1,
     treeCycleSpeedMin: 0.01,
     treeCycleSpeedStep: 0.01,

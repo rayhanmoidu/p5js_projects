@@ -218,4 +218,3 @@ class MeltingBust {
             this.bust.pixels[i1 + 3*render_mult] = 255;
         }
     }
-}

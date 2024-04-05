@@ -17,8 +17,8 @@ let eye_hair_mask;
 let eye_mask;
 
 // buffers
-let bust_dynamic;
-let bust_previous;
+let videoBust;
+let previousBust;
 
 // global vars
 let world_inside;
@@ -27,22 +27,22 @@ let world_outside;
 let shouldMelt = false;
 let prevNosePos = 0;
 
-let eyeMaskIndex = 0;
-let eyeMasks = []
+let eyeImageIndex = 0;
+let eyeImages = []
 
 function preload() {
   // load images
-  windowframe = loadImage("data/finalwindowframe.png");
-  bust_default = loadImage("data/rayhan_700.png");
-  eye_hair_mask = loadImage("data/hairmask_700.png")
-  bust_dynamic = loadImage("data/hairmask_700.png")
-  bust_previous = loadImage("data/rayhan_700.png")
-  eye_mask = loadImage("data/new_eye_mask.png")
+  windowframe = loadImage("data/windowframe.png");
+  bust_default = loadImage("data/defaultbust.png");
+  previousBust = loadImage("data/defaultbust.png")
+  eye_hair_mask = loadImage("data/EHEMask.png")
+  videoBust = loadImage("data/EHEMask.png")
+  eye_mask = loadImage("data/eyeMask.png")
 
   for (let i = 0; i < 45; i++) {
     stringname = "data/eyemask_" + i + ".png";
     let newEyeMask = loadImage(stringname);
-    eyeMasks.push(newEyeMask);
+    eyeImages.push(newEyeMask);
   }
 }
 
@@ -55,7 +55,7 @@ function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL).elt.getContext('2d', { willReadFrequently: true });
   noCursor();
 
-  createParamGui(s, paramChanged);
+  createParamGui(p, paramChanged);
 
   // vision
   cv_helper = new CV_Helper();

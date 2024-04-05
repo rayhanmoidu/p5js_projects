@@ -8,12 +8,12 @@ class MeltingBust {
         // load pixels for all masks and buffers
         bust_default.loadPixels();
         eye_hair_mask.loadPixels();
-        bust_dynamic.loadPixels();
-        bust_previous.loadPixels();
+        videoBust.loadPixels();
+        previousBust.loadPixels();
         eye_mask.loadPixels();
 
         for (let i = 0; i < 45; i++) {
-            eyeMasks[i].loadPixels();
+            eyeImages[i].loadPixels();
         }
 
         // Kelvinlet variables
@@ -52,7 +52,7 @@ class MeltingBust {
         // go through precompute eye pixel positions
         for (let i = 0; i < this.eyeImagePositions.length; i++) {
             let curIndex = this.eyeImagePositions[i];
-            this.colorPixel(curIndex, curIndex, true, eyeMasks[eyeMaskIndex].pixels);
+            this.colorPixel(curIndex, curIndex, true, eyeImages[eyeImageIndex].pixels);
         }
         this.bust.updatePixels();
     }
@@ -61,7 +61,7 @@ class MeltingBust {
     melt(x0, f) {
 
         // populate pickers (setting to true means pixel from videoBuffer enters finalBuffer)
-        for (let i = 0; i < 4000; i++) {
+        for (let i = 0; i < p.pixelTransfer; i++) {
             this.pickers[floor(random(0, bust_default.height-1))][floor(random(0, bust_default.width-1))] = true;
         }
 
@@ -85,15 +85,15 @@ class MeltingBust {
 
                 // if curPixel in eyeMask, color using current eye buffer
                 if (eye_mask.pixels[i] || eye_mask.pixels[i + 1] || eye_mask.pixels[i + 2] || eye_mask.pixels[i + 3]) {
-                    this.colorPixel(final_i, i, true, eyeMasks[eyeMaskIndex].pixels);
+                    this.colorPixel(final_i, i, true, eyeImages[eyeImageIndex].pixels);
                 } else {
                     // if curPixel in defaultMask, sample from buffer. else, background
                     if (bust_default.pixels[i] || bust_default.pixels[i + 1] || bust_default.pixels[i + 2] || bust_default.pixels[i + 3]) {
                         // if curPixel true in pickers, sample from videoBuffer. else, from previousBuffer
                         if (this.pickers[curLoc.getY()][curLoc.getX()]) {
-                            this.colorPixel(final_i, i, true, bust_dynamic.pixels);
+                            this.colorPixel(final_i, i, true, videoBust.pixels);
                         } else {
-                            this.colorPixel(final_i, i, true, bust_previous.pixels);
+                            this.colorPixel(final_i, i, true, previousBust.pixels);
                         }
                     } else {
                         this.colorPixel(final_i, i, false, 183);

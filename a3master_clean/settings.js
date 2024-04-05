@@ -1,3 +1,31 @@
+let p = {
+    pixelTransfer: 3500,
+    pixelTransferMax: 10000,
+    pixelTransferMin: 250,
+
+    personaSpeed: 0.018,
+    personaSpeedMax: 0.25,
+    personaSpeedMin: 0,
+    personaSpeedStep: 0.001,
+
+    intensityOffsetLow: 25,
+    intensityOffsetLowMax: 100,
+    intensityOffsetLowMin: -100,
+
+    intensityOffsetHigh: 75,
+    intensityOffsetHighMax: 100,
+    intensityOffsetHighMin: -100,
+
+    meltingSpeed: 0.16,
+    meltingSpeedMax: 1,
+    meltingSpeedMin: 0,
+    meltingSpeedStep: 0.01,
+
+    meltingTimeout: 400,
+    meltingTimeoutMax: 5000,
+    meltingTimeoutMin: 5,
+}
+
 let s = {
 
     castleX: 100,
@@ -69,11 +97,6 @@ let s = {
     scaleStep: 0.1,
 
     personaDist: 60,
-
-    personaSpeed: 0.02,
-    personaSpeedMax: 1,
-    personaSpeedMin: 0,
-    personaSpeedStep: 0.001,
 
     stepSize: 0.05,
     stepSizeMax: 10,
